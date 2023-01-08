@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Landing Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html"/>
+
+    <link rel="stylesheet" href="/bootstrap.css">
+    <script src="/jquery-3.6.0.js"></script>
+    <script src="/bootstrap.js"></script>
+
+</head>
+<body>
+    <div class="jumbotron text-center">
+        <h2 th:text="'Hello, ' + ${name} + '!'"/>
+        <p th:text="'Enter your name'"/>
+        <input type="text" name="userName" value="James Carrot" th:value="${name}"/>
+        <button type="submit" th:name="name" th:value="name">Submit</button>
+    </div>
+</body>
+
+</html>
