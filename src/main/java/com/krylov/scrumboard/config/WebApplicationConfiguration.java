@@ -16,7 +16,8 @@ public class WebApplicationConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().anyRequest();
+
+        return (web) -> web.ignoring().requestMatchers("api/v1");
     }
 
     @Bean

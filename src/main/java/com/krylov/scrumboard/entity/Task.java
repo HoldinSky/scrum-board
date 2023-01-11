@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,12 +39,33 @@ public class Task {
             updatable = false)
     private Timestamp createdAt;
 
-    @Column(name = "completed_at")
-    private Timestamp completedAt;
+    @Column(name = "started_at")
+    private Timestamp startedAt;
+
+    @Column(name = "finished_at")
+    private Timestamp finishedAt;
+
+    @Column(name = "difficulty")
+    private Byte difficulty;
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            mappedBy = "task")
+    private List<Worker> workerList;
+
+    public Task(String description) {
+        this.description = description;
+    }
 
     public Task(String description,
                 Timestamp createdAt) {
         this.description = description;
         this.createdAt = createdAt;
+    }
+
+    public void addWorker(Worker worker) {
+        if (workerList == null) workerList = new ArrayList<>();
+
+        workerList.add(worker);
     }
 }
