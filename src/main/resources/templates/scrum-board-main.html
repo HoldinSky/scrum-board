@@ -7,6 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html"/>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
     <script src="/js/jquery-3.6.0.js"></script>
     <script th:src="@{/js/bootstrap.js}"></script>
 </head>
@@ -14,24 +15,70 @@
 
 <!-- Start of NavBar section -->
 <nav class="navbar navbar-expand-lg border-bottom border-secondary sticky-top bg-body">
-    <div class="container-fluid">
-        <a class="navbar-brand text-info fw-bold" href="/board"
-           style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+    <div class="container-fluid justify-content-start">
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sidebarMenu"
+                aria-controls="sidebarMenu"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <i class="navbar-toggler-icon"></i>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <a class="navbar-brand text-info fw-bold ms-2" href="#"
+           style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
+        <div class="navbar-text text-start">
+            <ul class="navbar-nav me-auto mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold text-warning" aria-current="page"
+                    <a class="nav-link fs-5 fw-bold text-warning" aria-current="page"
                        href="http://localhost:8080/api/v1">Home</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-<!-- End of NavBar section -->
+
+<!-- Start of Sidebar -->
+<nav
+        id="sidebarMenu"
+        class="collapse d-lg-block sidebar collapse bg-body"
+>
+    <div class="position-sticky">
+        <div class="list-group list-group-flush mx-3 mt-4">
+            <a
+                    href="#"
+                    class="list-group-item list-group-item-action py-2 ripple"
+                    aria-current="true"
+            >
+                <i class="fas fa-tachometer-alt fa-fw me-3"></i
+                ><span>How it works</span>
+            </a>
+            <a
+                    href="#"
+                    class="list-group-item list-group-item-action py-2 ripple"
+            >
+                <i class="fas fa-chart-area fa-fw me-3"></i
+                ><span>Configure board</span>
+            </a>
+            <a
+                    href="#"
+                    class="list-group-item list-group-item-action py-2 ripple"
+            ><i class="fas fa-chart-line fa-fw me-3"></i
+            ><span>Current sprint</span></a
+            >
+            <a
+                    href="#"
+                    class="list-group-item list-group-item-action py-2 ripple"
+            ><i class="fas fa-globe fa-fw me-3"></i
+            ><span>Previous sprints</span></a
+            >
+        </div>
+    </div>
+</nav>
+<!-- End of Sidebar -->
+<!-- End of Navbar section -->
 <!-- Start of content section -->
 <p class="fs-2 fw-semibold text-danger text-center m-3">This is my scrum-board page</p>
 
