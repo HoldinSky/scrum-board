@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
 
 @Service
 @RestController
@@ -37,7 +36,7 @@ public class TaskController {
 
     @GetMapping
     public ModelAndView showScrumBoard() {
-        ModelAndView modelAndView = new ModelAndView("task-main.html");
+        ModelAndView modelAndView = new ModelAndView("task-main");
         modelAndView.addObject("tasks", taskService.retrieveALl());
         return modelAndView;
     }
