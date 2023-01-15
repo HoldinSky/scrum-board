@@ -1,10 +1,12 @@
 package com.krylov.scrumboard.service.controller;
 
 import com.krylov.scrumboard.entity.Task;
+import com.krylov.scrumboard.service.helper.TaskToShow;
 import com.krylov.scrumboard.service.logic.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -34,7 +36,9 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.retrieveALl();
+    public ModelAndView showScrumBoard() {
+        ModelAndView modelAndView = new ModelAndView("task-main.html");
+        modelAndView.addObject("tasks", taskService.retrieveALl());
+        return modelAndView;
     }
 }

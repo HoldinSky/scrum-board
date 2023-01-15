@@ -7,7 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html"/>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <script th:src="@{/jquery-3.6.0.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <script th:src="@{/js/jquery-3.6.0.js}"></script>
     <script th:src="@{/js/bootstrap.js}"></script>
 
 </head>
@@ -15,7 +16,7 @@
 <!-- Start of NavBar section -->
 <nav class="navbar navbar-expand-lg border-bottom border-secondary sticky-top bg-body">
     <div class="container-fluid">
-        <a class="navbar-brand text-info fw-bold" href="http://localhost:8080/api/v1/main"
+        <a class="navbar-brand text-info fw-bold" th:href="@{/api/v1/main}"
            style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +26,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a role="button" class="btn text-nowrap fw-bold text-warning"
-                       href="http://localhost:8080/api/v1">Home</a>
+                       th:href="@{/api/v1}">Home</a>
                 </li>
                 <li class="nav-item">
                     <a role="button" class="btn text-nowrap" data-bs-toggle="modal" data-bs-target="#aboutModal">
