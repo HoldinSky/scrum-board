@@ -23,8 +23,6 @@ public class MainController {
 
     @GetMapping(path = "/main")
     public ModelAndView showScrumBoard() {
-        ModelAndView modelAndView = new ModelAndView("scrum-board-main");
-        modelAndView.addObject("tasks", taskService.retrieveALl());
-        return modelAndView;
+        return new ModelAndView("scrum-board-main");
     }
 }

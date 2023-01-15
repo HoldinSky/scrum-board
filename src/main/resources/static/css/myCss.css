@@ -15,7 +15,7 @@
     }
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 992px) {
     .sidebar {
         width: 100%;
     }
@@ -68,5 +68,17 @@
         grid-template-areas: "sidebar main";
         grid-template-columns: 1fr 5fr;
         gap: 1.5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    #accordion {
+        display: none;
+    }
+}
+
+@media (max-width: 992px) {
+    #taskTable {
+        display: none;
     }
 }
