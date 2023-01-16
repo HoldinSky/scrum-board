@@ -6,6 +6,7 @@ import com.krylov.scrumboard.repository.TaskRepository;
 import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.service.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.service.helper.TaskToShow;
+import com.krylov.scrumboard.service.request.TaskRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,14 @@ public class TaskService {
 
     private MyDateTimeFormatter formatter;
 
-    public Task save(String request) {
+    public Task save(TaskRequest request) {
         // convert publication time to database timestamp
         LocalDateTime dateTime = LocalDateTime.now();
         Timestamp createdAt = converter.convertToDatabaseColumn(dateTime);
 
-        Task task = new Task(request, createdAt);
+
+        Task task = new Task(request.getDescription(), createdAt);
+        if (request.getDifficulty() != null) task.setDifficulty(request.getDifficulty());
         taskRepository.save(task);
         return task;
     }
@@ -64,7 +67,7 @@ public class TaskService {
         switch (request) {
             case "start" -> {
                 if (difficulty == 0 && task.getDifficulty() == null) return new Task("Task must have its difficulty");
-                if (task.getDifficulty() != null) task.setDifficulty(difficulty);
+                if (task.getDifficulty() == null) task.setDifficulty(difficulty);
                 task.setStartedAt(converter.convertToDatabaseColumn(dateTime));
             }
             case "finish" -> {
