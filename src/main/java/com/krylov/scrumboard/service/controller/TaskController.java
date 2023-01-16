@@ -3,7 +3,9 @@ package com.krylov.scrumboard.service.controller;
 import com.krylov.scrumboard.entity.Task;
 import com.krylov.scrumboard.service.helper.TaskToShow;
 import com.krylov.scrumboard.service.logic.TaskService;
+import com.krylov.scrumboard.service.request.TaskRequest;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,8 +20,12 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping
-    public Task createTask(@RequestBody String request) {
-        return taskService.save(request);
+    public ModelAndView createTask(@ModelAttribute TaskRequest request) {
+        if (request.getDescription().length() > 15)
+            taskService.save(request);
+        ModelAndView modelAndView = new ModelAndView("task-main");
+        modelAndView.addObject("tasks", taskService.retrieveALl());
+        return modelAndView;
     }
 
     @PatchMapping(path = "{id}")
@@ -30,8 +36,8 @@ public class TaskController {
     }
 
     @DeleteMapping(path = "{id}")
-    public Task deleteTask(@PathVariable(value = "id") Long id) {
-        return taskService.deleteTask(id);
+    public void deleteTask(@PathVariable(value = "id") Long id) {
+        taskService.deleteTask(id);
     }
 
     @GetMapping
