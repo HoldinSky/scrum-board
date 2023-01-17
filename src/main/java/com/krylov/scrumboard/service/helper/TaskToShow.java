@@ -1,13 +1,20 @@
 package com.krylov.scrumboard.service.helper;
 
 import lombok.*;
-import java.time.LocalDateTime;
-
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
-@AllArgsConstructor
+@NoArgsConstructor
 public class TaskToShow {
+
+    public TaskToShow (Long id,
+                       String description,
+                       String createdAt) {
+        this.id = id;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
 
     private Long id;
     private String description;

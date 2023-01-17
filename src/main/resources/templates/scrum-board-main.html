@@ -15,7 +15,7 @@
 
 <!-- Start of NavBar section -->
 <nav class="navbar navbar-expand-lg border-bottom border-secondary sticky-top bg-body">
-    <div class="container-fluid justify-content-start ms-4">
+    <div class="container-fluid justify-content-start">
         <button
                 class="navbar-toggler"
                 type="button"
@@ -30,12 +30,8 @@
         <a class="navbar-brand text-info fw-bold ms-2" th:href="@{/api/v1/main}"
            style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
         <div class="navbar-text text-start">
-            <ul class="navbar-nav me-auto mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link fs-5 fw-bold text-warning" aria-current="page"
-                       th:href="@{/api/v1}">Home</a>
-                </li>
-            </ul>
+            <a role="button" class="btn text-nowrap fw-bold text-warning"
+               th:href="@{/api/v1}">Home</a>
         </div>
     </div>
 </nav>
@@ -44,7 +40,7 @@
     <!-- Start of Sidebar -->
     <aside
             id="sidebarMenu"
-            class="collapse d-lg-block sidebar collapse bg-body bd-sidebar"
+            class="collapse d-lg-block sidebar bd-sidebar"
     >
         <div class="position-sticky">
             <div class="list-group list-group-flush mx-3 mt-4">

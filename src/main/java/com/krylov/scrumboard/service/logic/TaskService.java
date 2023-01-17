@@ -22,10 +22,10 @@ public class TaskService {
 
     private TaskRepository taskRepository;
     private LocalDateTimeConverter converter;
-
     private MyDateTimeFormatter formatter;
+    private List<TaskToShow> taskList;
 
-    public Task save(TaskRequest request) {
+    public void save(TaskRequest request) {
         // convert publication time to database timestamp
         LocalDateTime dateTime = LocalDateTime.now();
         Timestamp createdAt = converter.convertToDatabaseColumn(dateTime);
@@ -34,18 +34,47 @@ public class TaskService {
         Task task = new Task(request.getDescription(), createdAt);
         if (request.getDifficulty() != null) task.setDifficulty(request.getDifficulty());
         taskRepository.save(task);
-        return task;
     }
 
-    public List<Task> retrieveALl() {
-        return taskRepository.findAll();
+    public List<TaskToShow> retrieveALl() {
+        taskList = new ArrayList<>();
+
+        for (Task t : taskRepository.findAll()) {
+            Timestamp started = t.getStartedAt();
+            Timestamp finished = t.getFinishedAt();
+            Byte dif = t.getDifficulty();
+
+            TaskToShow tts = new TaskToShow(
+                    t.getId(),
+                    t.getDescription(),
+                    formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
+
+            if (started != null) tts.setStartedAt(formatter.format(converter.convertToEntityAttribute(started)));
+            if (finished != null) tts.setFinishedAt(formatter.format(converter.convertToEntityAttribute(finished)));
+            if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
+
+            taskList.add(tts);
+        }
+
+        return taskList;
     }
 
-    public Task retrieveById(Long id) {
+    public TaskToShow retrieveById(Long id) {
         Optional<Task> optional = taskRepository.findById(id);
         if (optional.isEmpty()) return null;
 
-        return optional.get();
+        Task t = optional.get();
+
+        TaskToShow tts = new TaskToShow(
+                t.getId(),
+                t.getDescription(),
+                formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
+
+        if (t.getStartedAt() != null) tts.setStartedAt(formatter.format(converter.convertToEntityAttribute(t.getStartedAt())));
+        if (t.getFinishedAt() != null) tts.setFinishedAt(formatter.format(converter.convertToEntityAttribute(t.getFinishedAt())));
+        if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
+
+        return tts;
     }
 
     public List<Worker> retrieveWorkersById(Long id) {
@@ -66,7 +95,7 @@ public class TaskService {
         // based on request complete actions
         switch (request) {
             case "start" -> {
-                if (difficulty == 0 && task.getDifficulty() == null) return new Task("Task must have its difficulty");
+                if (difficulty == null && task.getDifficulty() == null) return new Task("Task must have its difficulty");
                 if (task.getDifficulty() == null) task.setDifficulty(difficulty);
                 task.setStartedAt(converter.convertToDatabaseColumn(dateTime));
             }
@@ -88,14 +117,13 @@ public class TaskService {
         return task;
     }
 
-    public Task deleteTask(Long id) {
+    public void deleteTask(Long id) {
         // retrieve task from DB
         Optional<Task> optional = taskRepository.findById(id);
         // if there is not such task -> return
-        if(optional.isEmpty()) return null;
+        if(optional.isEmpty()) return;
 
         Task task = optional.get();
         taskRepository.delete(task);
-        return task;
     }
 }
