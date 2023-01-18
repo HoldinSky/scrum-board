@@ -156,9 +156,8 @@
                                 <th scope="col" class="text-center">Task</th>
                             </tr>
                             <tbody>
-                            <tr th:each="task : ${tasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#backlogModal' + ${task.id}" style="cursor: pointer"
-                                th:if="${task.createdAt} != null and ${task.startedAt} == null">
+                            <tr th:each="task : ${backlogTasks}" class="mb-2" data-bs-toggle="modal"
+                                th:data-bs-target="'#backlogModal' + ${task.id}" style="cursor: pointer">
                                 <td class="text-center fw-bold"
                                     th:text="${task.id}"></td>
                                 <td class="text-center" th:text="${task.description}"></td>
@@ -175,29 +174,29 @@
                                                 <div class="fs-5 text-start">
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task id:'"></p>
+                                                           th:text="'Id:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task description:'"></p>
+                                                           th:text="'Description:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.description}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task creation time:'"></p>
+                                                           th:text="'Creation time:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.createdAt}"></p>
                                                     </div>
                                                     <div class="mx-2" th:if="${task.difficulty} != null">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task difficulty:'"></p>
+                                                           th:text="'Difficulty:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.difficulty}"></p>
                                                     </div>
                                                     <div class="mx-2 mt-4" th:if="${task.difficulty} == null">
                                                         <p class="d-inline fw-medium"
-                                                           th:text="'Please set task difficulty before it can be started'"></p>
+                                                           th:text="'Please set difficulty before task can be started'"></p>
                                                         <form class="row g-3 mt-2" th:method="put"
                                                               th:action="@{/api/v1/tasks/{id}(id=${task.id})}">
                                                             <div class="col-auto">
@@ -267,9 +266,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="task : ${tasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#inProgressModal' + ${task.id}" style="cursor: pointer"
-                                th:if="${task.startedAt} != null and ${task.finishedAt} == null">
+                            <tr th:each="task : ${inProgressTasks}" class="mb-2" data-bs-toggle="modal"
+                                th:data-bs-target="'#inProgressModal' + ${task.id}" style="cursor: pointer">
                                 <td class="text-center fw-bold"
                                     th:text="${task.id}"></td>
                                 <td class="text-center" th:text="${task.description}"></td>
@@ -287,28 +285,28 @@
                                                 <div class="fs-5 text-start">
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task id:'"></p>
+                                                           th:text="'Id:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task description:'"></p>
+                                                           th:text="'Description:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.description}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task creation time:'"></p>
+                                                           th:text="'Creation time:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.createdAt}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task start time:'"></p>
+                                                           th:text="'Start time:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.startedAt}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task difficulty:'"></p>
+                                                           th:text="'Difficulty:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.difficulty}"></p>
                                                     </div>
@@ -355,9 +353,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="task : ${tasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#finishModal' + ${task.id}" style="cursor: pointer"
-                                th:if="${task.finishedAt} != null">
+                            <tr th:each="task : ${finishedTasks}" class="mb-2" data-bs-toggle="modal"
+                                th:data-bs-target="'#finishModal' + ${task.id}" style="cursor: pointer">
                                 <td class="text-center fw-bold" th:text="${task.id}"></td>
                                 <td class="text-center" th:text="${task.description}"></td>
                                 <div class="modal fade" th:id="'finishModal' + ${task.id}" tabindex="-1"
@@ -373,34 +370,34 @@
                                                 <div class="fs-5 text-start">
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task id:'"></p>
+                                                           th:text="'Id:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task description:'"></p>
+                                                           th:text="'Description:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.description}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task creation time:'"></p>
+                                                           th:text="'Creation time:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.createdAt}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task start time:'"></p>
+                                                           th:text="'Start time:'"></p>
                                                         <p class="d-inline fw-normal" th:text="' ' + ${task.startedAt}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task finish time:'"></p>
+                                                           th:text="'Finish time:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.finishedAt}"></p>
                                                     </div>
                                                     <div class="mx-2">
                                                         <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Task difficulty:'"></p>
+                                                           th:text="'Difficulty:'"></p>
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.difficulty}"></p>
                                                     </div>

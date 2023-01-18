@@ -3,11 +3,25 @@ package com.krylov.scrumboard.repository;
 import com.krylov.scrumboard.entity.Task;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 @Repository
 @Transactional
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM task WHERE started_at IS NULL;")
+    public List<Task> findAllBacklog();
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM task WHERE started_at IS NOT NULL AND finished_at IS NULL")
+    public List<Task> findAllInProgress();
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM task WHERE finished_at IS NOT NULL")
+    public List<Task> findAllFinished();
 }
