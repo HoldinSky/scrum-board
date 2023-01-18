@@ -70,15 +70,3 @@
         gap: 1.5rem;
     }
 }
-
-@media (min-width: 992px) {
-    #accordion {
-        display: none;
-    }
-}
-
-@media (max-width: 992px) {
-    #taskTable {
-        display: none;
-    }
-}
