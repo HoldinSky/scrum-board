@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 
 @Entity(name = "Sprint")
 @Table(name = "Sprint")
@@ -28,7 +26,6 @@ public class Sprint {
             updatable = false)
     private Long id;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "duration",
             nullable = false)
@@ -47,6 +44,16 @@ public class Sprint {
     @Column(name = "time_of_config",
             updatable = false,
             nullable = false)
-    private Timestamp canFillNextSprint;
+    private Timestamp canConfigNextSprint;
+
+    public Sprint(Timestamp startOfSprint,
+                  Timestamp endOfSprint,
+                  Duration duration,
+                  Timestamp canConfigNextSprint) {
+        this.startOfSprint = startOfSprint;
+        this.endOfSprint = endOfSprint;
+        this.duration = duration;
+        this.canConfigNextSprint = canConfigNextSprint;
+    }
 
 }

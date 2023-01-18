@@ -7,7 +7,7 @@ public enum Duration {
     THREE_WEEKS(21),
     MONTHS(28);
 
-    final int days;
+    private final int days;
 
     Duration(int days) {
         this.days = days;
@@ -16,4 +16,5 @@ public enum Duration {
     public int getDays() {
         return days;
     }
+
 }

@@ -10,15 +10,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1/tasks")
+@RequestMapping(path = "api/v1/no-sprint-tasks")
 @AllArgsConstructor
-public class TaskController {
+public class NoSprintTaskController {
 
     private TaskService taskService;
 
     @GetMapping
     public ModelAndView showScrumBoard() {
-        ModelAndView modelAndView = new ModelAndView("task-main");
+        ModelAndView modelAndView = new ModelAndView("no-sprint-tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -30,7 +30,7 @@ public class TaskController {
         if (request.getDescription().length() > 15)
             taskService.save(request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/no-sprint-tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -43,7 +43,7 @@ public class TaskController {
                            @ModelAttribute("request") String request) {
         taskService.updateTask(id, difficulty, request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/no-sprint-tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -51,8 +51,14 @@ public class TaskController {
     }
 
     @DeleteMapping(path = "{id}")
-    public void deleteTask(@PathVariable(value = "id") Long id) {
+    public ModelAndView deleteTask(@PathVariable(value = "id") Long id) {
         taskService.deleteTask(id);
+
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/no-sprint-tasks");
+        modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
+        modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
+        modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
+        return modelAndView;
     }
 
 }

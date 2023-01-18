@@ -45,10 +45,10 @@ public class TaskService {
         TaskToShow tts = new TaskToShow(
                 t.getId(),
                 t.getDescription(),
-                formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
+                formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
 
-        if (t.getStartedAt() != null) tts.setStartedAt(formatter.format(converter.convertToEntityAttribute(t.getStartedAt())));
-        if (t.getFinishedAt() != null) tts.setFinishedAt(formatter.format(converter.convertToEntityAttribute(t.getFinishedAt())));
+        if (t.getStartedAt() != null) tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
+        if (t.getFinishedAt() != null) tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
         if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
 
         return tts;
@@ -71,7 +71,7 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
             if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);
         }
@@ -85,8 +85,8 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
-            tts.setStartedAt(formatter.format(converter.convertToEntityAttribute(t.getStartedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
 
             tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);
@@ -102,9 +102,9 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.format(converter.convertToEntityAttribute(t.getCreatedAt())));
-            tts.setStartedAt(formatter.format(converter.convertToEntityAttribute(t.getStartedAt())));
-            tts.setFinishedAt(formatter.format(converter.convertToEntityAttribute(t.getFinishedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
+            tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
 
             tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);

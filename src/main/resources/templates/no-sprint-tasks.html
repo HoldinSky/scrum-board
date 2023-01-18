@@ -54,7 +54,7 @@
                     ><span>How it works</span>
                 </a>
                 <a
-                        th:href="@{/api/v1/tasks}"
+                        th:href="'#'"
                         class="list-group-item list-group-item-action py-2 ripple"
                 ><i class="fas fa-chart-line fa-fw me-3"></i
                 ><span>Current sprint</span></a
@@ -66,14 +66,14 @@
                 ><span>Previous sprints</span></a
                 >
                 <a
-                        th:href="@{/}"
+                        th:href="'#'"
                         class="list-group-item list-group-item-action py-2 ripple"
                 >
                     <i class="fas fa-chart-area fa-fw me-3"></i
                     ><span>Configure board</span>
                 </a>
                 <a
-                        href="#"
+                        th:href="@{/api/v1/no-sprint-tasks}"
                         class="list-group-item list-group-item-action py-2 ripple"
                 ><i class="fas fa-globe fa-fw me-3"></i
                 ><span>No-sprint tasks</span></a
@@ -143,7 +143,7 @@
                         aria-expanded="false" aria-controls="collapseOne">
                     <div id="headingOne">
                         <h5 class="mb-0 text-center">
-                            Backlog of the sprint
+                            Planned tasks
                         </h5>
                     </div>
                 </button>
@@ -166,7 +166,7 @@
                                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="backlogModalLabel">Backlog task details</h1>
+                                                <h1 class="modal-title fs-5" id="backlogModalLabel">Planned task details</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                         aria-label="Close"></button>
                                             </div>
@@ -198,7 +198,7 @@
                                                         <p class="d-inline fw-medium"
                                                            th:text="'Please set difficulty before task can be started'"></p>
                                                         <form class="row g-3 mt-2" th:method="put"
-                                                              th:action="@{/api/v1/tasks/{id}(id=${task.id})}">
+                                                              th:action="@{/api/v1/no-sprint-tasks/{id}(id=${task.id})}">
                                                             <div class="col-auto">
                                                                 <div>
                                                                     <label for="taskAddDifficultyMobile" class="form-label ps-2">Difficulty</label>
@@ -223,7 +223,7 @@
                                                         </form>
                                                     </div>
                                                     <form th:if="${task.difficulty} != null"
-                                                          th:action="@{/api/v1/tasks/{id}(id=${task.id})}" th:method="put">
+                                                          th:action="@{/api/v1/no-sprint-tasks/{id}(id=${task.id})}" th:method="put">
                                                         <input type="text" th:name="request" th:value="'start'"
                                                                class="visually-hidden"/>
                                                         <button type="submit" class="mx-2 mt-2 btn btn-primary">
@@ -233,6 +233,11 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
+                                                <form th:action="@{/api/v1/no-sprint-tasks/{id}(id=${task.id})}" th:method="delete">
+                                                    <button type="submit" class="mx-2 mt-2 btn btn-danger">
+                                                        Delete
+                                                    </button>
+                                                </form>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                     Close
                                                 </button>
@@ -310,7 +315,7 @@
                                                         <p class="d-inline fw-normal"
                                                            th:text="' ' + ${task.difficulty}"></p>
                                                     </div>
-                                                    <form th:action="@{/api/v1/tasks/{id}(id=${task.id})}" th:method="put">
+                                                    <form th:action="@{/api/v1/no-sprint-tasks/{id}(id=${task.id})}" th:method="put">
                                                         <input type="text" th:name="request" th:value="'finish'"
                                                                class="visually-hidden"/>
                                                         <button type="submit" class="mx-2 mt-2 btn btn-primary">
@@ -343,7 +348,7 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
                     <div class="card-body">
                         <table class="table table-hover">
                             <thead class="mb-2 text-center">
