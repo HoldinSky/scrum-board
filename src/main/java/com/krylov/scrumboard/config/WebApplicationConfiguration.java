@@ -1,7 +1,6 @@
 package com.krylov.scrumboard.config;
 
-import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.service.helper.MyDateTimeFormatter;
+import com.krylov.scrumboard.service.bean.SprintConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -14,6 +13,11 @@ public class WebApplicationConfiguration {
 //        http.httpBasic().disable();
 //        return http.build();
 //    }
+
+    @Bean
+    public SprintConfiguration sprintConfiguration() {
+        return new SprintConfiguration();
+    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
