@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.config;
 
 import com.krylov.scrumboard.service.bean.SprintConfiguration;
+import com.krylov.scrumboard.service.logic.SprintService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;

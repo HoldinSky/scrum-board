@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.service.logic;
 
+import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.entity.Task;
 import com.krylov.scrumboard.entity.Worker;
 import com.krylov.scrumboard.repository.WorkerRepository;
@@ -25,7 +26,7 @@ public class WorkerService {
         return optional.get();
     }
 
-    public Task retrieveTaskById(Long id) {
+    public SprintTask retrieveTaskById(Long id) {
         Optional<Worker> optional = workerRepository.findById(id);
         if (optional.isEmpty()) return null;
         return optional.get().getTask();

@@ -19,7 +19,9 @@ public class SprintService {
     private SprintRepository sprintRepository;
 
     public SprintService() {
-        sprintConfiguration.setSprintRepository(sprintRepository);
+        sprintConfiguration = new SprintConfiguration();
+        converter = new LocalDateTimeConverter();
+
         sprintConfiguration.setConverter(converter);
     }
 

@@ -10,10 +10,12 @@ public class TaskToShow {
 
     public TaskToShow (Long id,
                        String description,
-                       String createdAt) {
+                       String createdAt,
+                       Byte priority) {
         this.id = id;
         this.description = description;
         this.createdAt = createdAt;
+        this.priority = priority;
     }
 
     private Long id;
@@ -22,5 +24,6 @@ public class TaskToShow {
     private String startedAt;
     private String finishedAt;
     private Byte difficulty;
+    private Byte priority;
 
 }
