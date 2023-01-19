@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/myCss.css}">
-    <script th:src="@{/jquery-3.6.0.js}"></script>
+    <script th:src="@{/js/myJs/js}"></script>
+    <script th:src="@{/js/jquery-3.6.0.js}"></script>
     <script th:src="@{/js/bootstrap.js}"></script>
 
 </head>
@@ -104,6 +105,16 @@
                               style="min-width: 300px"></textarea>
                 </div>
                 <div class="col-auto">
+                    <label for="taskPriority" class="form-label ps-2">Task Priority (lower - more valuable)</label>
+                    <select id="taskPriority" class="form-select" th:name="'priority'">
+                        <option selected value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="col-auto">
                     <label for="taskDifficulty" class="form-label ps-2">Difficulty (not required)</label>
                     <select id="taskDifficulty" class="form-select" th:name="'difficulty'">
                         <option selected th:default="null" th:placeholder="'Open menu'"></option>
@@ -116,36 +127,24 @@
                         <option value="13">13</option>
                     </select>
                 </div>
-                <div class="col-auto">
-                    <label for="taskPriority" class="form-label ps-2">Task Priority (lower - more valuable)</label>
-                    <select id="taskPriority" class="form-select" th:name="'priority'">
-                        <option selected value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
         </div>
     </div>
-
     <!-- End of additional content -->
 
     <!-- Start of main content section -->
-
     <main class="bd-main">
-        <div class="d-grid gap-2 mb-3 px-2 me-4">
+        <div class="d-grid gap-2 mb-3 px-2 me-lg-4">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#addTaskOffcanvas"
                     aria-controls="addTaskOffcanvas">Add New Task
             </button>
         </div>
 
         <div id="accordion" class="mx-2 my-2">
-            <div class="card mb-2 me-4">
+            <div class="card mb-2 me-lg-4">
                 <button class="btn btn-link text-decoration-none text-info fw-semibold card-header"
                         data-bs-toggle="collapse" data-bs-target="#collapseOne"
                         aria-expanded="false" aria-controls="collapseOne">
@@ -162,144 +161,23 @@
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">Task</th>
-                                <th scope="col" class="text-center">Priority</th>
+                                <th scope="col" class="text-center"></th>
                             </tr>
+                            </thead>
                             <tbody>
-                            <tr th:each="task : ${backlogTasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#backlogModal' + ${task.id}" style="cursor: pointer">
-                                <td class="text-center fw-bold"
-                                    th:text="${task.id}"></td>
-                                <td class="text-center" th:text="${task.description}"></td>
-                                <td class="text-center" th:text="${task.priority}"></td>
-
-                                <div id="deleteConfirmationModal" class="modal fade">
-                                    <div class="modal-dialog modal-confirm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <div class="icon-box">
-                                                    <i class="material-icons">&#xE5CD;</i>
-                                                </div>
-                                                <h4 class="modal-title">Are you sure?</h4>
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Do you really want to delete these task</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
-                                                      th:method="delete">
-                                                    <button type="submit" class="mx-2 mt-2 btn btn-danger">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" th:id="'backlogModal' + ${task.id}" tabindex="-1"
-                                     aria-labelledby="backlogModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="backlogModalLabel">Planned task
-                                                    details</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="fs-5 text-start">
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Id:'"></p>
-                                                        <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Description:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.description}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Creation time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.createdAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Priority:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.priority}"></p>
-                                                    </div>
-                                                    <div class="mx-2" th:if="${task.difficulty} != null">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Difficulty:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.difficulty}"></p>
-                                                    </div>
-                                                    <div class="mx-2 mt-4" th:if="${task.difficulty} == null">
-                                                        <p class="d-inline fw-medium"
-                                                           th:text="'Please set difficulty before task can be started'"></p>
-                                                        <form class="row g-3 mt-2" th:method="put"
-                                                              th:action="@{/api/v1/tasks/{id}(id=${task.id})}">
-                                                            <div class="col-auto">
-                                                                <div>
-                                                                    <label for="taskAddDifficultyMobile"
-                                                                           class="form-label ps-2">Difficulty</label>
-                                                                    <select id="taskAddDifficultyMobile"
-                                                                            class="form-select"
-                                                                            th:name="'dif'">
-                                                                        <option selected value="1">1</option>
-                                                                        <option value="2">2</option>
-                                                                        <option value="3">3</option>
-                                                                        <option value="5">5</option>
-                                                                        <option value="8">8</option>
-                                                                        <option value="10">10</option>
-                                                                        <option value="13">13</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <input type="text" th:name="request"
-                                                                   th:value="'setDifficulty'"
-                                                                   class="visually-hidden"/>
-                                                            <div class="col-12 mt-3">
-                                                                <button type="submit" class="btn btn-primary">Submit
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    <form th:if="${task.difficulty} != null"
-                                                          th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
-                                                          th:method="put">
-                                                        <input type="text" th:name="request" th:value="'start'"
-                                                               class="visually-hidden"/>
-                                                        <button type="submit" class="mx-2 mt-2 btn btn-primary">
-                                                            Start task
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="mx-2 mt-2 btn btn-danger"
-                                                        data-bs-toggle="modal" data-bs-target="deleteConfirmationModal">
-                                                    Delete
-                                                </button>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <tr th:each="task : ${backlogTasks}" class="mb-2">
+                                <td class="text-center fw-bold w-15" th:text="${task.id}"></td>
+                                <td class="text-center w-65" th:text="${task.description}"></td>
+                                <td class="text-center w-20">
+                                    <a class="btn btn-outline-dark" th:href="@{/api/v1/tasks/{id}(id=${task.id})}">More</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <div class="card mb-2 me-4">
+            <div class="card mb-2 me-lg-4">
                 <button class="btn btn-link text-decoration-none text-warning fw-semibold card-header"
                         data-bs-toggle="collapse" data-bs-target="#collapseTwo"
                         aria-expanded="false" aria-controls="collapseTwo">
@@ -316,88 +194,23 @@
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">Task</th>
-                                <th scope="col" class="text-center">Priority</th>
+                                <th scope="col" class="text-center"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="task : ${inProgressTasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#inProgressModal' + ${task.id}" style="cursor: pointer">
-                                <td class="text-center fw-bold"
-                                    th:text="${task.id}"></td>
-                                <td class="text-center" th:text="${task.description}"></td>
-                                <td class="text-center" th:text="${task.priority}"></td>
-                                <div class="modal fade" th:id="'inProgressModal' + ${task.id}" tabindex="-1"
-                                     aria-labelledby="inProgressModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="inProgressModalLabel">
-                                                    In progress task details</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="fs-5 text-start">
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Id:'"></p>
-                                                        <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Description:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.description}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Creation time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.createdAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Start time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.startedAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Priority:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.priority}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Difficulty:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.difficulty}"></p>
-                                                    </div>
-                                                    <form th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
-                                                          th:method="put">
-                                                        <input type="text" th:name="request" th:value="'finish'"
-                                                               class="visually-hidden"/>
-                                                        <button type="submit" class="mx-2 mt-2 btn btn-primary">
-                                                            Finish task
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <tr th:each="task : ${inProgressTasks}" class="mb-2">
+                                <td class="text-center fw-bold w-15" th:text="${task.id}"></td>
+                                <td class="text-center w-65" th:text="${task.description}"></td>
+                                <td class="text-center w-20">
+                                    <a class="btn btn-outline-dark" th:href="@{/api/v1/tasks/{id}(id=${task.id})}">More</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <div class="card mb-2 me-4">
+            <div class="card mb-2 me-lg-4">
                 <button class="btn btn-link text-decoration-none text-info fw-semibold card-header"
                         data-bs-toggle="collapse" data-bs-target="#collapseThree"
                         aria-expanded="false" aria-controls="collapseThree">
@@ -417,67 +230,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="task : ${finishedTasks}" class="mb-2" data-bs-toggle="modal"
-                                th:data-bs-target="'#finishModal' + ${task.id}" style="cursor: pointer">
-                                <td class="text-center fw-bold" th:text="${task.id}"></td>
-                                <td class="text-center" th:text="${task.description}"></td>
-                                <div class="modal fade" th:id="'finishModal' + ${task.id}" tabindex="-1"
-                                     aria-labelledby="finishedModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="finishedModalLabel">Finished task
-                                                    details</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="fs-5 text-start">
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Id:'"></p>
-                                                        <p class="d-inline fw-normal" th:text="' ' + ${task.id}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Description:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.description}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Creation time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.createdAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Start time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.startedAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Finish time:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.finishedAt}"></p>
-                                                    </div>
-                                                    <div class="mx-2">
-                                                        <p class="d-inline fw-medium text-decoration-underline"
-                                                           th:text="'Difficulty:'"></p>
-                                                        <p class="d-inline fw-normal"
-                                                           th:text="' ' + ${task.difficulty}"></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <tr th:each="task : ${finishedTasks}" class="mb-2">
+                                <td class="text-center fw-bold w-15" th:text="${task.id}"></td>
+                                <td class="text-center w-65" th:text="${task.description}"></td>
+                                <td class="text-center w-20">
+                                    <a class="btn btn-outline-dark" th:href="@{/api/v1/tasks/{id}(id=${task.id})}">More</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

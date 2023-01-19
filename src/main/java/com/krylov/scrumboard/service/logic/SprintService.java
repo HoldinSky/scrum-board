@@ -26,8 +26,8 @@ public class SprintService {
     }
 
     public SprintConfiguration configureSprint(SprintRequest request) {
-        sprintConfiguration.setSprintDuration(Duration.valueOf(request.getSprintDuration()));
         sprintConfiguration.setStartOfSprint(request.getStartOfSprint());
+        sprintConfiguration.setSprintDuration(Duration.valueOf(request.getSprintDuration()));
 
         return sprintConfiguration;
     }

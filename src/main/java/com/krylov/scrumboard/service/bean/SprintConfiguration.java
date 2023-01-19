@@ -38,6 +38,7 @@ public class SprintConfiguration implements Runnable {
     public SprintConfiguration() {
         canConfigTasks = false;
         sprintBacklog = new ArrayList<>();
+        sprintDraft = new Sprint();
     }
 
     private void calculateEndOfSprint() {
@@ -45,14 +46,20 @@ public class SprintConfiguration implements Runnable {
         configTasksDate = startOfSprint.minusDays(sprintDuration.getDays() / 3);
     }
 
-    public void setStartOfSprint(LocalDateTime startOfSprint) {
-        this.startOfSprint = startOfSprint;
+    public void setSprintDuration(Duration sprintDuration) {
+        this.sprintDuration = sprintDuration;
         calculateEndOfSprint();
     }
 
     public void run() {
         canConfigTasks = LocalDateTime.now().isAfter(configTasksDate) && LocalDateTime.now().isBefore(startOfSprint);
         if (!canConfigTasks) return;
+
+        sprintDraft.setStartOfSprint(converter.convertToDatabaseColumn(startOfSprint));
+        sprintDraft.setEndOfSprint(converter.convertToDatabaseColumn(endOfSprint));
+        sprintDraft.setDuration(sprintDuration);
+        sprintDraft.setCanConfigSprint(converter.convertToDatabaseColumn(configTasksDate));
+
 
     }
 

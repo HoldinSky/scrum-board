@@ -70,3 +70,7 @@
         gap: 1.5rem;
     }
 }
+
+.clickable-row{
+    cursor: pointer;
+}
