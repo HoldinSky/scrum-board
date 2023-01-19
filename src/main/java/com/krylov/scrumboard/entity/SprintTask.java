@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,17 +13,17 @@ import java.sql.Timestamp;
 @EqualsAndHashCode
 @ToString
 
-@Entity(name = "Task")
-@Table(name = "Task")
-public class Task {
+@Entity(name = "SprintTask")
+@Table(name = "SprintTask")
+public class SprintTask {
 
     @Id
     @SequenceGenerator(
-            name = "task_sequence",
-            sequenceName = "task_sequence",
+            name = "sprint_task_sequence",
+            sequenceName = "sprint_task_sequence",
             allocationSize = 1)
     @GeneratedValue(
-            generator = "task_sequence",
+            generator = "sprint_task_sequence",
             strategy = GenerationType.SEQUENCE)
     @Column(name = "id",
             updatable = false)
@@ -50,20 +52,29 @@ public class Task {
             nullable = false)
     private Byte priority;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id",
-            foreignKey = @ForeignKey(name = "user_id_fkey"))
-    private AppUser user;
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE},
+            mappedBy = "task")
+    private List<Worker> workerList;
 
-    public Task(String description) {
+    public SprintTask(String description) {
         this.description = description;
     }
 
-    public Task(String description,
-                Timestamp createdAt,
-                Byte priority) {
+    public SprintTask(String description,
+                      Timestamp createdAt,
+                      Byte priority) {
         this.description = description;
         this.createdAt = createdAt;
         this.priority = priority;
+    }
+
+    public void addWorker(Worker worker) {
+        if (workerList == null) workerList = new ArrayList<>();
+        workerList.add(worker);
+    }
+
+    public void removeWorker(Worker worker) {
+        if (workerList != null) workerList.remove(worker);
     }
 }

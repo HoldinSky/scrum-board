@@ -3,9 +3,6 @@ package com.krylov.scrumboard.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity(name = "Worker")
 @Table(name = "Worker",
         uniqueConstraints = {
@@ -48,7 +45,7 @@ public class Worker {
     @ManyToOne
     @JoinColumn(name = "task_id",
             foreignKey = @ForeignKey(name = "task_id_fkey"))
-    private Task task;
+    private SprintTask task;
 
     public Worker(String firstName,
                   String lastName,

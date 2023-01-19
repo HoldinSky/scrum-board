@@ -11,4 +11,6 @@ public class TaskRequest {
 
     private String description;
     private Byte difficulty;
+    private Byte priority;
+
 }

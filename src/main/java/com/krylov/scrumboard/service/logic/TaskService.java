@@ -31,7 +31,7 @@ public class TaskService {
         Timestamp createdAt = converter.convertToDatabaseColumn(dateTime);
 
 
-        Task task = new Task(request.getDescription(), createdAt);
+        Task task = new Task(request.getDescription(), createdAt, request.getPriority());
         if (request.getDifficulty() != null) task.setDifficulty(request.getDifficulty());
         taskRepository.save(task);
     }
@@ -45,7 +45,8 @@ public class TaskService {
         TaskToShow tts = new TaskToShow(
                 t.getId(),
                 t.getDescription(),
-                formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+                formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                t.getPriority());
 
         if (t.getStartedAt() != null) tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
         if (t.getFinishedAt() != null) tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
@@ -71,7 +72,8 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    t.getPriority());
             if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);
         }
@@ -85,7 +87,8 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    t.getPriority());
             tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
 
             tts.setDifficulty(t.getDifficulty());
@@ -102,7 +105,8 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())));
+                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    t.getPriority());
             tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
             tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
 
@@ -111,12 +115,6 @@ public class TaskService {
         }
 
         return toReturn;
-    }
-
-    public List<Worker> retrieveWorkersById(Long id) {
-        Optional<Task> optional = taskRepository.findById(id);
-        if (optional.isEmpty()) return null;
-        return optional.get().getWorkerList();
     }
 
     public Task updateTask(Long id, Byte difficulty, String request) {

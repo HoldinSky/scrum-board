@@ -14,11 +14,11 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM task WHERE started_at IS NULL;")
+            value = "SELECT * FROM task WHERE started_at IS NULL ORDER BY priority")
     public List<Task> findAllBacklog();
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM task WHERE started_at IS NOT NULL AND finished_at IS NULL")
+            value = "SELECT * FROM task WHERE started_at IS NOT NULL AND finished_at IS NULL ORDER BY priority")
     public List<Task> findAllInProgress();
 
     @Query(nativeQuery = true,
