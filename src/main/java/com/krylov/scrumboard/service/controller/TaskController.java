@@ -18,7 +18,7 @@ public class TaskController {
 
     @GetMapping
     public ModelAndView showScrumBoard() {
-        ModelAndView modelAndView = new ModelAndView("tasks");
+        var modelAndView = new ModelAndView("tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -27,7 +27,7 @@ public class TaskController {
 
     @GetMapping(path = "{id}")
     public ModelAndView showTaskDetails(@PathVariable(name = "id") Long id) {
-        ModelAndView modelAndView = new ModelAndView("task-details");
+        var modelAndView = new ModelAndView("task-details");
         modelAndView.addObject("task", taskService.retrieveById(id));
         return modelAndView;
     }
@@ -37,7 +37,7 @@ public class TaskController {
         if (request.getDescription().length() > 15)
             taskService.save(request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks");
+        var modelAndView = new ModelAndView("redirect:/api/v1/tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());

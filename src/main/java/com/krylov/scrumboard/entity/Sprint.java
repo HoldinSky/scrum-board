@@ -43,11 +43,6 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
-    @Column(name = "time_of_config",
-            updatable = false,
-            nullable = false)
-    private Timestamp canConfigSprint;
-
     @OneToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
             mappedBy = "sprint")
@@ -55,12 +50,10 @@ public class Sprint {
 
     public Sprint(Timestamp startOfSprint,
                   Timestamp endOfSprint,
-                  Duration duration,
-                  Timestamp canConfigSprint) {
+                  Duration duration) {
         this.startOfSprint = startOfSprint;
         this.endOfSprint = endOfSprint;
         this.duration = duration;
-        this.canConfigSprint = canConfigSprint;
     }
 
     public void addSprintTask(SprintTask task) {

@@ -16,7 +16,7 @@ public class MainController {
 
     @GetMapping
     public ModelAndView showLandingPage(@RequestParam(required = false, defaultValue = "World", name = "name") String name) {
-        ModelAndView modelAndView = new ModelAndView("main-page");
+        var modelAndView = new ModelAndView("main-page");
         modelAndView.addObject("name", name);
         return modelAndView;
     }

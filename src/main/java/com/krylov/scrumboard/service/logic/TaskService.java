@@ -40,17 +40,17 @@ public class TaskService {
         Optional<Task> optional = taskRepository.findById(id);
         if (optional.isEmpty()) return null;
 
-        Task t = optional.get();
+        var task = optional.get();
 
         TaskToShow tts = new TaskToShow(
-                t.getId(),
-                t.getDescription(),
-                formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
-                t.getPriority());
+                task.getId(),
+                task.getDescription(),
+                formatter.formatDateTime(converter.convertToEntityAttribute(task.getCreatedAt())),
+                task.getPriority());
 
-        if (t.getStartedAt() != null) tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
-        if (t.getFinishedAt() != null) tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
-        if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
+        if (task.getStartedAt() != null) tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getStartedAt())));
+        if (task.getFinishedAt() != null) tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getFinishedAt())));
+        if (task.getDifficulty() != null) tts.setDifficulty(task.getDifficulty());
 
         return tts;
     }
