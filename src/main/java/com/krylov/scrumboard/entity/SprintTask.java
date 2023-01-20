@@ -57,6 +57,11 @@ public class SprintTask {
             mappedBy = "task")
     private List<Worker> workerList;
 
+    @ManyToOne
+    @JoinColumn(name = "sprint_id",
+            foreignKey = @ForeignKey(name = "sprint_id_fkey"))
+    private Sprint sprint;
+
     public SprintTask(String description) {
         this.description = description;
     }

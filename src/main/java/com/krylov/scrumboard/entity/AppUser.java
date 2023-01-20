@@ -18,7 +18,6 @@ public class AppUser {
             generator = "user_sequence")
     private Long id;
 
-
     @OneToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "user")

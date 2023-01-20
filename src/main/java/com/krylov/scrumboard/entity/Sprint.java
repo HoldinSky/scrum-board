@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Sprint")
 @Table(name = "Sprint")
@@ -41,19 +43,22 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
-    @Column(name = "time_of_config",
-            updatable = false,
-            nullable = false)
-    private Timestamp canConfigNextSprint;
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
+            mappedBy = "sprint")
+    private List<SprintTask> taskList;
 
     public Sprint(Timestamp startOfSprint,
                   Timestamp endOfSprint,
-                  Duration duration,
-                  Timestamp canConfigNextSprint) {
+                  Duration duration) {
         this.startOfSprint = startOfSprint;
         this.endOfSprint = endOfSprint;
         this.duration = duration;
-        this.canConfigNextSprint = canConfigNextSprint;
+    }
+
+    public void addSprintTask(SprintTask task) {
+        if (taskList == null) taskList = new ArrayList<>();
+        taskList.add(task);
     }
 
 }

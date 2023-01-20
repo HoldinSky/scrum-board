@@ -1,37 +1,66 @@
 package com.krylov.scrumboard.service.logic;
 
-import com.krylov.scrumboard.repository.SprintRepository;
-import com.krylov.scrumboard.service.bean.SprintConfiguration;
+import com.krylov.scrumboard.entity.Sprint;
+import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.repository.SprintTaskRepository;
+import com.krylov.scrumboard.service.bean.SprintConfigurer;
 import com.krylov.scrumboard.service.helper.Duration;
 import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.service.request.SprintRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class SprintService {
 
-    private SprintConfiguration sprintConfiguration;
+    private SprintConfigurer sprintConfigurer;
 
     private LocalDateTimeConverter converter;
 
-    private SprintRepository sprintRepository;
+    private SprintTaskRepository sprintTaskRepository;
 
     public SprintService() {
-        sprintConfiguration = new SprintConfiguration();
+        sprintConfigurer = new SprintConfigurer();
         converter = new LocalDateTimeConverter();
 
-        sprintConfiguration.setConverter(converter);
+        sprintConfigurer.setConverter(converter);
     }
 
-    public SprintConfiguration configureSprint(SprintRequest request) {
-        sprintConfiguration.setSprintDuration(Duration.valueOf(request.getSprintDuration()));
-        sprintConfiguration.setStartOfSprint(request.getStartOfSprint());
+    public SprintConfigurer configureSprint(SprintRequest request) {
+        sprintConfigurer.setStartOfSprint(request.getStartOfSprint());
+        sprintConfigurer.setSprintDuration(Duration.valueOf(request.getSprintDuration()));
 
-        return sprintConfiguration;
+        Thread thread = new Thread(sprintConfigurer);
+        thread.start();
+
+        return sprintConfigurer;
     }
 
+    public void addSprintTaskById(Long id) {
+        Optional<SprintTask> optional = sprintTaskRepository.findById(id);
+        if (optional.isEmpty()) return;
+
+        var task = optional.get();
+        sprintConfigurer.addTask(task);
+    }
+
+    public void addMultipleTasks(List<Long> idList) {
+        var list = sprintTaskRepository.findAllById(idList);
+
+        sprintConfigurer.addMultipleTasks(list);
+    }
+
+    public Sprint getSprintById(Long id) {
+        return sprintConfigurer.getSprintDraft();
+    }
+
+    public List<SprintTask> retrieveBacklog() {
+        return sprintTaskRepository.findAll();
+    }
 
 
 }
