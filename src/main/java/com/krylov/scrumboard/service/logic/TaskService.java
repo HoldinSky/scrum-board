@@ -48,8 +48,10 @@ public class TaskService {
                 formatter.formatDateTime(converter.convertToEntityAttribute(task.getCreatedAt())),
                 task.getPriority());
 
-        if (task.getStartedAt() != null) tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getStartedAt())));
-        if (task.getFinishedAt() != null) tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getFinishedAt())));
+        if (task.getStartedAt() != null)
+            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getStartedAt())));
+        if (task.getFinishedAt() != null)
+            tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getFinishedAt())));
         if (task.getDifficulty() != null) tts.setDifficulty(task.getDifficulty());
 
         return tts;
@@ -117,11 +119,12 @@ public class TaskService {
         return toReturn;
     }
 
-    public Task updateTask(Long id, Byte difficulty, String request) {
+    public String updateTask(Long id, Byte difficulty, String request) {
         // retrieve task from DB
         Optional<Task> optional = taskRepository.findById(id);
         // if there is not such task -> return
-        if(optional.isEmpty()) return new Task("Could not find such a task");
+        if (optional.isEmpty()) return "Could not find the task with such id";
+
 
         Task task = optional.get();
         LocalDateTime dateTime = LocalDateTime.now();
@@ -129,16 +132,16 @@ public class TaskService {
         // based on request complete actions
         switch (request) {
             case "start" -> {
-                if (difficulty == null && task.getDifficulty() == null) return new Task("Task must have its difficulty");
+                if (difficulty == null && task.getDifficulty() == null) return "Task must have its difficulty";
                 if (task.getDifficulty() == null) task.setDifficulty(difficulty);
                 task.setStartedAt(converter.convertToDatabaseColumn(dateTime));
             }
             case "finish" -> {
-                if (task.getStartedAt() == null) return new Task("This task was not started yet");
+                if (task.getStartedAt() == null) return "Task was not started yet";
                 task.setFinishedAt(converter.convertToDatabaseColumn(dateTime));
             }
             case "setDifficulty" -> {
-                if (difficulty == 0) return new Task("Task must have its difficulty");
+                if (difficulty == 0) return "Task must have its difficulty";
                 task.setDifficulty(difficulty);
             }
             default -> {
@@ -148,14 +151,14 @@ public class TaskService {
 
         // update DB instance
         taskRepository.save(task);
-        return task;
+        return task.toString();
     }
 
     public void deleteTask(Long id) {
         // retrieve task from DB
         Optional<Task> optional = taskRepository.findById(id);
         // if there is not such task -> return
-        if(optional.isEmpty()) return;
+        if (optional.isEmpty()) return;
 
         Task task = optional.get();
         taskRepository.delete(task);

@@ -1,11 +1,10 @@
 package com.krylov.scrumboard.service.request;
 
 
-import com.krylov.scrumboard.service.helper.Duration;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -13,17 +12,16 @@ import java.time.format.DateTimeFormatter;
 public class SprintRequest {
 
     private DateTimeFormatter formatter;
-
-    private LocalDateTime startOfSprint;
+    private LocalDate startOfSprint;
     private String sprintDuration;
 
 
-    public SprintRequest(String dateTime,
+    public SprintRequest(String start,
                          String duration) {
 
         formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-        startOfSprint = LocalDateTime.parse(dateTime, formatter);
+        startOfSprint = LocalDate.parse(start, formatter);
         this.sprintDuration = duration;
     }
 }
