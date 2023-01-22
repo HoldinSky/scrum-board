@@ -48,7 +48,7 @@ public class TaskController {
     public ModelAndView updateTask(@PathVariable(value = "id") Long id,
                            @RequestParam(name = "dif", required = false) Byte difficulty,
                            @ModelAttribute("request") String request) {
-        taskService.updateTask(id, difficulty, request);
+        String message = taskService.updateTask(id, difficulty, request);
 
         ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/{id}");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
