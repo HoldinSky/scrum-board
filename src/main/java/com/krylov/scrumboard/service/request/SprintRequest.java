@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.service.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class SprintRequest {
 
     private DateTimeFormatter formatter;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate startOfSprint;
     private String sprintDuration;
 
@@ -19,7 +21,7 @@ public class SprintRequest {
     public SprintRequest(String start,
                          String duration) {
 
-        formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         startOfSprint = LocalDate.parse(start, formatter);
         this.sprintDuration = duration;

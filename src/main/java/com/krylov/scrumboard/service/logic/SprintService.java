@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -27,47 +28,35 @@ public class SprintService implements Runnable {
 
     private SprintTaskRepository sprintTaskRepository;
 
-    private Sprint currentSprint;
-
-    private Sprint nextSprint;
-
-    private Duration sprintDuration;
-
-    private SprintProperties properties;
-
-    public SprintService() {
-        sprintConfigurer = new SprintConfigurer();
-        converter = new LocalDateTimeConverter();
-
-        sprintConfigurer.setConverter(converter);
-    }
+    private SprintServiceProps ssp;
 
     public List<Sprint> configureSprint(SprintRequest request) {
         // setup current sprint
-        sprintDuration = Duration.valueOf(request.getSprintDuration());
+        ssp.sprintDuration = Duration.valueOf(request.getSprintDuration());
         var sprintStart = request.getStartOfSprint();
-        var sprintEnd = sprintStart.plusDays(sprintDuration.getDays());
+        var sprintEnd = sprintStart.plusDays(ssp.sprintDuration.getDays());
 
-        properties = new SprintProperties(
+        ssp.properties = new SprintProperties(
                 sprintStart,
                 sprintEnd,
-                sprintDuration);
+                ssp.sprintDuration);
 
-        sprintConfigurer.setProperties(properties);
-        currentSprint = sprintConfigurer.getSprintEntity();
+        sprintConfigurer.setProperties(ssp.properties);
+        ssp.currentSprint = sprintConfigurer.getSprintEntity();
 
         // setup next sprint
         sprintStart = sprintEnd;
-        sprintEnd = sprintEnd.plusDays(sprintDuration.getDays());
+        sprintEnd = sprintEnd.plusDays(ssp.sprintDuration.getDays());
 
-        properties.setStart(sprintStart);
-        properties.setEnd(sprintEnd);
+        ssp.properties.setStart(sprintStart);
+        ssp.properties.setEnd(sprintEnd);
 
-        sprintConfigurer.setProperties(properties);
-        nextSprint = sprintConfigurer.getSprintEntity();
+        sprintConfigurer.setProperties(ssp.properties);
+        ssp.nextSprint = sprintConfigurer.getSprintEntity();
 
-        var sprintList = List.of(currentSprint, nextSprint);
-        sprintRepository.saveAll(sprintList);
+        var sprintList = List.of(ssp.currentSprint, ssp.nextSprint);
+        sprintRepository.save(ssp.currentSprint);
+        sprintRepository.save(ssp.nextSprint);
 
         var threadThis = new Thread(this);
         threadThis.start();
@@ -81,7 +70,7 @@ public class SprintService implements Runnable {
 
         synchronized (this) {
             // if the first sprint is not started yet
-            if (LocalDateTime.now().isBefore(currentSprint.getStartOfSprint().toLocalDateTime())) {
+            if (LocalDateTime.now().isBefore(ssp.currentSprint.getStartOfSprint().toLocalDateTime())) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
 
                 var hrs = tomorrow.getHour();
@@ -92,67 +81,52 @@ public class SprintService implements Runnable {
                 wait(86_400_000 - (hrs * 3600 + min * 60 + sec) * 1000);
                 run();
             }
-            wait(86_400_000L * currentSprint.getDuration().getDays());  // wait until start of next Sprint
-            currentSprint = nextSprint;
+            wait(86_400_000L * ssp.currentSprint.getDuration().getDays());  // wait until start of next Sprint
+            ssp.currentSprint = ssp.nextSprint;
 
             var sprintStart = LocalDate.now();
-            var sprintEnd = sprintStart.plusDays(sprintDuration.getDays());
+            var sprintEnd = sprintStart.plusDays(ssp.sprintDuration.getDays());
 
-            properties.setStart(sprintStart);
-            properties.setEnd(sprintEnd);
+            ssp.properties.setStart(sprintStart);
+            ssp.properties.setEnd(sprintEnd);
 
-            sprintConfigurer.setProperties(properties);
-            nextSprint = sprintConfigurer.getSprintEntity();
+            sprintConfigurer.setProperties(ssp.properties);
+            ssp.nextSprint = sprintConfigurer.getSprintEntity();
 
             run();
         }
     }
 
-    public void addTaskToSprintById(Long id, String sprintVariant) {
+    public void addTaskToSprintById(Long id, Long sprintId) {
         var task = findTask(id);
+        var sprint = sprintRepository.findById(sprintId).orElse(new Sprint());
+        if (sprint.getId() == null) return;
+        if (task == null) return;
 
-        switch (sprintVariant) {
-            case "current" -> {
-                currentSprint.addSprintTask(task);
-                sprintRepository.save(currentSprint);
-            }
-            case "next" -> {
-                nextSprint.addSprintTask(task);
-                sprintRepository.save(nextSprint);
-            }
-            default -> System.out.println("DEBUG: cannot recognize sprint variant");
-        }
+        task.setSprint(sprint);
+        sprintTaskRepository.save(task);
     }
 
-    public void addMultipleTasksToSprintById(List<Long> taskIdList, String sprintVariant) {
+    public void addMultipleTasksToSprintById(List<Long> taskIdList, Long sprintId) {
         var list = sprintTaskRepository.findAllById(taskIdList);
+        var sprint = sprintRepository.findById(sprintId).orElse(new Sprint());
+        if (sprint.getId() == null) return;
 
-        switch (sprintVariant) {
-            case "current" -> {
-                list.forEach(task -> currentSprint.addSprintTask(task));
-                sprintRepository.save(currentSprint);
-            }
-            case "next" -> {
-                list.forEach(task -> nextSprint.addSprintTask(task));
-                sprintRepository.save(nextSprint);
-            }
-            default -> System.out.println("DEBUG: cannot recognize sprint variant");
-        }
+
+        list.forEach(task -> task.setSprint(sprint));
+        sprintTaskRepository.saveAll(list);
     }
 
-    public Sprint getSprint(String variant) {
-        return switch (variant) {
-            case "current" -> currentSprint;
-            case "next" -> nextSprint;
-            default -> null;
-        };
+
+    public Sprint getSprint(Long id) {
+        return sprintRepository.findById(id).orElse(new Sprint());
     }
 
     public List<SprintTask> retrieveBacklog() {
-        return sprintTaskRepository.findAll();
+        return sprintTaskRepository.retrieveBacklog();
     }
 
-    public void addTaskToBacklog(SprintTaskRequest request) {
+    public void saveTask(SprintTaskRequest request) {
         var creationTime = LocalDateTime.now();
         var createdAt = converter.convertToDatabaseColumn(creationTime);
 
@@ -205,6 +179,16 @@ public class SprintService implements Runnable {
 
         // update DB instance
         sprintTaskRepository.save(task);
+    }
+
+    public void deleteTask(Long id) {
+        // retrieve task from DB
+        var optional = sprintRepository.findById(id);
+        // if there is not such task -> return
+        if (optional.isEmpty()) return;
+
+        var task = optional.get();
+        sprintRepository.delete(task);
     }
 
     private SprintTask findTask(Long id) {
