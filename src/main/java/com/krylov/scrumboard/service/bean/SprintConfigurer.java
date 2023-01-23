@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @EqualsAndHashCode
 public class SprintConfigurer {
 
@@ -24,10 +25,11 @@ public class SprintConfigurer {
 
     private List<SprintTask> sprintBacklog;
 
-    public SprintConfigurer() {
-        sprintBacklog = new ArrayList<>();
+    public void setProperties(SprintProperties properties) {
         sprintEntity = new Sprint();
-
-        sprintEntity.setTaskList(sprintBacklog);
+        sprintEntity.setStartOfSprint(converter.convertToDatabaseColumn(properties.getStart().atStartOfDay()));
+        sprintEntity.setEndOfSprint(converter.convertToDatabaseColumn(properties.getEnd().atStartOfDay()));
+        sprintEntity.setDuration(properties.getDuration());
+        sprintEntity.setTaskList(new ArrayList<>());
     }
 }

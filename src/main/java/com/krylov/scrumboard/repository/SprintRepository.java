@@ -12,5 +12,6 @@ import java.util.Optional;
 @Transactional
 public interface SprintRepository extends JpaRepository<Sprint, Long> {
 
-    public Optional<Sprint> findByStartOfSprint(Timestamp startOfSprint);
+    Optional<Sprint> findByStartOfSprint(Timestamp startOfSprint);
+
 }

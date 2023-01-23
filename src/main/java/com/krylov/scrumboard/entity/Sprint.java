@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.krylov.scrumboard.service.helper.Duration;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,6 +47,7 @@ public class Sprint {
     @OneToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
             mappedBy = "sprint")
+    @JsonManagedReference
     private List<SprintTask> taskList;
 
     public Sprint(Timestamp startOfSprint,
