@@ -5,12 +5,14 @@ import com.krylov.scrumboard.service.bean.SprintConfigurer;
 import com.krylov.scrumboard.service.helper.Duration;
 import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.service.helper.SprintProperties;
-import com.krylov.scrumboard.service.helper.SprintServiceProps;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
+
 @Configuration
+@EnableJpaRepositories(value = "com.krylov.scrumboard.repository")
 public class WebApplicationConfiguration {
 
 //    @Bean
@@ -19,10 +21,7 @@ public class WebApplicationConfiguration {
 //        return http.build();
 //    }
 
-    @Bean
-    public SprintConfigurer sprintConfiguration() {
-        return new SprintConfigurer();
-    }
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -39,12 +38,17 @@ public class WebApplicationConfiguration {
     }
 
     @Bean
-    public SprintServiceProps props() {
-        return new SprintServiceProps(
-                new Sprint(),
-                new Sprint(),
-                Duration.WEEK,
-                new SprintProperties()
-        );
+    public Sprint sprint() {
+        return new Sprint();
+    }
+
+    @Bean
+    public Duration duration() {
+        return Duration.NONE;
+    }
+
+    @Bean
+    public SprintProperties sprintProperties() {
+        return new SprintProperties();
     }
 }

@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,7 @@ public class Worker {
     @ManyToOne
     @JoinColumn(name = "task_id",
             foreignKey = @ForeignKey(name = "task_id_fkey"))
+    @JsonBackReference
     private SprintTask task;
 
     public Worker(String firstName,

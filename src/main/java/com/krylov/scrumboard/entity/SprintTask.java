@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
+
+@JsonIgnoreProperties(value = {"workerList"})
 
 @Entity(name = "SprintTask")
 @Table(name = "SprintTask")
