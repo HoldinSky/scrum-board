@@ -2,7 +2,6 @@ package com.krylov.scrumboard.service.controller;
 
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.repository.SprintRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.service.logic.SprintService;
 import com.krylov.scrumboard.service.request.SprintRequest;
@@ -20,10 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SprintController {
 
-    private SprintService sprintService;
-    private SprintTaskRepository sprintTaskRepository;
-
-    private SprintRepository sprintRepository;
+    private final SprintService sprintService;
+    private final SprintTaskRepository sprintTaskRepository;
 
     @GetMapping(path = "/config")
     public List<SprintTask> showSprintConfiguratorAndBacklog() {
@@ -48,8 +45,8 @@ public class SprintController {
         var modelAndView = new ModelAndView("sprint-main");
 
         // TODO: manage retrieving sprint ids by default
-        var currentId = sprintService.getSprint(4L).getId();
-        var nextId = sprintService.getSprint(5L).getId();
+        var currentId = sprintService.getSprint("current").getId();
+        var nextId = sprintService.getSprint("next").getId();
 
         modelAndView.addObject("currentSprint",
                 sprintTaskRepository.retrieveTasksOfSprintById(currentId));
@@ -57,7 +54,7 @@ public class SprintController {
                 sprintTaskRepository.retrieveTasksOfSprintById(nextId));
 
 //        return modelAndView;
-        return List.of(sprintService.getSprint(currentId), sprintService.getSprint(nextId));
+        return List.of(sprintService.getSprint("current"), sprintService.getSprint("next"));
     }
 
     @PostMapping(path = "/task")
@@ -68,20 +65,20 @@ public class SprintController {
         return showCurrentAndNextSprints();
     }
 
-    @PostMapping(path = "/single/{sprintId}")
-    public List<Sprint> addOneTaskToSprint(@PathVariable(name = "sprintId") Long sprintId,
+    @PostMapping(path = "/single/{state}")
+    public List<Sprint> addOneTaskToSprint(@PathVariable(name = "state") String state,
                                              @RequestParam(name = "task") Long taskId) {
-        sprintService.addTaskToSprintById(taskId, sprintId);
+        sprintService.addTaskToSprintById(taskId, state);
 
         return showCurrentAndNextSprints();
     }
 
 
-    @PostMapping(path = "/multiple/{sprintId}")
-    public List<Sprint> addMultipleTasksToSprint(@PathVariable(name = "sprintId") Long sprintId,
+    @PostMapping(path = "/multiple/{state}")
+    public List<Sprint> addMultipleTasksToSprint(@PathVariable(name = "state") String state,
                                                    @RequestBody List<Long> taskIds) {
 
-        sprintService.addMultipleTasksToSprintById(taskIds, sprintId);
+        sprintService.addMultipleTasksToSprintById(taskIds, state);
 
         return showCurrentAndNextSprints();
     }
