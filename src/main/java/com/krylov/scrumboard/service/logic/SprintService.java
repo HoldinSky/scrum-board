@@ -86,6 +86,15 @@ public class SprintService implements Runnable {
             return;
         }
         nextSprint = sprintOptional.get();
+
+        properties = new SprintProperties(
+                currentSprint.getStartOfSprint().toLocalDateTime().toLocalDate(),
+                currentSprint.getEndOfSprint().toLocalDateTime().toLocalDate(),
+                currentSprint.getDuration()
+        );
+
+        sprintDuration = currentSprint.getDuration();
+
     }
 
     public List<Sprint> configureSprint(SprintRequest request) {
@@ -114,21 +123,12 @@ public class SprintService implements Runnable {
         nextSprint = sprintConfigurer.getSprintEntity();
 
         // save current and next sprints
-        sprintListRepository.save(
-                new SprintList(currentSprint.getId(),
-                        "current"));
-        sprintListRepository.save(
-                new SprintList(nextSprint.getId(),
-                        "next")
-        );
-
+        sprintListRepository.save(new SprintList("current", currentSprint.getId()));
+        sprintListRepository.save(new SprintList("next", nextSprint.getId()));
 
         var sprintList = List.of(currentSprint, nextSprint);
         sprintRepository.save(currentSprint);
         sprintRepository.save(nextSprint);
-
-        var threadThis = new Thread(this);
-        threadThis.start();
 
         return sprintList;
     }
@@ -137,8 +137,8 @@ public class SprintService implements Runnable {
     public void run() {
 
         synchronized (this) {
-            // if the first sprint is not started yet
-            if (LocalDateTime.now().isBefore(currentSprint.getStartOfSprint().toLocalDateTime())) {
+            // if the first sprint has not ended yet
+            if (currentSprint == null || LocalDateTime.now().isBefore(currentSprint.getEndOfSprint().toLocalDateTime())) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
 
                 var hrs = tomorrow.getHour();
@@ -161,8 +161,8 @@ public class SprintService implements Runnable {
             sprintConfigurer.setProperties(properties);
             nextSprint = sprintConfigurer.getSprintEntity();
 
-            sprintListRepository.save(new SprintList(currentSprint.getId(), "current"));
-            sprintListRepository.save(new SprintList(nextSprint.getId(), "next"));
+            sprintListRepository.save(new SprintList("current", currentSprint.getId()));
+            sprintListRepository.save(new SprintList("next", nextSprint.getId()));
 
             run();
         }

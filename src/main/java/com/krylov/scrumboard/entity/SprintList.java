@@ -18,10 +18,14 @@ import lombok.*;
 public class SprintList {
 
     @Id
+    @Column(name = "state",
+            unique = true,
+            nullable = false)
+    private String state;   // current/next
+
     @Column(name = "sprint_id",
             unique = true,
             nullable = false)
     private Long sprintId;
 
-    private String state;   // current/next
 }
