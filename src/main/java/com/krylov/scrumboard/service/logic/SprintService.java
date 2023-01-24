@@ -217,6 +217,14 @@ public class SprintService implements Runnable {
         return sprintTaskRepository.retrieveBacklog();
     }
 
+    public List<SprintTask> retrieveTaskOfSprint(String state) {
+        return switch (state) {
+            case "current" -> sprintTaskRepository.retrieveTasksOfSprintById(currentSprint.getId());
+            case "next" -> sprintTaskRepository.retrieveTasksOfSprintById(nextSprint.getId());
+            default -> retrieveBacklog();
+        };
+    }
+
     public void saveTask(SprintTaskRequest request) {
         var creationTime = LocalDateTime.now();
         var createdAt = converter.convertToDatabaseColumn(creationTime);

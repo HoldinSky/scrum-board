@@ -21,7 +21,6 @@ import java.util.Optional;
 public class SprintController {
 
     private final SprintService sprintService;
-    private final SprintTaskRepository sprintTaskRepository;
 
     @GetMapping(path = "/config")
     public List<SprintTask> showSprintConfiguratorAndBacklog() {
@@ -57,9 +56,9 @@ public class SprintController {
             var nextId = next.getId();
 
             modelAndView.addObject("currentSprint",
-                    sprintTaskRepository.retrieveTasksOfSprintById(currentId));
+                    sprintService.retrieveTaskOfSprint("current"));
             modelAndView.addObject("nextSprint",
-                    sprintTaskRepository.retrieveTasksOfSprintById(nextId));
+                    sprintService.retrieveTaskOfSprint("next"));
         }
 
 
