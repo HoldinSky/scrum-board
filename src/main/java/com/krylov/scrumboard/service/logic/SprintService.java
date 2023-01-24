@@ -35,6 +35,8 @@ public class SprintService implements Runnable {
     public Duration sprintDuration;
     public SprintProperties properties;
 
+    private volatile boolean projectIsRunning;
+
     public SprintService(SprintConfigurer sprintConfigurer,
                          LocalDateTimeConverter converter,
                          SprintListRepository sprintListRepository,
@@ -53,6 +55,7 @@ public class SprintService implements Runnable {
         this.nextSprint = nextSprint;
         this.sprintDuration = sprintDuration;
         this.properties = properties;
+        projectIsRunning = false;
 
         setSprints();
 
@@ -94,7 +97,7 @@ public class SprintService implements Runnable {
         );
 
         sprintDuration = currentSprint.getDuration();
-
+        if (currentSprint != null) projectIsRunning = true;
     }
 
     public List<Sprint> configureSprint(SprintRequest request) {
@@ -130,6 +133,12 @@ public class SprintService implements Runnable {
         sprintRepository.save(currentSprint);
         sprintRepository.save(nextSprint);
 
+        if (!projectIsRunning) {
+            projectIsRunning = true;
+            Thread threadThis = new Thread(this);
+            threadThis.start();
+        }
+
         return sprintList;
     }
 
@@ -137,6 +146,7 @@ public class SprintService implements Runnable {
     public void run() {
 
         synchronized (this) {
+            if (!projectIsRunning) return;
             // if the first sprint has not ended yet
             if (currentSprint == null || LocalDateTime.now().isBefore(currentSprint.getEndOfSprint().toLocalDateTime())) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
@@ -270,6 +280,10 @@ public class SprintService implements Runnable {
 
         var task = optional.get();
         sprintRepository.delete(task);
+    }
+
+    public void endProject() {
+        projectIsRunning = false;
     }
 
     private SprintTask findTask(Long id) {
