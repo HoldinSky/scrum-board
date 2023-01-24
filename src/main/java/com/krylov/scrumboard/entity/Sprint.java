@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.krylov.scrumboard.service.helper.Duration;
 import jakarta.persistence.*;
@@ -9,14 +10,15 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "Sprint")
-@Table(name = "Sprint")
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+
+@Entity(name = "Sprint")
+@Table(name = "Sprint")
 public class Sprint {
 
     @Id
@@ -44,7 +46,7 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
-    @OneToMany(fetch = FetchType.LAZY,
+    @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
             mappedBy = "sprint")
     @JsonManagedReference

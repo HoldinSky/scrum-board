@@ -195,11 +195,11 @@ public class SprintService implements Runnable {
     }
 
 
-    public Sprint getSprint(String state) {
+    public Optional<Sprint> getSprint(String state) {
         return switch (state) {
-            case "current" -> currentSprint;
-            case "next" -> nextSprint;
-            default -> new Sprint();
+            case "current" -> Optional.of(currentSprint);
+            case "next" -> Optional.of(nextSprint);
+            default -> Optional.empty();
         };
     }
 

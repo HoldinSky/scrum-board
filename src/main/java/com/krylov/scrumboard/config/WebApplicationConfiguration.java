@@ -1,16 +1,10 @@
 package com.krylov.scrumboard.config;
 
 import com.krylov.scrumboard.entity.Sprint;
-import com.krylov.scrumboard.repository.SprintListRepository;
-import com.krylov.scrumboard.repository.SprintRepository;
-import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.service.bean.SprintConfigurer;
 import com.krylov.scrumboard.service.helper.Duration;
 import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.service.helper.SprintProperties;
-import com.krylov.scrumboard.service.helper.SprintServiceProps;
-import com.krylov.scrumboard.service.logic.SprintService;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -41,16 +35,6 @@ public class WebApplicationConfiguration {
         SprintConfigurer configurer = new SprintConfigurer();
         configurer.setConverter(converter);
         return configurer;
-    }
-
-    @Bean
-    public SprintServiceProps props() {
-        return new SprintServiceProps(
-                new Sprint(),
-                new Sprint(),
-                Duration.WEEK,
-                new SprintProperties()
-        );
     }
 
     @Bean

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RestController
@@ -44,17 +45,26 @@ public class SprintController {
     public List<Sprint> showCurrentAndNextSprints() {
         var modelAndView = new ModelAndView("sprint-main");
 
-        // TODO: manage retrieving sprint ids by default
-        var currentId = sprintService.getSprint("current").getId();
-        var nextId = sprintService.getSprint("next").getId();
+        Optional<Sprint> currentOptional = sprintService.getSprint("current");
+        Optional<Sprint> nextOptional = sprintService.getSprint("next");
 
-        modelAndView.addObject("currentSprint",
-                sprintTaskRepository.retrieveTasksOfSprintById(currentId));
-        modelAndView.addObject("nextSprint",
-                sprintTaskRepository.retrieveTasksOfSprintById(nextId));
+        if (currentOptional.isEmpty() || nextOptional.isEmpty()) {
+            modelAndView.addObject("noCurrentSprintMsg", "Sprint was not configured yet");
+        } else {
+            Sprint current = currentOptional.get();
+            Sprint next = nextOptional.get();
+            var currentId = current.getId();
+            var nextId = next.getId();
+
+            modelAndView.addObject("currentSprint",
+                    sprintTaskRepository.retrieveTasksOfSprintById(currentId));
+            modelAndView.addObject("nextSprint",
+                    sprintTaskRepository.retrieveTasksOfSprintById(nextId));
+        }
+
 
 //        return modelAndView;
-        return List.of(sprintService.getSprint("current"), sprintService.getSprint("next"));
+        return List.of(sprintService.getSprint("current").get(), sprintService.getSprint("next").get());
     }
 
     @PostMapping(path = "/task")
