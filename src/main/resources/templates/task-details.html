@@ -13,74 +13,15 @@
 
 </head>
 <body class="bg-body">
-<!-- Start of NavBar section -->
-<nav class="navbar navbar-expand-lg border-bottom border-secondary sticky-top bg-body">
-    <div class="container-fluid justify-content-start">
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sidebarMenu"
-                aria-controls="sidebarMenu"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <i class="navbar-toggler-icon"></i>
-        </button>
-        <a class="navbar-brand text-info fw-bold ms-2" th:href="@{/api/v1/main}"
-           style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
-        <div class="navbar-text text-start">
-            <a role="button" class="btn text-nowrap fw-bold text-warning"
-               th:href="@{/api/v1}">Home</a>
-        </div>
-    </div>
-</nav>
 
-<!-- Body section -->
+<!-- Navbar -->
+<div th:insert="_nav-simple :: navbar"></div>
+
+<!-- Body -->
 <div class="bd-gutter mt-3 bd-layout" style="padding-left: 0; margin-left: 0; margin-right: 0;">
-    <!-- Start of Sidebar -->
-    <aside
-            id="sidebarMenu"
-            class="collapse d-lg-block sidebar bd-sidebar"
-    >
-        <div class="position-sticky">
-            <div class="list-group list-group-flush mx-3 mt-4">
-                <a
-                        th:href="@{/api/v1/main}"
-                        class="list-group-item list-group-item-action py-2 ripple"
-                        aria-current="true"
-                >
-                    <i class="fas fa-tachometer-alt fa-fw me-3"></i
-                    ><span>How it works</span>
-                </a>
-                <a
-                        th:href="@{/api/v1/sprint}"
-                        class="list-group-item list-group-item-action py-2 ripple"
-                ><i class="fas fa-chart-line fa-fw me-3"></i
-                ><span>Current sprint</span></a
-                >
-                <a
-                        th:href="@{/api/v1/stats}"
-                        class="list-group-item list-group-item-action py-2 ripple"
-                ><i class="fas fa-globe fa-fw me-3"></i
-                ><span>Previous sprints</span></a
-                >
-                <a
-                        th:href="@{/api/v1/sprint/config}"
-                        class="list-group-item list-group-item-action py-2 ripple"
-                >
-                    <i class="fas fa-chart-area fa-fw me-3"></i
-                    ><span>Configure board</span>
-                </a>
-                <a
-                        th:href="@{/api/v1/tasks}"
-                        class="list-group-item list-group-item-action py-2 ripple"
-                ><i class="fas fa-globe fa-fw me-3"></i
-                ><span>No-sprint tasks</span></a
-                >
-            </div>
-        </div>
-    </aside>
+
+    <!-- Sidebar -->
+    <div th:insert="_aside-navbar :: aside"></div>
 
     <!-- Confirmation Modal -->
     <div id="deleteConfirmationModal" class="modal fade">
@@ -95,7 +36,7 @@
                     <p>Do you really want to delete these task? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <form th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
+                    <form th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
                           th:method="delete">
                         <button type="submit" class="btn btn-danger">
                             Delete
@@ -110,7 +51,7 @@
     <!-- Task description -->
     <main class="bd-main">
         <div class="text-start fw-bold fs-2 mb-3 ms-md-2 ms-1 text-decoration-underline" id="goBack">
-            <a th:href="@{/api/v1/tasks}">
+            <a th:href="@{/api/v1/tasks/personal}">
                 <p class="mt-3">
                     <- Return
                 </p>
@@ -160,7 +101,7 @@
                 <p class="d-inline fw-medium mb-1"
                    th:text="'Please set difficulty before task can be started'"></p>
                 <form class="row g-3" th:method="put"
-                      th:action="@{/api/v1/tasks/{id}(id=${task.id})}">
+                      th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}">
                     <div class="col-auto">
                         <select id="taskAddDifficulty"
                                 class="form-select ms-2"
@@ -184,7 +125,7 @@
                 </form>
             </div>
             <form th:if="${task.difficulty} != null and ${task.startedAt} == null"
-                  th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
+                  th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
                   th:method="put"
                   class="my-2">
                 <input type="text" th:name="request" th:value="'start'"
@@ -194,7 +135,7 @@
                 </button>
             </form>
             <form th:if="${task.startedAt} != null and ${task.finishedAt} == null"
-                  th:action="@{/api/v1/tasks/{id}(id=${task.id})}"
+                  th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
                   th:method="put"
                   class="my-2">
                 <input type="text" th:name="request" th:value="'finish'"
