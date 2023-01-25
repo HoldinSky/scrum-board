@@ -2,7 +2,6 @@ package com.krylov.scrumboard.service.controller;
 
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.service.logic.SprintService;
 import com.krylov.scrumboard.service.request.SprintRequest;
 import com.krylov.scrumboard.service.request.SprintTaskRequest;

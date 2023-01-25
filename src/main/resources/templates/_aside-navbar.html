@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Aside Navbar</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html"/>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/myCss.css}">
+    <script th:src="@{/js/jquery-3.6.0.js}"></script>
+    <script th:src="@{/js/bootstrap.js}"></script>
+
+</head>
+<body>
+    <div th:fragment="aside">
+        <aside
+                id="sidebarMenu"
+                class="collapse d-lg-block sidebar bd-sidebar"
+        >
+            <div class="position-sticky">
+                <div class="list-group list-group-flush mx-3 mt-4">
+                    <a
+                            th:href="@{/api/v1/main}"
+                            class="list-group-item list-group-item-action py-2 ripple"
+                            aria-current="true"
+                    >
+                        <i class="fas fa-tachometer-alt fa-fw me-3"></i
+                        ><span>How it works</span>
+                    </a>
+                    <a
+                            th:href="@{/api/v1/sprint}"
+                            class="list-group-item list-group-item-action py-2 ripple"
+                    ><i class="fas fa-chart-line fa-fw me-3"></i
+                    ><span>Current sprint</span></a
+                    >
+                    <a
+                            th:href="@{/api/v1/stats}"
+                            class="list-group-item list-group-item-action py-2 ripple"
+                    ><i class="fas fa-globe fa-fw me-3"></i
+                    ><span>Previous sprints</span></a
+                    >
+                    <a
+                            th:href="@{/api/v1/sprint/config}"
+                            class="list-group-item list-group-item-action py-2 ripple"
+                    >
+                        <i class="fas fa-chart-area fa-fw me-3"></i
+                        ><span>Configure board</span>
+                    </a>
+                    <a
+                            th:href="@{/api/v1/tasks}"
+                            class="list-group-item list-group-item-action py-2 ripple"
+                    ><i class="fas fa-globe fa-fw me-3"></i
+                    ><span>No-sprint tasks</span></a
+                    >
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
