@@ -10,9 +10,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1/tasks")
+@RequestMapping(path = "api/v1/tasks/personal")
 @AllArgsConstructor
-public class TaskController {
+public class PersonalTaskController {
 
     private TaskService taskService;
 
@@ -37,7 +37,7 @@ public class TaskController {
         if (request.getDescription().length() > 15)
             taskService.save(request);
 
-        var modelAndView = new ModelAndView("redirect:/api/v1/tasks");
+        var modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -50,7 +50,7 @@ public class TaskController {
                            @ModelAttribute("request") String request) {
         String message = taskService.updateTask(id, difficulty, request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/{id}");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal/{id}");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -61,7 +61,7 @@ public class TaskController {
     public ModelAndView deleteTask(@PathVariable(value = "id") Long id) {
         taskService.deleteTask(id);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
