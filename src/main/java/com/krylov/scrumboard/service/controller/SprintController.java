@@ -2,6 +2,7 @@ package com.krylov.scrumboard.service.controller;
 
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.service.logic.ProjectService;
 import com.krylov.scrumboard.service.logic.SprintService;
 import com.krylov.scrumboard.service.request.SprintRequest;
 import com.krylov.scrumboard.service.request.SprintTaskRequest;
@@ -21,27 +22,21 @@ public class SprintController {
 
     private final SprintService sprintService;
 
+    private final ProjectService projectService;
+
     @GetMapping(path = "/config")
     public List<SprintTask> showSprintConfiguratorAndBacklog() {
         var modelAndView = new ModelAndView("sprint-config");
 
-        modelAndView.addObject("backlog", sprintService.retrieveBacklog());
+        modelAndView.addObject("backlog", projectService.retrieveBacklog());
 
 //        return modelAndView;
-        return sprintService.retrieveBacklog();
-    }
-
-    @PostMapping(path = "/config")
-    public List<Sprint> configureSprint(@ModelAttribute(name = "sprint") SprintRequest request) {
-        return sprintService.configureSprint(request);
-
-//        return new ModelAndView("redirect:/api/v1/sprint");
-
+        return projectService.retrieveBacklog();
     }
 
     @GetMapping
     public List<Sprint> showCurrentAndNextSprints() {
-        var modelAndView = new ModelAndView("sprint-main");
+        var modelAndView = new ModelAndView("sprint-upcoming");
 
         Optional<Sprint> currentOptional = sprintService.getSprint("current");
         Optional<Sprint> nextOptional = sprintService.getSprint("next");
@@ -65,14 +60,6 @@ public class SprintController {
         return List.of(sprintService.getSprint("current").get(), sprintService.getSprint("next").get());
     }
 
-    @PostMapping(path = "/task")
-    public List<Sprint> addTaskToBacklog(@ModelAttribute(name = "task") SprintTaskRequest request) {
-        if (request.getDescription().length() > 15)
-            sprintService.saveTask(request);
-
-        return showCurrentAndNextSprints();
-    }
-
     @PostMapping(path = "/single/{state}")
     public List<Sprint> addOneTaskToSprint(@PathVariable(name = "state") String state,
                                              @RequestParam(name = "task") Long taskId) {
@@ -87,22 +74,6 @@ public class SprintController {
                                                    @RequestBody List<Long> taskIds) {
 
         sprintService.addMultipleTasksToSprintById(taskIds, state);
-
-        return showCurrentAndNextSprints();
-    }
-
-    @PutMapping(path = "task/{id}")
-    public List<Sprint> updateTaskById(@PathVariable(name = "id") Long taskId,
-                                       @RequestParam(name = "dif", required = false) Byte difficulty,
-                                       @ModelAttribute("request") String request) {
-        sprintService.updateTask(taskId, request, difficulty);
-
-        return showCurrentAndNextSprints();
-    }
-
-    @DeleteMapping(path = "task/{id}")
-    public List<Sprint> deleteTaskById(@PathVariable(name = "id") Long taskId) {
-        sprintService.deleteTask(taskId);
 
         return showCurrentAndNextSprints();
     }

@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.krylov.scrumboard.service.helper.Duration;
@@ -51,6 +52,12 @@ public class Sprint {
             mappedBy = "sprint")
     @JsonManagedReference
     private List<SprintTask> taskList;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id",
+            foreignKey = @ForeignKey(name = "project_id_fkey"))
+    @JsonBackReference
+    private Project project;
 
     public Sprint(Timestamp startOfSprint,
                   Timestamp endOfSprint,

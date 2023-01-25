@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.service.logic;
 
+import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintList;
 import com.krylov.scrumboard.entity.SprintTask;
@@ -58,9 +59,6 @@ public class SprintService implements Runnable {
         projectIsRunning = false;
 
         setSprints();
-
-        Thread threadThis = new Thread(this);
-        threadThis.start();
     }
 
     private void setSprints() {
@@ -100,7 +98,7 @@ public class SprintService implements Runnable {
         if (currentSprint != null) projectIsRunning = true;
     }
 
-    public List<Sprint> configureSprint(SprintRequest request) {
+    public List<Sprint> configureSprint(SprintRequest request, Project project) {
 
         // setup current sprint
         sprintDuration = Duration.valueOf(request.getSprintDuration());
@@ -124,6 +122,9 @@ public class SprintService implements Runnable {
 
         sprintConfigurer.setProperties(properties);
         nextSprint = sprintConfigurer.getSprintEntity();
+
+        currentSprint.setProject(project);
+        nextSprint.setProject(project);
 
         // save current and next sprints
         sprintListRepository.save(new SprintList("current", currentSprint.getId()));
@@ -213,81 +214,12 @@ public class SprintService implements Runnable {
         };
     }
 
-    public List<SprintTask> retrieveBacklog() {
-        return sprintTaskRepository.retrieveBacklog();
-    }
-
     public List<SprintTask> retrieveTaskOfSprint(String state) {
         return switch (state) {
             case "current" -> sprintTaskRepository.retrieveTasksOfSprintById(currentSprint.getId());
             case "next" -> sprintTaskRepository.retrieveTasksOfSprintById(nextSprint.getId());
-            default -> retrieveBacklog();
+            default -> sprintTaskRepository.retrieveBacklog();
         };
-    }
-
-    public void saveTask(SprintTaskRequest request) {
-        var creationTime = LocalDateTime.now();
-        var createdAt = converter.convertToDatabaseColumn(creationTime);
-
-        var task = new SprintTask(request.getDescription(),
-                createdAt,
-                request.getPriority());
-
-        if (request.getDifficulty() != null) task.setDifficulty(request.getDifficulty());
-
-        sprintTaskRepository.save(task);
-    }
-
-    public void updateTask(Long id, String request, Byte difficulty) {
-        // retrieve task from DB
-        var optional = sprintTaskRepository.findById(id);
-        // if there is not such task -> return
-        if (optional.isEmpty()) return;
-
-        var task = optional.get();
-        var dateTime = LocalDateTime.now();
-
-        // based on request complete actions
-        switch (request) {
-            case "start" -> {
-                if (difficulty == null && task.getDifficulty() == null) {
-                    System.out.println("DEBUG: Task must have its difficulty");
-                    return;
-                }
-                if (task.getDifficulty() == null) task.setDifficulty(difficulty);
-                task.setStartedAt(converter.convertToDatabaseColumn(dateTime));
-            }
-            case "finish" -> {
-                if (task.getStartedAt() == null) {
-                    System.out.println("DEBUG: Task was not started yet");
-                    return;
-                }
-                task.setFinishedAt(converter.convertToDatabaseColumn(dateTime));
-            }
-            case "setDifficulty" -> {
-                if (difficulty == 0) {
-                    System.out.println("DEBUG: Task must have its difficulty");
-                    return;
-                }
-                task.setDifficulty(difficulty);
-            }
-            default -> {
-                System.out.println("DEBUG: Cannot recognize update request \"" + request + "\"");
-            }
-        }
-
-        // update DB instance
-        sprintTaskRepository.save(task);
-    }
-
-    public void deleteTask(Long id) {
-        // retrieve task from DB
-        var optional = sprintRepository.findById(id);
-        // if there is not such task -> return
-        if (optional.isEmpty()) return;
-
-        var task = optional.get();
-        sprintRepository.delete(task);
     }
 
     public void endProject() {
