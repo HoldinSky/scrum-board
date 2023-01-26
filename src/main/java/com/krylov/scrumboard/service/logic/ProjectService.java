@@ -6,6 +6,7 @@ import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
+import com.krylov.scrumboard.service.helper.Status;
 import com.krylov.scrumboard.service.request.SprintRequest;
 import com.krylov.scrumboard.service.request.SprintTaskRequest;
 import lombok.SneakyThrows;
@@ -13,9 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class ProjectService implements Runnable {
+public class ProjectService {
 
     private final LocalDateTimeConverter converter;
 
@@ -23,8 +25,6 @@ public class ProjectService implements Runnable {
 
     private final SprintTaskRepository backlog;
     private final SprintService sprintService;
-
-    private volatile boolean inProgress;
 
     public ProjectService(LocalDateTimeConverter converter,
                           ProjectRepository repository,
@@ -34,24 +34,11 @@ public class ProjectService implements Runnable {
         this.sprintService = service;
         this.backlog = taskRepository;
         this.converter = converter;
-
-        inProgress = false;
-    }
-
-    @Override
-    @SneakyThrows
-    public void run() {
-        synchronized (this) {
-            if (!inProgress) return;
-            wait(86_400_000L * 7);
-            run();
-        }
     }
 
     public Project createProject(String name) {
         var project = new Project(name);
         repository.save(project);
-        inProgress = true;
         return project;
     }
 
@@ -60,6 +47,7 @@ public class ProjectService implements Runnable {
         if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
 
         var project = optional.get();
+        project.setStatus(Status.IN_PROGRESS);
         List<Sprint> sprints = sprintService.configureSprint(request, project);
         sprints.forEach(project::addSprint);
 
@@ -68,8 +56,23 @@ public class ProjectService implements Runnable {
     }
 
     public Project stopProject(String name) {
-        inProgress = false;
+        Optional<Project> optional = repository.findByName(name);
+        if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
+
+        var project = optional.get();
+        project.setStatus(Status.FINISHED);
+
+        repository.save(project);
+
+        return project;
+    }
+
+    public Project retrieveProjectByName(String name) {
         return repository.findByName(name).orElse(new Project("There are no project with such name '" + name + "'"));
+    }
+
+    public Project retrieveProjectById(Long id) {
+        return repository.findById(id).orElse(new Project("There are no project with such id '" + id + "'"));
     }
 
     public void saveTask(SprintTaskRequest request) {

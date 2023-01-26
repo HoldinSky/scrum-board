@@ -49,18 +49,4 @@ public class WebApplicationConfiguration {
         return configurer;
     }
 
-    @Bean
-    public Sprint sprint() {
-        return new Sprint();
-    }
-
-    @Bean
-    public Duration duration() {
-        return Duration.NONE;
-    }
-
-    @Bean
-    public SprintProperties sprintProperties() {
-        return new SprintProperties();
-    }
 }

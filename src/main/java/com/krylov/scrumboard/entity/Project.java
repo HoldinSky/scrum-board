@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.krylov.scrumboard.service.helper.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,9 +31,14 @@ public class Project {
             nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status",
+            nullable = false)
+    private Status status;
+
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
-            mappedBy = "sprint")
+            mappedBy = "project")
     @JsonManagedReference
     private List<Sprint> sprintList;
 
@@ -43,5 +49,6 @@ public class Project {
 
     public Project(String name) {
         this.name = name;
+        this.status = Status.PLANNED;
     }
 }
