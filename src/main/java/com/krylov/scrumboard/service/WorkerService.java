@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.service.logic;
+package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.entity.Task;

@@ -1,9 +1,9 @@
-package com.krylov.scrumboard.service.bean;
+package com.krylov.scrumboard.bean;
 
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.service.helper.SprintProperties;
+import com.krylov.scrumboard.helper.LocalDateTimeConverter;
+import com.krylov.scrumboard.helper.SprintProperties;
 import lombok.*;
 
 import java.util.ArrayList;

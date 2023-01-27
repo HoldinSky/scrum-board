@@ -1,7 +1,7 @@
 package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.krylov.scrumboard.service.helper.Status;
+import com.krylov.scrumboard.helper.Status;
 import jakarta.persistence.*;
 import lombok.*;
 

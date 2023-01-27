@@ -1,14 +1,15 @@
-package com.krylov.scrumboard.service.logic;
+package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.helper.Duration;
+import com.krylov.scrumboard.helper.SprintProperties;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
-import com.krylov.scrumboard.service.bean.SprintConfigurer;
-import com.krylov.scrumboard.service.helper.*;
-import com.krylov.scrumboard.service.request.*;
+import com.krylov.scrumboard.bean.SprintConfigurer;
+import com.krylov.scrumboard.request.SprintRequest;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
@@ -203,9 +204,20 @@ public class SprintService implements Runnable {
         sprintTaskRepo.saveAll(list);
     }
 
+    public Sprint getSprintById(Long id) {
+        Optional<Sprint> sprintOptional = sprintRepo.findById(id);
+        if (sprintOptional.isEmpty()) return null;
 
-    public Optional<Sprint> getSprintOfProject(Project project, String state) {
-        return Optional.ofNullable(switch (state) {
+        return sprintOptional.get();
+    }
+
+    public Sprint getSprintOfProject(String name, String state) {
+
+        Optional<Project> projectOptional = projectRepo.findByName(name);
+        if (projectOptional.isEmpty()) return null;
+        Project project = projectOptional.get();
+
+        return switch (state) {
             case "current" -> current.stream()
                     .filter(sprint -> sprint.getProject().equals(project))
                     .sorted().toList().get(0);
@@ -213,10 +225,15 @@ public class SprintService implements Runnable {
                     .filter(sprint -> sprint.getProject().equals(project))
                     .sorted().toList().get(0);
             default -> null;
-        });
+        };
     }
 
-    public List<SprintTask> retrieveTaskOfSprintOfProject(Project project, String state) {
+    public List<SprintTask> retrieveTaskOfSprintOfProject(String name, String state) {
+
+        Optional<Project> projectOptional = projectRepo.findByName(name);
+        if (projectOptional.isEmpty()) return new ArrayList<>();
+        Project project = projectOptional.get();
+
         return switch (state) {
             case "current" -> current.stream()
                     .filter(sprint -> sprint.getProject().equals(project))
@@ -228,8 +245,24 @@ public class SprintService implements Runnable {
         };
     }
 
-    public void endProject() {
-        someProjectIsRunning = false;
+    public void endProject(Project project) {
+
+        // free list of sprints
+        for (Sprint s : current) {
+            if (s.getProject().equals(project)) {
+                current.remove(s);
+                break;
+            }
+        }
+
+        for (Sprint s : next) {
+            if (s.getProject().equals(project)) {
+                next.remove(s);
+                break;
+            }
+        }
+
+        if (current.isEmpty()) someProjectIsRunning = false;
     }
 
     private SprintTask findTask(Long id) {

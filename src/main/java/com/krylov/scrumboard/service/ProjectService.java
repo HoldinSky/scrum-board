@@ -1,15 +1,14 @@
-package com.krylov.scrumboard.service.logic;
+package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
-import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.service.helper.Status;
-import com.krylov.scrumboard.service.request.SprintRequest;
-import com.krylov.scrumboard.service.request.SprintTaskRequest;
-import lombok.SneakyThrows;
+import com.krylov.scrumboard.helper.LocalDateTimeConverter;
+import com.krylov.scrumboard.helper.Status;
+import com.krylov.scrumboard.request.SprintRequest;
+import com.krylov.scrumboard.request.SprintTaskRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -63,7 +62,19 @@ public class ProjectService {
         project.setStatus(Status.FINISHED);
 
         repository.save(project);
+        sprintService.endProject(project);
 
+        return project;
+    }
+
+    public Project deleteProject(String name) {
+        Optional<Project> optional = repository.findByName(name);
+        if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
+
+        var project = optional.get();
+        if (project.getStatus() == Status.IN_PROGRESS) return new Project("Started project cannot be deleted!");
+
+        repository.delete(project);
         return project;
     }
 
@@ -73,6 +84,10 @@ public class ProjectService {
 
     public Project retrieveProjectById(Long id) {
         return repository.findById(id).orElse(new Project("There are no project with such id '" + id + "'"));
+    }
+
+    public List<Project> retrieveAllProjects() {
+        return repository.findAll();
     }
 
     public void saveTask(SprintTaskRequest request) {
@@ -140,8 +155,8 @@ public class ProjectService {
         backlog.delete(task);
     }
 
-    public List<SprintTask> retrieveBacklog() {
-        return backlog.retrieveBacklog();
+    public List<SprintTask> retrieveBacklog(String projectName) {
+        return backlog.retrieveBacklog(projectName);
     }
 
 }

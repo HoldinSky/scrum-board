@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.service.helper;
+package com.krylov.scrumboard.helper;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -1,7 +1,7 @@
-package com.krylov.scrumboard.service.controller;
+package com.krylov.scrumboard.controller;
 
-import com.krylov.scrumboard.service.logic.TaskService;
-import com.krylov.scrumboard.service.request.TaskRequest;
+import com.krylov.scrumboard.service.TaskService;
+import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1/tasks/personal")
+@RequestMapping(path = "api/v1/task/personal")
 @AllArgsConstructor
 public class PersonalTaskController {
 
@@ -37,7 +37,7 @@ public class PersonalTaskController {
         if (request.getDescription().length() > 15)
             taskService.save(request);
 
-        var modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal");
+        var modelAndView = new ModelAndView("redirect:/api/v1/task/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -50,7 +50,7 @@ public class PersonalTaskController {
                            @ModelAttribute("request") String request) {
         String message = taskService.updateTask(id, difficulty, request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal/{id}");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/task/personal/{id}");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -61,7 +61,7 @@ public class PersonalTaskController {
     public ModelAndView deleteTask(@PathVariable(value = "id") Long id) {
         taskService.deleteTask(id);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/tasks/personal");
+        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/task/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
