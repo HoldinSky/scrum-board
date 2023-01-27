@@ -1,11 +1,7 @@
 package com.krylov.scrumboard.config;
 
-import com.krylov.scrumboard.entity.Sprint;
-import com.krylov.scrumboard.service.bean.SprintConfigurer;
-import com.krylov.scrumboard.service.helper.Duration;
-import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.service.helper.SprintProperties;
-import org.apache.commons.lang3.CharEncoding;
+import com.krylov.scrumboard.bean.SprintConfigurer;
+import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -49,18 +45,4 @@ public class WebApplicationConfiguration {
         return configurer;
     }
 
-    @Bean
-    public Sprint sprint() {
-        return new Sprint();
-    }
-
-    @Bean
-    public Duration duration() {
-        return Duration.NONE;
-    }
-
-    @Bean
-    public SprintProperties sprintProperties() {
-        return new SprintProperties();
-    }
 }

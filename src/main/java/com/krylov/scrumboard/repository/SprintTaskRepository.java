@@ -13,8 +13,10 @@ import java.util.List;
 public interface SprintTaskRepository extends JpaRepository<SprintTask, Long> {
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM sprint_task WHERE started_at IS NOT NULL")
-    List<SprintTask> retrieveBacklog();
+            value = "SELECT st.id, st.description, st.created_at, st.difficulty, st.priority FROM sprint_task st" +
+                    " JOIN sprint s ON st.sprint_id = s.id JOIN project p ON p.id = s.project_id WHERE st.started_at IS NULL" +
+                    " AND p.name = :projectName")
+    List<SprintTask> retrieveBacklog(String projectName);
 
     @Query(nativeQuery = true,
             value = "SELECT * FROM sprint_task WHERE sprint_id = :sprintId")

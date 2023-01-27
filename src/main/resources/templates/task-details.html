@@ -36,7 +36,7 @@
                     <p>Do you really want to delete these task? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <form th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
+                    <form th:action="@{/api/v1/task/personal/{id}(id=${task.id})}"
                           th:method="delete">
                         <button type="submit" class="btn btn-danger">
                             Delete
@@ -101,7 +101,7 @@
                 <p class="d-inline fw-medium mb-1"
                    th:text="'Please set difficulty before task can be started'"></p>
                 <form class="row g-3" th:method="put"
-                      th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}">
+                      th:action="@{/api/v1/task/personal/{id}(id=${task.id})}">
                     <div class="col-auto">
                         <select id="taskAddDifficulty"
                                 class="form-select ms-2"
@@ -125,7 +125,7 @@
                 </form>
             </div>
             <form th:if="${task.difficulty} != null and ${task.startedAt} == null"
-                  th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
+                  th:action="@{/api/v1/task/personal/{id}(id=${task.id})}"
                   th:method="put"
                   class="my-2">
                 <input type="text" th:name="request" th:value="'start'"
@@ -135,7 +135,7 @@
                 </button>
             </form>
             <form th:if="${task.startedAt} != null and ${task.finishedAt} == null"
-                  th:action="@{/api/v1/tasks/personal/{id}(id=${task.id})}"
+                  th:action="@{/api/v1/task/personal/{id}(id=${task.id})}"
                   th:method="put"
                   class="my-2">
                 <input type="text" th:name="request" th:value="'finish'"

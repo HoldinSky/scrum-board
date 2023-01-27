@@ -1,6 +1,6 @@
-package com.krylov.scrumboard.service.controller;
+package com.krylov.scrumboard.controller;
 
-import com.krylov.scrumboard.service.logic.TaskService;
+import com.krylov.scrumboard.service.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;

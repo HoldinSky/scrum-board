@@ -1,16 +1,13 @@
-package com.krylov.scrumboard.service.request;
+package com.krylov.scrumboard.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
-public class TaskRequest {
+public class SprintTaskRequest {
 
     private String description;
-    private Byte difficulty;
     private Byte priority;
-
+    private Byte difficulty;
 }

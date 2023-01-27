@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.service.request;
+package com.krylov.scrumboard.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -1,12 +1,11 @@
-package com.krylov.scrumboard.service.logic;
+package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.Task;
-import com.krylov.scrumboard.entity.Worker;
 import com.krylov.scrumboard.repository.TaskRepository;
-import com.krylov.scrumboard.service.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.service.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.service.helper.TaskToShow;
-import com.krylov.scrumboard.service.request.TaskRequest;
+import com.krylov.scrumboard.helper.LocalDateTimeConverter;
+import com.krylov.scrumboard.helper.MyDateTimeFormatter;
+import com.krylov.scrumboard.helper.TaskToShow;
+import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
