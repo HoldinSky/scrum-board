@@ -12,6 +12,7 @@ import com.krylov.scrumboard.request.SprintTaskRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,7 +88,7 @@ public class ProjectService {
     }
 
     public List<Project> retrieveAllProjects() {
-        return repository.findAll();
+        return repository.findAll().stream().sorted(Comparator.comparing(p -> p.getStatus().getValue())).toList();
     }
 
     public void saveTask(SprintTaskRequest request) {

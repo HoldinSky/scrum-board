@@ -68,7 +68,7 @@ public class ConfigController {
 
     @GetMapping(path = "/sprint")
     public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectName") String name) {
-        var modelAndView = new ModelAndView("project-details");
+        var modelAndView = new ModelAndView("sprint-main");
 
         modelAndView.addObject("backlog", projectService.retrieveBacklog(name));
 

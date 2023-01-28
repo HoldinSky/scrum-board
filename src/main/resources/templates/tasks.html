@@ -92,7 +92,12 @@
                 </button>
                 <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <p th:if="${backlogTasks.size()} == 0"
+                           class="text-center text-warning fw-medium fs-4 p-2">
+                            You have not planned any tasks yet. Please proceed to creating one at Your choice.
+                        </p>
+                        <table th:if="${backlogTasks.size()} != 0"
+                               class="table table-hover">
                             <thead class="mb-2">
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
@@ -106,7 +111,7 @@
                                 <td class="text-center w-65" th:text="${task.description}"></td>
                                 <td class="text-center w-20">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/tasks/personal/{id}(id=${task.id})}">More</a>
+                                       th:href="@{/api/v1/task/personal/{id}(id=${task.id})}">More</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -126,7 +131,12 @@
                 </button>
                 <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <p th:if="${inProgressTasks.size()} == 0"
+                           class="text-center text-info fw-medium fs-4 p-2">
+                            You have not started any tasks yet.
+                        </p>
+                        <table th:if="${inProgressTasks.size()} != 0"
+                               class="table table-hover">
                             <thead class="mb-2">
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
@@ -140,7 +150,7 @@
                                 <td class="text-center w-65" th:text="${task.description}"></td>
                                 <td class="text-center w-20">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/tasks/personal/{id}(id=${task.id})}">More</a>
+                                       th:href="@{/api/v1/task/personal/{id}(id=${task.id})}">More</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -160,11 +170,17 @@
                 </button>
                 <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <p th:if="${finishedTasks.size()} == 0"
+                           class="text-center text-warning fw-medium fs-4 p-2">
+                            You have not finished any tasks yet.
+                        </p>
+                        <table th:if="${finishedTasks.size()} != 0"
+                               class="table table-hover">
                             <thead class="mb-2 text-center">
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">Task</th>
+                                <th scope="col" class="text-center"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -173,7 +189,7 @@
                                 <td class="text-center w-65" th:text="${task.description}"></td>
                                 <td class="text-center w-20">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/tasks/personal/{id}(id=${task.id})}">More</a>
+                                       th:href="@{/api/v1/task/personal/{id}(id=${task.id})}">More</a>
                                 </td>
                             </tr>
                             </tbody>
