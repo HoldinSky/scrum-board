@@ -24,8 +24,77 @@
     <!-- Sidebar -->
     <div th:insert="_aside-navbar :: aside"></div>
 
-    <main>
+    <!-- Configuring project -->
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="createProjectOffcanvas"
+         aria-labelledby="createProjectOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="createProjectOffcanvasLabel">Project settings</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form class="row g-3" method="post">
+                <div class="col-auto">
+                    <p class="text-danger">Required fields marked with asterisk *</p>
+                </div>
+                <div class="col-auto">
+                    <label for="projectName" class="form-label ps-2">
+                        <span class="text-danger">*</span> Project name</label>
+                    <textarea th:name="'projectName'" class="form-control" id="projectName" maxlength="255"
+                              placeholder="Name Your project here"
+                              style="min-width: 300px"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- Main content -->
+    <main class="bd-main">
+        <div class="text-center fw-bold fs-1 my-md-3 my-2">
+            <p class="pt-1" id="pageTitle" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
+                Project Main Page</p>
+        </div>
+        <div th:if="${projects.size()} == 0"
+             class="text-center text-decoration-underline text-warning fw-medium fs-3 p-2">
+            <p>
+                You have not started any projects yet. Please proceed to configuring one at Your choice.
+            </p>
+        </div>
+        <div class="d-grid gap-2 mb-3 px-2 me-lg-4">
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#createProjectOffcanvas"
+                    aria-controls="createProjectOffcanvas">Create New Project
+            </button>
+        </div>
+        <div th:if="${projects.size()} != 0"
+            class="me-lg-4 px-2">
+            <p class="text-center text-decoration-underline fw-semibold fs-3 p-2 border-top border-2"
+                style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
+                Project table
+            </p>
+            <table class="table table-hover">
+                <thead class="mb-2">
+                <tr>
+                    <th scope="col" class="text-center">Id</th>
+                    <th scope="col" class="text-center">Name</th>
+                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col" class="text-center">Info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="project : ${projects}" class="mb-2">
+                    <td class="text-center fw-bold w-10" th:text="${project.id}"></td>
+                    <td class="text-center w-50" th:text="${project.name}"></td>
+                    <td class="text-center w-25" th:text="${project.status.name}"></td>
+                    <td class="text-center w-15">
+                        <a class="btn btn-outline-dark"
+                           th:href="@{/api/v1/project/{projectId}(projectId=${project.id})}">More</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </main>
 </div>
 

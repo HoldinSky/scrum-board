@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class StartProjectRequest {
 
-    private String projectName;
+    private Long projectId;
     private String sprintStart;
     private String sprintDuration;
 

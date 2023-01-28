@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class SprintService implements Runnable {
@@ -31,12 +32,13 @@ public class SprintService implements Runnable {
 
     private final ProjectRepository projectRepo;
 
-    public List<Sprint> current;
-    public List<Sprint> next;
-    public Duration sprintDuration;
+    private final List<Sprint> current;
+    private final List<Sprint> next;
+    private Duration sprintDuration;
 
-    private volatile boolean someProjectIsRunning;
+    private Thread service;
 
+    private final AtomicBoolean running;
     private final Comparator<Sprint> sprintComparator;
 
     public SprintService(SprintConfigurer sprintConfigurer,
@@ -55,7 +57,7 @@ public class SprintService implements Runnable {
 
         this.sprintDuration = Duration.NONE;
 
-        someProjectIsRunning = false;
+        running = new AtomicBoolean(false);
 
         setSprints();
     }
@@ -77,12 +79,12 @@ public class SprintService implements Runnable {
 
         if (!current.isEmpty()) {
             sprintDuration = current.get(0).getDuration();
-            someProjectIsRunning = true;
+            running.set(true);
         }
 
-        if (someProjectIsRunning) {
-            var thread = new Thread(this);
-            thread.start();
+        if (running.get()) {
+            service = new Thread(this);
+            service.start();
         }
     }
 
@@ -118,9 +120,9 @@ public class SprintService implements Runnable {
 
         sprintRepo.save(sprint);
 
-        someProjectIsRunning = true;
-        Thread threadThis = new Thread(this);
-        threadThis.start();
+        running.set(true);
+        service = new Thread(this);
+        service.start();
 
         List<Sprint> toRet = new ArrayList<>(current);
         toRet.addAll(next);
@@ -130,48 +132,46 @@ public class SprintService implements Runnable {
     @SneakyThrows
     public void run() {
 
-        synchronized (this) {
-            if (!someProjectIsRunning) return;
+        synchronized (SprintService.class) {
+            while (running.get()) {
+                var tomorrow = LocalDateTime.now().plusDays(1);
 
-            var tomorrow = LocalDateTime.now().plusDays(1);
+                var hrs = tomorrow.getHour();
+                var min = tomorrow.getMinute();
+                var sec = tomorrow.getSecond();
 
-            var hrs = tomorrow.getHour();
-            var min = tomorrow.getMinute();
-            var sec = tomorrow.getSecond();
+                // wait until the midnight
+                wait(86_400_000 - (hrs * 3600 + min * 60 + sec) * 1000);
+                run();
 
-            // wait until the midnight
-            wait(86_400_000 - (hrs * 3600 + min * 60 + sec) * 1000);
-            run();
+                current.forEach(sprint -> {
+                    if (LocalDateTime.now().isAfter(sprint.getEndOfSprint().toLocalDateTime())) current.remove(sprint);
+                });
 
-            current.forEach(sprint -> {
-                if (LocalDateTime.now().isAfter(sprint.getEndOfSprint().toLocalDateTime())) current.remove(sprint);
-            });
+                next.forEach(sprint -> {
+                    if (LocalDateTime.now().isAfter(sprint.getStartOfSprint().toLocalDateTime())) {
+                        // reconfiguring sprints that have to be started
+                        // add to current sprint, which start date has passed
+                        current.add(sprint);
 
-            next.forEach(sprint -> {
-                if (LocalDateTime.now().isAfter(sprint.getStartOfSprint().toLocalDateTime())) {
-                    // reconfiguring sprints that have to be started
-                    // add to current sprint, which start date has passed
-                    current.add(sprint);
+                        // describe new 'next' sprint
+                        var properties = new SprintProperties(
+                                LocalDate.now(),
+                                LocalDate.now().plusDays(sprintDuration.getDays()),
+                                sprintDuration
+                        );
+                        sprintConfigurer.setProperties(properties);
+                        Sprint sprintEntity = sprintConfigurer.getSprintEntity();
 
-                    // describe new 'next' sprint
-                    var properties = new SprintProperties(
-                            LocalDate.now(),
-                            LocalDate.now().plusDays(sprintDuration.getDays()),
-                            sprintDuration
-                    );
-                    sprintConfigurer.setProperties(properties);
-                    Sprint sprintEntity = sprintConfigurer.getSprintEntity();
+                        // map sprint to the same project and save it
+                        sprintEntity.setProject(sprint.getProject());
+                        sprintRepo.save(sprintEntity);
 
-                    // map sprint to the same project and save it
-                    sprintEntity.setProject(sprint.getProject());
-                    sprintRepo.save(sprintEntity);
-
-                    next.add(sprintEntity);
-                    next.remove(sprint);
-                }
-            });
-
-            run();
+                        next.add(sprintEntity);
+                        next.remove(sprint);
+                    }
+                });
+            }
         }
     }
 
@@ -262,7 +262,7 @@ public class SprintService implements Runnable {
             }
         }
 
-        if (current.isEmpty()) someProjectIsRunning = false;
+        if (current.isEmpty()) running.set(false);
     }
 
     private SprintTask findTask(Long id) {

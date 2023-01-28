@@ -44,33 +44,35 @@ public class ConfigController {
 
         var sprintRequest = new SprintRequest(request.getSprintStart(), request.getSprintDuration());
 
-        projectService.startProjectByName(request.getProjectName(), sprintRequest);
+        projectService.startProjectByName(request.getProjectId(), sprintRequest);
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        return new ModelAndView("redirect:/api/v1/project/" + request.getProjectId());
     }
 
-    @PutMapping(path = "/project/{projectName}")
-    public ModelAndView stopProject(@PathVariable(name = "projectName") String name) {
+    @PutMapping(path = "/project/{projectId}")
+    public ModelAndView stopProject(@PathVariable(name = "projectId") Long id,
+                                    @ModelAttribute(name = "action") String action) {
 
-        projectService.stopProject(name);
+        projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        return new ModelAndView("redirect:/api/v1/project/" + id);
     }
 
-    @DeleteMapping(path = "/project/{projectName}")
-    public ModelAndView deleteProject(@PathVariable(name = "projectName") String name) {
+    @DeleteMapping(path = "/project/{projectId}")
+    public ModelAndView deleteProject(@PathVariable(name = "projectId") Long id,
+                                      @ModelAttribute(name = "action") String action) {
 
-        projectService.deleteProject(name);
+        projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        return new ModelAndView("redirect:/api/v1/project/" + id);
     }
 
 
     @GetMapping(path = "/sprint")
-    public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectName") String name) {
-        var modelAndView = new ModelAndView("project-details");
+    public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectId") Long id) {
+        var modelAndView = new ModelAndView("sprint-main");
 
-        modelAndView.addObject("backlog", projectService.retrieveBacklog(name));
+        modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
 
         return modelAndView;
     }
