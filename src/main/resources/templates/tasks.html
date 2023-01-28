@@ -24,60 +24,13 @@
     <!-- Sidebar -->
     <div th:insert="_aside-navbar :: aside"></div>
 
-    <!-- Task addition -->
-    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addTaskOffcanvas"
-         aria-labelledby="addTaskOffcanvasLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="addTaskOffcanvasLabel">Add task</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <form class="row g-3" method="post">
-                <div class="col-auto">
-                    <label for="taskDescription" class="form-label ps-2">Task Description (15 characters
-                        minimum)</label>
-                    <textarea th:name="'description'" class="form-control" id="taskDescription" maxlength="255"
-                              minlength="15"
-                              placeholder="Describe task here"
-                              style="min-width: 300px"></textarea>
-                </div>
-                <div class="col-auto">
-                    <label for="taskPriority" class="form-label ps-2">Task Priority (lower - more valuable)</label>
-                    <select id="taskPriority" class="form-select" th:name="'priority'">
-                        <option selected value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <label for="taskDifficulty" class="form-label ps-2">Difficulty (not required)</label>
-                    <select id="taskDifficulty" class="form-select" th:name="'difficulty'">
-                        <option selected th:default="null" th:placeholder="'Open menu'"></option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="5">5</option>
-                        <option value="8">8</option>
-                        <option value="10">10</option>
-                        <option value="13">13</option>
-                    </select>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Main -->
     <main class="bd-main">
-        <div class="d-grid gap-2 mb-3 px-2 me-lg-4">
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#addTaskOffcanvas"
-                    aria-controls="addTaskOffcanvas">Add New Task
-            </button>
-        </div>
+
+        <!-- Task addition -->
+        <div th:insert="_task-addition :: form"></div>
+
+        <div th:insert="_task-addition :: activation_button"></div>
 
         <div id="accordion" class="mx-2 my-2">
             <div class="card mb-2 me-lg-4">
@@ -90,7 +43,8 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion"
+                    th:classappend="${backlogTasks.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${backlogTasks.size()} == 0"
                            class="text-center text-warning fw-medium fs-4 p-2">
@@ -129,7 +83,8 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion"
+                     th:classappend="${inProgressTasks.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${inProgressTasks.size()} == 0"
                            class="text-center text-info fw-medium fs-4 p-2">
@@ -168,7 +123,8 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion"
+                     th:classappend="${finishedTasks.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${finishedTasks.size()} == 0"
                            class="text-center text-warning fw-medium fs-4 p-2">

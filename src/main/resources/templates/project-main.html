@@ -53,7 +53,7 @@
     <!-- Main content -->
     <main class="bd-main">
         <div class="text-center fw-bold fs-2 my-md-3 my-2">
-            <p class="pt-1" id="title" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
+            <p class="pt-1" id="pageTitle" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
                 Project Main Page</p>
         </div>
         <div th:if="${projects.size()} == 0"
@@ -89,7 +89,7 @@
                     <td class="text-center align-items-center w-25" th:text="${project.status.name}"></td>
                     <td class="text-center align-items-center w-15">
                         <a class="btn btn-outline-dark"
-                           th:href="@{/api/v1/project/{projectName}(projectName=${project.name})}">More</a>
+                           th:href="@{/api/v1/project/{projectId}(projectId=${project.id})}">More</a>
                     </td>
                 </tr>
                 </tbody>

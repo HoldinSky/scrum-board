@@ -21,7 +21,6 @@ public class TaskService {
 
     private TaskRepository taskRepository;
     private LocalDateTimeConverter converter;
-    private MyDateTimeFormatter formatter;
     private List<TaskToShow> taskList;
 
     public void save(TaskRequest request) {
@@ -44,13 +43,13 @@ public class TaskService {
         TaskToShow tts = new TaskToShow(
                 task.getId(),
                 task.getDescription(),
-                formatter.formatDateTime(converter.convertToEntityAttribute(task.getCreatedAt())),
+                MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(task.getCreatedAt())),
                 task.getPriority());
 
         if (task.getStartedAt() != null)
-            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getStartedAt())));
+            tts.setStartedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(task.getStartedAt())));
         if (task.getFinishedAt() != null)
-            tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(task.getFinishedAt())));
+            tts.setFinishedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(task.getFinishedAt())));
         if (task.getDifficulty() != null) tts.setDifficulty(task.getDifficulty());
 
         return tts;
@@ -73,7 +72,7 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
                     t.getPriority());
             if (t.getDifficulty() != null) tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);
@@ -88,9 +87,9 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
                     t.getPriority());
-            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
+            tts.setStartedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
 
             tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);
@@ -106,10 +105,10 @@ public class TaskService {
             TaskToShow tts = new TaskToShow(
                     t.getId(),
                     t.getDescription(),
-                    formatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
+                    MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getCreatedAt())),
                     t.getPriority());
-            tts.setStartedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
-            tts.setFinishedAt(formatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
+            tts.setStartedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getStartedAt())));
+            tts.setFinishedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(t.getFinishedAt())));
 
             tts.setDifficulty(t.getDifficulty());
             toReturn.add(tts);

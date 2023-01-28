@@ -3,6 +3,9 @@ package com.krylov.scrumboard.service;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.entity.Task;
+import com.krylov.scrumboard.helper.MyDateTimeFormatter;
+import com.krylov.scrumboard.helper.TaskToShow;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
@@ -42,9 +45,9 @@ public class ProjectService {
         return project;
     }
 
-    public Project startProjectByName(String name, SprintRequest request) {
-        var optional = repository.findByName(name);
-        if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
+    public Project startProjectByName(Long id, SprintRequest request) {
+        var optional = repository.findById(id);
+        if (optional.isEmpty()) return new Project("There are no project with such id '" + id + "'");
 
         var project = optional.get();
         project.setStatus(Status.IN_PROGRESS);
@@ -55,9 +58,18 @@ public class ProjectService {
         return project;
     }
 
-    public Project stopProject(String name) {
-        Optional<Project> optional = repository.findByName(name);
-        if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
+    public Project updateProject(Long id, String action) {
+
+        return switch (action) {
+            case "stop" -> stopProject(id);
+            case "delete" -> deleteProject(id);
+            default -> null;
+        };
+    }
+
+    private Project stopProject(Long id) {
+        Optional<Project> optional = repository.findById(id);
+        if (optional.isEmpty()) return null;
 
         var project = optional.get();
         project.setStatus(Status.FINISHED);
@@ -68,12 +80,12 @@ public class ProjectService {
         return project;
     }
 
-    public Project deleteProject(String name) {
-        Optional<Project> optional = repository.findByName(name);
-        if (optional.isEmpty()) return new Project("There are no project with such name '" + name + "'");
+    private Project deleteProject(Long id) {
+        Optional<Project> optional = repository.findById(id);
+        if (optional.isEmpty()) return null;
 
         var project = optional.get();
-        if (project.getStatus() == Status.IN_PROGRESS) return new Project("Started project cannot be deleted!");
+        if (project.getStatus() == Status.IN_PROGRESS) return null;
 
         repository.delete(project);
         return project;
@@ -156,8 +168,29 @@ public class ProjectService {
         backlog.delete(task);
     }
 
-    public List<SprintTask> retrieveBacklog(String projectName) {
-        return backlog.retrieveBacklog(projectName);
+    public TaskToShow retrieveTaskById(Long id) {
+        Optional<SprintTask> optional = backlog.findById(id);
+        var sprintTask = optional.orElse(null);
+
+        if (sprintTask == null) return null;
+
+        var tts = new TaskToShow(
+                sprintTask.getId(),
+                sprintTask.getDescription(),
+                MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(sprintTask.getCreatedAt())),
+                sprintTask.getPriority());
+
+        if (sprintTask.getDifficulty() != null) tts.setDifficulty(sprintTask.getDifficulty());
+        if (sprintTask.getFinishedAt() != null)
+            tts.setFinishedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(sprintTask.getFinishedAt())));
+        if (sprintTask.getStartedAt() != null)
+            tts.setStartedAt(MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(sprintTask.getStartedAt())));
+
+        return tts;
+    }
+
+    public List<SprintTask> retrieveBacklog(Long projectId) {
+        return backlog.retrieveBacklog(projectId);
     }
 
 }
