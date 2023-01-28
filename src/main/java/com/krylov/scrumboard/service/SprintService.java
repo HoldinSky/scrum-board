@@ -32,8 +32,8 @@ public class SprintService implements Runnable {
 
     private final ProjectRepository projectRepo;
 
-    private List<Sprint> current;
-    private List<Sprint> next;
+    private final List<Sprint> current;
+    private final List<Sprint> next;
     private Duration sprintDuration;
 
     private Thread service;

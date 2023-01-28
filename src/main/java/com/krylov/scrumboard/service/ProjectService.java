@@ -3,7 +3,6 @@ package com.krylov.scrumboard.service;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.entity.Task;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.helper.TaskToShow;
 import com.krylov.scrumboard.repository.ProjectRepository;
@@ -11,7 +10,7 @@ import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.helper.Status;
 import com.krylov.scrumboard.request.SprintRequest;
-import com.krylov.scrumboard.request.SprintTaskRequest;
+import com.krylov.scrumboard.request.TaskRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -103,13 +102,17 @@ public class ProjectService {
         return repository.findAll().stream().sorted(Comparator.comparing(p -> p.getStatus().getValue())).toList();
     }
 
-    public void saveTask(SprintTaskRequest request) {
+    public void saveTask(TaskRequest request, Long id) {
         var creationTime = LocalDateTime.now();
         var createdAt = converter.convertToDatabaseColumn(creationTime);
 
+        var optional = repository.findById(id);
+        if (optional.isEmpty()) return;
+
         var task = new SprintTask(request.getDescription(),
                 createdAt,
-                request.getPriority());
+                request.getPriority(),
+                optional.get());
 
         if (request.getDifficulty() != null) task.setDifficulty(request.getDifficulty());
 
@@ -168,7 +171,7 @@ public class ProjectService {
         backlog.delete(task);
     }
 
-    public TaskToShow retrieveTaskById(Long id) {
+    public TaskToShow retrieveTaskById(Long projectId, Long id) {
         Optional<SprintTask> optional = backlog.findById(id);
         var sprintTask = optional.orElse(null);
 
@@ -179,6 +182,9 @@ public class ProjectService {
                 sprintTask.getDescription(),
                 MyDateTimeFormatter.formatDateTime(converter.convertToEntityAttribute(sprintTask.getCreatedAt())),
                 sprintTask.getPriority());
+
+        var projectOptional = repository.findById(projectId);
+        projectOptional.ifPresent(tts::setProject);
 
         if (sprintTask.getDifficulty() != null) tts.setDifficulty(sprintTask.getDifficulty());
         if (sprintTask.getFinishedAt() != null)

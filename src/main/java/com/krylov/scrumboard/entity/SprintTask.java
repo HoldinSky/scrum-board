@@ -69,16 +69,20 @@ public class SprintTask {
     @JsonBackReference
     private Sprint sprint;
 
-    public SprintTask(String description) {
-        this.description = description;
-    }
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH})
+    @JoinColumn(name = "project_id",
+            foreignKey = @ForeignKey(name = "project_id_fkey"))
+    private Project project;
 
     public SprintTask(String description,
                       Timestamp createdAt,
-                      Byte priority) {
+                      Byte priority,
+                      Project project) {
         this.description = description;
         this.createdAt = createdAt;
         this.priority = priority;
+        this.project = project;
     }
 
     public void addWorker(Worker worker) {

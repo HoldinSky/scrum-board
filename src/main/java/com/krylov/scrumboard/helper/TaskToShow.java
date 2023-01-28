@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.helper;
 
+import com.krylov.scrumboard.entity.Project;
 import lombok.*;
 @Getter
 @Setter
@@ -25,5 +26,7 @@ public class TaskToShow {
     private String finishedAt;
     private Byte difficulty;
     private Byte priority;
+
+    private Project project;
 
 }

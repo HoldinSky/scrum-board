@@ -29,7 +29,8 @@
 
         <div class="me-lg-4 px-2">
             <div class="text-center fw-bold my-md-3 my-2">
-                <p class="py-2 my-2 fs-1 border-2 border-bottom" id="pageTitle" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
+                <p class="py-2 my-2 fs-1 border-2 border-bottom" id="pageTitle"
+                   style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
                     Project Details Page
                 </p>
                 <p class="pt-2 my-2 fs-3" id="projectName" th:text="${project.name}"
@@ -51,7 +52,8 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseBacklog" class="collapse" aria-labelledby="headingBacklog" data-parent="#accordion">
+                <div id="collapseBacklog" class="collapse" aria-labelledby="headingBacklog" data-parent="#accordion"
+                     th:classappend="${backlog.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${backlog.size()} == 0"
                            class="text-center text-warning fw-medium fs-4 p-2">
@@ -63,16 +65,19 @@
                             <tr>
                                 <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">Task</th>
+                                <th scope="col" class="text-center">Priority</th>
                                 <th scope="col" class="text-center"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="task : ${backlog}" class="mb-2">
-                                <td class="text-center fw-bold w-15" th:text="${task.id}"></td>
+                                <td class="text-center fw-bold w-10" th:text="${task.id}"></td>
                                 <td class="text-center w-65" th:text="${task.description}"></td>
-                                <td class="text-center w-20">
+                                <td class="text-center w-10" th:text="${task.priority}"></td>
+                                <td class="text-center w-15">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/project/task/{id}(id=${task.id})}">More</a>
+                                       th:href="@{/api/v1/project/task/{pId}/
+                                       {id}(id=${task.id}, pId=${project.id})}">More</a>
                                 </td>
                             </tr>
                             </tbody>

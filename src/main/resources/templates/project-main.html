@@ -52,7 +52,7 @@
 
     <!-- Main content -->
     <main class="bd-main">
-        <div class="text-center fw-bold fs-2 my-md-3 my-2">
+        <div class="text-center fw-bold fs-1 my-md-3 my-2">
             <p class="pt-1" id="pageTitle" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
                 Project Main Page</p>
         </div>
@@ -69,10 +69,10 @@
         </div>
         <div th:if="${projects.size()} != 0"
             class="me-lg-4 px-2">
-            <h3 class="text-center text-decoration-underline fw-semibold p-2"
+            <p class="text-center text-decoration-underline fw-semibold fs-3 p-2 border-top border-2"
                 style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
                 Project table
-            </h3>
+            </p>
             <table class="table table-hover">
                 <thead class="mb-2">
                 <tr>
@@ -84,10 +84,10 @@
                 </thead>
                 <tbody>
                 <tr th:each="project : ${projects}" class="mb-2">
-                    <td class="text-center align-items-center fw-bold w-10" th:text="${project.id}"></td>
-                    <td class="text-center align-items-center w-50" th:text="${project.name}"></td>
-                    <td class="text-center align-items-center w-25" th:text="${project.status.name}"></td>
-                    <td class="text-center align-items-center w-15">
+                    <td class="text-center fw-bold w-10" th:text="${project.id}"></td>
+                    <td class="text-center w-50" th:text="${project.name}"></td>
+                    <td class="text-center w-25" th:text="${project.status.name}"></td>
+                    <td class="text-center w-15">
                         <a class="btn btn-outline-dark"
                            th:href="@{/api/v1/project/{projectId}(projectId=${project.id})}">More</a>
                     </td>
