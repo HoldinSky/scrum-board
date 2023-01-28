@@ -25,24 +25,44 @@
 
     <main class="bd-main">
 
-        <div th:insert="_task-addition :: form"></div>
-
         <div class="me-lg-4 px-2">
             <div class="text-center fw-bold my-md-3 my-2">
-                <p class="py-2 my-2 fs-1 border-2 border-bottom" id="pageTitle"
-                   style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
-                    Project Details Page
-                </p>
-                <p class="pt-2 my-2 fs-3" id="projectName" th:text="${project.name}"
+                <p class="pt-2 my-2 fs-1" id="projectName" th:text="${project.name}"
                    style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
                 </p>
             </div>
         </div>
 
-        <div th:insert="_task-addition :: activation_button"></div>
+        <div class="me-lg-4 px-2 border-top border-bottom border-2 my-3">
+            <div class="fs-4 fw-normal text-center text-dark">
+                <p class="d-inline fw-bold">Info of the project</p>
+            </div>
+            <div class="fs-4 fw-normal text-start text-dark ps-4">
+                <p class="d-inline fw-bold">Id:</p>
+                <p class="d-inline" th:text="${project.id}"></p>
+            </div>
+            <div class="fs-4 fw-normal text-start text-dark ps-4">
+                <p class="d-inline fw-bold">Status:</p>
+                <p class="d-inline" th:text="${project.status.name}"></p>
+            </div>
+        </div>
 
-        <div id="accordion" class="mt-4 mb-2 my-2">
-            <div class="card mb-2 me-lg-4">
+        <div th:insert="_additional :: add-task-form"></div>
+        <div th:insert="_additional :: start-project-form"></div>
+        <div th:insert="_additional :: project-delete-confirmation"></div>
+        <div th:if="${project.status.name} == 'In progress'"
+             th:insert="_additional :: project-delete-confirmation"></div>
+
+        <div class="d-lg-flex d-grid flex-lg-row justify-content-lg-center gap-2 me-lg-4 m-2">
+            <div class="w-lg-32" th:insert="_additional :: add-task-button"></div>
+            <div class="w-lg-32" th:insert="_additional :: start-project-button"></div>
+            <div class="w-lg-32" th:insert="_additional :: delete-project-button"></div>
+        </div>
+        <div th:if="${project.status.name} == 'In progress'"
+             th:insert="_additional :: stop-project-button"></div>
+
+        <div id="accordion" class="m-2 me-lg-4">
+            <div class="card mb-2">
                 <button class="btn btn-link text-decoration-none text-info fw-semibold card-header"
                         data-bs-toggle="collapse" data-bs-target="#collapseBacklog"
                         aria-expanded="false" aria-controls="collapseBacklog">

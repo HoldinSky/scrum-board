@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Task addition</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html"/>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/myCss.css}">
+    <script th:src="@{/js/jquery-3.6.0.js}"></script>
+    <script th:src="@{/js/bootstrap.js}"></script>
+</head>
+<body>
+
+<div th:fragment="add-task-form"
+     class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addTask"
+     aria-labelledby="addTaskLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="addTaskLabel">Add task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form class="row g-3" method="post">
+            <div class="col-auto">
+                <label for="taskDescription" class="form-label ps-2">Task Description (15 characters
+                    minimum)</label>
+                <textarea th:name="'description'" class="form-control" id="taskDescription" maxlength="255"
+                          minlength="15"
+                          placeholder="Describe task here"
+                          style="min-width: 300px"></textarea>
+            </div>
+            <div class="col-auto">
+                <label for="taskPriority" class="form-label ps-2">Task Priority (lower - more valuable)</label>
+                <select id="taskPriority" class="form-select" th:name="'priority'">
+                    <option selected value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="taskDifficulty" class="form-label ps-2">Difficulty (not required)</label>
+                <select id="taskDifficulty" class="form-select" th:name="'difficulty'">
+                    <option selected th:default="null" th:placeholder="'Open menu'"></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="8">8</option>
+                    <option value="10">10</option>
+                    <option value="13">13</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="start-project-form"
+     class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="startProject"
+     aria-labelledby="startProjectLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="startProjectLabel">Configure project</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form class="row g-3" method="post">
+            <div class="col-auto">
+
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="project-delete-confirmation"
+     id="deleteProject" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Are you sure?</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete these project? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form th:action="@{/api/v1/config/project/{pId}(pId=${project.id})}"
+                      th:method="delete">
+                    <input type="text" th:name="action" th:value="'delete'"
+                    class="visually-hidden"/>
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="project-stop"
+     id="stopProject" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Are you sure?</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to stop these project? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form th:action="@{/api/v1/config/project/{pId}(pId=${project.id})}"
+                      th:method="delete">
+                    <input type="text" th:name="action" th:value="'stop'"
+                           class="visually-hidden"/>
+                    <button type="submit" class="btn btn-dark">
+                        Stop
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button th:fragment="add-task-button"
+        class="btn btn-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#addTask"
+        aria-controls="addTask">Add New Task
+</button>
+
+<button th:fragment="start-project-button"
+        class="btn btn-warning w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#startProject"
+        aria-controls="startProject">Start Project
+</button>
+
+<button th:fragment="delete-project-button"
+        class="btn btn-danger w-100" type="button" data-bs-toggle="modal" data-bs-target="#deleteProject">
+    Delete Project
+</button>
+
+<button th:fragment="stop-project-button"
+        class="btn btn-dark w-100" type="button" data-bs-toggle="modal" data-bs-target="#stopProject">
+    Stop Project
+</button>
+
+</body>
+</html>

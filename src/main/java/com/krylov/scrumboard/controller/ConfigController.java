@@ -64,7 +64,7 @@ public class ConfigController {
 
         projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/project/" + id);
+        return new ModelAndView("redirect:/api/v1/config/project");
     }
 
 
