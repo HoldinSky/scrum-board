@@ -16,21 +16,22 @@
 <body class="bg-body">
 
 <!-- Navbar -->
-<div th:insert="_nav-simple :: navbar"></div>
+<div th:insert="~{_nav-simple :: navbar}"></div>
 
 <!-- Body -->
 <div class="bd-gutter mt-3 bd-layout" style="padding-left: 0; margin-left: 0; margin-right: 0;">
 
     <!-- Sidebar -->
-    <div th:insert="_aside-navbar :: aside"></div>
+    <div th:insert="~{_aside-navbar :: aside}"></div>
 
     <!-- Main -->
     <main class="bd-main">
 
         <!-- Task addition -->
-        <div th:insert="_task-addition :: form"></div>
+        <div th:insert="~{_additional :: add-task-form}"></div>
 
-        <div th:insert="_task-addition :: activation_button"></div>
+        <div class="d-grid gap-2 mb-3 px-2 me-lg-4"
+             th:insert="~{_additional :: add-task-button}"></div>
 
         <div id="accordion" class="mx-2 my-2">
             <div class="card mb-2 me-lg-4">
@@ -44,7 +45,7 @@
                     </div>
                 </button>
                 <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion"
-                    th:classappend="${backlogTasks.size()} != 0 ? ' show' : ''">
+                     th:classappend="${backlogTasks.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${backlogTasks.size()} == 0"
                            class="text-center text-warning fw-medium fs-4 p-2">

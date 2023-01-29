@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class SprintRequest {
 
     private DateTimeFormatter formatter;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate startOfSprint;
     private String sprintDuration;
 
@@ -21,7 +21,7 @@ public class SprintRequest {
     public SprintRequest(String start,
                          String duration) {
 
-        formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
         startOfSprint = LocalDate.parse(start, formatter);
         this.sprintDuration = duration;

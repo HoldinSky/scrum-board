@@ -7589,6 +7589,20 @@ textarea.form-control-lg {
   width: 50% !important;
 }
 
+@media (min-width: 992px) {
+  .w-lg-50 {
+    width: 50% !important;
+  }
+
+  .w-lg-32 {
+    width: 32% !important;
+  }
+
+  .w-lg-25 {
+    width: 25% !important;
+  }
+}
+
 .w-65 {
   width: 65% !important;
 }

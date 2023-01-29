@@ -16,13 +16,13 @@
 <body class="bg-body">
 
 <!-- Navbar -->
-<div th:insert="_nav-simple :: navbar"></div>
+<div th:insert="~{_nav-simple :: navbar}"></div>
 
 <!-- Body -->
 <div class="bd-gutter mt-3 bd-layout" style="padding-left: 0; margin-left: 0; margin-right: 0;">
 
     <!-- Sidebar -->
-    <div th:insert="_aside-navbar :: aside"></div>
+    <div th:insert="~{_aside-navbar :: aside}"></div>
 
     <!-- Configuring project -->
     <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="createProjectOffcanvas"
@@ -56,23 +56,20 @@
             <p class="pt-1" id="pageTitle" style="color: var(--bs-cyan); text-shadow: 1px 1px #0d8ca8;">
                 Project Main Page</p>
         </div>
+        <div class="d-grid gap-2 mb-3 px-2 me-lg-4">
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#createProjectOffcanvas"
+                    aria-controls="createProjectOffcanvas">Create New Project
+            </button>
+        </div>
         <div th:if="${projects.size()} == 0"
              class="text-center text-decoration-underline text-warning fw-medium fs-3 p-2">
             <p>
                 You have not started any projects yet. Please proceed to configuring one at Your choice.
             </p>
         </div>
-        <div class="d-grid gap-2 mb-3 px-2 me-lg-4">
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#createProjectOffcanvas"
-                    aria-controls="createProjectOffcanvas">Create New Project
-            </button>
-        </div>
+
         <div th:if="${projects.size()} != 0"
             class="me-lg-4 px-2">
-            <p class="text-center text-decoration-underline fw-semibold fs-3 p-2 border-top border-2"
-                style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
-                Project table
-            </p>
             <table class="table table-hover">
                 <thead class="mb-2">
                 <tr>

@@ -44,7 +44,7 @@ public class ProjectService {
         return project;
     }
 
-    public Project startProjectByName(Long id, SprintRequest request) {
+    public Project startProjectById(Long id, SprintRequest request) {
         var optional = repository.findById(id);
         if (optional.isEmpty()) return new Project("There are no project with such id '" + id + "'");
 
@@ -95,7 +95,7 @@ public class ProjectService {
     }
 
     public Project retrieveProjectById(Long id) {
-        return repository.findById(id).orElse(new Project("There are no project with such id '" + id + "'"));
+        return repository.findById(id).orElse(null);
     }
 
     public List<Project> retrieveAllProjects() {

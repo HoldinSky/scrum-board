@@ -1,11 +1,16 @@
 package com.krylov.scrumboard.controller;
 
+import com.krylov.scrumboard.entity.Project;
+import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -20,8 +25,16 @@ public class ProjectController {
     public ModelAndView showProjectPage(@PathVariable(name = "projectId") Long id) {
         var modelAndView = new ModelAndView("project-details");
 
-        modelAndView.addObject("project", projectService.retrieveProjectById(id));
+        Project project = projectService.retrieveProjectById(id);
+        if (project == null) return new ModelAndView("redirect:/api/v1/config/project");
+
+        modelAndView.addObject("project", project);
         modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
+        modelAndView.addObject("today", MyDateTimeFormatter.formatToHTMLDate(LocalDate.now()));
+        modelAndView.addObject("minDate",
+                MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().minusDays(7)));
+        modelAndView.addObject("maxDate",
+                MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().plusDays(30)));
 
         return modelAndView;
     }
@@ -55,9 +68,9 @@ public class ProjectController {
 
     @PutMapping(path = "/task/{projectId}/{id}")
     public ModelAndView updateTaskById(@PathVariable(name = "id") Long taskId,
-                                 @PathVariable(name = "projectId") Long projectId,
-                                 @RequestParam(name = "dif", required = false) Byte difficulty,
-                                 @ModelAttribute("request") String request) {
+                                       @PathVariable(name = "projectId") Long projectId,
+                                       @RequestParam(name = "dif", required = false) Byte difficulty,
+                                       @ModelAttribute("request") String request) {
         projectService.updateTask(taskId, request, difficulty);
 
         return new ModelAndView("redirect:/api/v1/project/" + projectId);
