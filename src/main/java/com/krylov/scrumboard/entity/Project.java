@@ -37,7 +37,7 @@ public class Project {
     private Status status;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
+            cascade = CascadeType.ALL,
             mappedBy = "project")
     @JsonManagedReference
     private List<Sprint> sprintList;

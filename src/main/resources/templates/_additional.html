@@ -68,10 +68,24 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <form class="row g-3" method="post">
+        <form class="row g-3" method="post" th:action="@{/api/v1/config/project/start}">
             <div class="col-auto">
-
+                <label for="projectStart" class="form-label ps-2">Start of the project</label>
+                <input type="date" id="projectStart" name="sprintStart"
+                       th:value="${today}"
+                       th:min="${minDate}" th:max="${maxDate}">
             </div>
+            <div class="col-auto">
+                <label for="sprintDuration" class="form-label ps-2">Duration of one sprint</label>
+                <select id="sprintDuration" class="form-select" th:name="'sprintDuration'">
+                    <option selected value="WEEK">Week</option>
+                    <option value="TWO_WEEKS">2 Weeks</option>
+                    <option value="THREE_WEEKS">3 Weeks</option>
+                    <option value="MONTH">Month</option>
+                </select>
+            </div>
+            <input type="text" th:name="'projectId'" th:value="${project.id}"
+                   class="visually-hidden"/>
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
@@ -95,7 +109,7 @@
                 <form th:action="@{/api/v1/config/project/{pId}(pId=${project.id})}"
                       th:method="delete">
                     <input type="text" th:name="action" th:value="'delete'"
-                    class="visually-hidden"/>
+                           class="visually-hidden"/>
                     <button type="submit" class="btn btn-danger">
                         Delete
                     </button>
@@ -123,7 +137,7 @@
                       th:method="delete">
                     <input type="text" th:name="action" th:value="'stop'"
                            class="visually-hidden"/>
-                    <button type="submit" class="btn btn-dark">
+                    <button type="submit" class="btn btn-warning">
                         Stop
                     </button>
                 </form>
@@ -139,7 +153,7 @@
 </button>
 
 <button th:fragment="start-project-button"
-        class="btn btn-warning w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#startProject"
+        class="btn btn-success w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#startProject"
         aria-controls="startProject">Start Project
 </button>
 
@@ -149,7 +163,7 @@
 </button>
 
 <button th:fragment="stop-project-button"
-        class="btn btn-dark w-100" type="button" data-bs-toggle="modal" data-bs-target="#stopProject">
+        class="btn btn-warning w-100" type="button" data-bs-toggle="modal" data-bs-target="#stopProject">
     Stop Project
 </button>
 

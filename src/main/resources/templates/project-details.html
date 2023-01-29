@@ -15,13 +15,13 @@
 <body class="bg-body">
 
 <!-- Navbar -->
-<div th:insert="_nav-simple :: navbar"></div>
+<div th:insert="~{_nav-simple :: navbar}"></div>
 
 <!-- Body -->
 <div class="bd-gutter mt-3 bd-layout" style="padding-left: 0; margin-left: 0; margin-right: 0;">
 
     <!-- Sidebar -->
-    <div th:insert="_aside-navbar :: aside"></div>
+    <div th:insert="~{_aside-navbar :: aside}"></div>
 
     <main class="bd-main">
 
@@ -47,19 +47,23 @@
             </div>
         </div>
 
-        <div th:insert="_additional :: add-task-form"></div>
-        <div th:insert="_additional :: start-project-form"></div>
-        <div th:insert="_additional :: project-delete-confirmation"></div>
+        <!-- Forms -->
+        <div th:insert="~{_additional :: add-task-form}"></div>
+        <div th:insert="~{_additional :: start-project-form}"></div>
+        <div th:insert="~{_additional :: project-delete-confirmation}"></div>
         <div th:if="${project.status.name} == 'In progress'"
-             th:insert="_additional :: project-delete-confirmation"></div>
+             th:insert="~{_additional :: project-stop}"></div>
 
+        <!-- Buttons -->
         <div class="d-lg-flex d-grid flex-lg-row justify-content-lg-center gap-2 me-lg-4 m-2">
-            <div class="w-lg-32" th:insert="_additional :: add-task-button"></div>
-            <div class="w-lg-32" th:insert="_additional :: start-project-button"></div>
-            <div class="w-lg-32" th:insert="_additional :: delete-project-button"></div>
+            <div th:if="${project.status.name} != 'Finished'"
+                 class="w-lg-50" th:insert="~{_additional :: add-task-button}"></div>
+            <div th:if="${project.status.name} == 'Planned'"
+                 class="w-lg-50" th:insert="~{_additional :: start-project-button}"></div>
+            <div th:if="${project.status.name} == 'In progress'"
+                 class="w-lg-50" th:insert="~{_additional :: stop-project-button}"></div>
         </div>
-        <div th:if="${project.status.name} == 'In progress'"
-             th:insert="_additional :: stop-project-button"></div>
+
 
         <div id="accordion" class="m-2 me-lg-4">
             <div class="card mb-2">
@@ -107,7 +111,9 @@
             </div>
         </div>
 
-
+        <div class="d-grid w-auto mx-2 mt-5 me-lg-4"
+             th:if="${project.status.name} != 'In progress'"
+             th:insert="~{_additional :: delete-project-button}"></div>
     </main>
 
 </div>

@@ -16,13 +16,13 @@
 <body class="bg-body">
 
 <!-- Navbar -->
-<div th:insert="_nav-simple :: navbar"></div>
+<div th:insert="~{_nav-simple :: navbar}"></div>
 
 <!-- Body -->
 <div class="bd-gutter mt-3 bd-layout" style="padding-left: 0; margin-left: 0; margin-right: 0;">
 
     <!-- Sidebar -->
-    <div th:insert="_aside-navbar :: aside"></div>
+    <div th:insert="~{_aside-navbar :: aside}"></div>
 
     <!-- Configuring project -->
     <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="createProjectOffcanvas"

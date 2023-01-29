@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.controller;
 
 
+import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.request.SprintRequest;
 import com.krylov.scrumboard.request.StartProjectRequest;
 import com.krylov.scrumboard.service.ProjectService;
@@ -41,10 +42,11 @@ public class ConfigController {
 
     @PostMapping(path = "/project/start")
     public ModelAndView startProject(@ModelAttribute(name = "startProjectRequest") StartProjectRequest request) {
+        String start = MyDateTimeFormatter.formatInputDate(request.getSprintStart());
 
-        var sprintRequest = new SprintRequest(request.getSprintStart(), request.getSprintDuration());
+        var sprintRequest = new SprintRequest(start, request.getSprintDuration());
 
-        projectService.startProjectByName(request.getProjectId(), sprintRequest);
+        projectService.startProjectById(request.getProjectId(), sprintRequest);
 
         return new ModelAndView("redirect:/api/v1/project/" + request.getProjectId());
     }
@@ -55,7 +57,7 @@ public class ConfigController {
 
         projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/project/" + id);
+        return new ModelAndView("redirect:/api/v1/config/project");
     }
 
     @DeleteMapping(path = "/project/{projectId}")

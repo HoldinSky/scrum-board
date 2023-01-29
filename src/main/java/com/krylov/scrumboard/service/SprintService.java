@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -64,13 +61,14 @@ public class SprintService implements Runnable {
 
     private void setSprints() {
 
+        // TODO: resolve bugs with thread owner class
         List<Sprint> sprintInProgress = sprintRepo.findAllActiveSprints();
         List<Project> projectInProgress = projectRepo.findAllActiveProjects();
 
         if (sprintInProgress == null) return;
         projectInProgress.forEach(project -> {
             List<Sprint> sprints = sprintInProgress.stream()
-                    .filter(s -> s.getProject().equals(project)).sorted(sprintComparator).toList();
+                    .filter(s -> Objects.equals(s.getProject().getId(), project.getId())).sorted(sprintComparator).toList();
             if (sprints.size() >= 2) {
                 next.add(sprints.get(0));
                 current.add(sprints.get(1));
@@ -132,7 +130,7 @@ public class SprintService implements Runnable {
     @SneakyThrows
     public void run() {
 
-        synchronized (SprintService.class) {
+        synchronized ("Just to be here") {
             while (running.get()) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
 
@@ -249,14 +247,14 @@ public class SprintService implements Runnable {
 
         // free list of sprints
         for (Sprint s : current) {
-            if (s.getProject().equals(project)) {
+            if (s.getProject().getId().equals(project.getId())) {
                 current.remove(s);
                 break;
             }
         }
 
         for (Sprint s : next) {
-            if (s.getProject().equals(project)) {
+            if (s.getProject().getId().equals(project.getId())) {
                 next.remove(s);
                 break;
             }
