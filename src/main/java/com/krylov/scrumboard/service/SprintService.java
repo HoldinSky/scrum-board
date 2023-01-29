@@ -4,6 +4,7 @@ import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.helper.Duration;
+import com.krylov.scrumboard.helper.LinkedSet;
 import com.krylov.scrumboard.helper.SprintProperties;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -29,15 +32,14 @@ public class SprintService implements Runnable {
 
     private final ProjectRepository projectRepo;
 
-    private final List<Sprint> current;
-    private final List<Sprint> next;
+    private final LinkedSet<Sprint> current;
+    private final LinkedSet<Sprint> next;
     private Duration sprintDuration;
-
-    private Thread service;
-
+    private final ExecutorService service;
     private final AtomicBoolean running;
     private final Comparator<Sprint> sprintComparator;
 
+    @SneakyThrows
     public SprintService(SprintConfigurer sprintConfigurer,
                          SprintRepository sprintRepo,
                          SprintTaskRepository sprintTaskRepo,
@@ -49,19 +51,21 @@ public class SprintService implements Runnable {
         this.sprintTaskRepo = sprintTaskRepo;
         this.projectRepo = projectRepo;
 
-        this.current = new ArrayList<>();
-        this.next = new ArrayList<>();
+        this.current = new LinkedSet<>();
+        this.next = new LinkedSet<>();
 
         this.sprintDuration = Duration.NONE;
 
         running = new AtomicBoolean(false);
+
+        int cores = Runtime.getRuntime().availableProcessors();
+        service = Executors.newFixedThreadPool(cores);
 
         setSprints();
     }
 
     private void setSprints() {
 
-        // TODO: resolve bugs with thread owner class
         List<Sprint> sprintInProgress = sprintRepo.findAllActiveSprints();
         List<Project> projectInProgress = projectRepo.findAllActiveProjects();
 
@@ -76,13 +80,12 @@ public class SprintService implements Runnable {
         });
 
         if (!current.isEmpty()) {
-            sprintDuration = current.get(0).getDuration();
+            sprintDuration = current.iterator().next().getDuration();
             running.set(true);
         }
 
         if (running.get()) {
-            service = new Thread(this);
-            service.start();
+            service.execute(this);
         }
     }
 
@@ -119,8 +122,7 @@ public class SprintService implements Runnable {
         sprintRepo.save(sprint);
 
         running.set(true);
-        service = new Thread(this);
-        service.start();
+        service.execute(this);
 
         List<Sprint> toRet = new ArrayList<>(current);
         toRet.addAll(next);
@@ -130,17 +132,9 @@ public class SprintService implements Runnable {
     @SneakyThrows
     public void run() {
 
-        synchronized ("Just to be here") {
-            while (running.get()) {
-                var tomorrow = LocalDateTime.now().plusDays(1);
+        while (running.get()) {
 
-                var hrs = tomorrow.getHour();
-                var min = tomorrow.getMinute();
-                var sec = tomorrow.getSecond();
-
-                // wait until the midnight
-                wait(86_400_000 - (hrs * 3600 + min * 60 + sec) * 1000);
-                run();
+            synchronized (current) {
 
                 current.forEach(sprint -> {
                     if (LocalDateTime.now().isAfter(sprint.getEndOfSprint().toLocalDateTime())) current.remove(sprint);
@@ -154,8 +148,8 @@ public class SprintService implements Runnable {
 
                         // describe new 'next' sprint
                         var properties = new SprintProperties(
-                                LocalDate.now(),
-                                LocalDate.now().plusDays(sprintDuration.getDays()),
+                                sprint.getEndOfSprint().toLocalDateTime().toLocalDate(),
+                                sprint.getEndOfSprint().toLocalDateTime().toLocalDate().plusDays(sprintDuration.getDays()),
                                 sprintDuration
                         );
                         sprintConfigurer.setProperties(properties);
@@ -169,6 +163,18 @@ public class SprintService implements Runnable {
                         next.remove(sprint);
                     }
                 });
+
+
+            }
+            synchronized (service) {
+                var tomorrow = LocalDateTime.now().plusDays(1);
+
+                var hrs = tomorrow.getHour();
+                var min = tomorrow.getMinute();
+                var sec = tomorrow.getSecond();
+
+                // wait until the midnight
+                service.wait((86_400 - (hrs * 3600 + min * 60 + sec)) * 1000);
             }
         }
     }

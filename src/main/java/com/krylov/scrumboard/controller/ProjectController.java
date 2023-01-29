@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.controller;
 
+import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
@@ -24,7 +25,10 @@ public class ProjectController {
     public ModelAndView showProjectPage(@PathVariable(name = "projectId") Long id) {
         var modelAndView = new ModelAndView("project-details");
 
-        modelAndView.addObject("project", projectService.retrieveProjectById(id));
+        Project project = projectService.retrieveProjectById(id);
+        if (project == null) return new ModelAndView("redirect:/api/v1/config/project");
+
+        modelAndView.addObject("project", project);
         modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
         modelAndView.addObject("today", MyDateTimeFormatter.formatToHTMLDate(LocalDate.now()));
         modelAndView.addObject("minDate",
