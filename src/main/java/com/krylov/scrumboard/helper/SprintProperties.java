@@ -6,9 +6,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @AllArgsConstructor
-@NoArgsConstructor
 public class SprintProperties {
 
     private LocalDate start;

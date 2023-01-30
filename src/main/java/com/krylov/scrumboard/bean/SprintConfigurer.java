@@ -20,7 +20,6 @@ public class SprintConfigurer {
     private LocalDateTimeConverter converter;
 
     private SprintProperties properties;
-
     private Sprint sprintEntity;
 
     private List<SprintTask> sprintBacklog;

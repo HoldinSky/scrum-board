@@ -6,6 +6,7 @@ import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.helper.Duration;
 import com.krylov.scrumboard.helper.LinkedSet;
 import com.krylov.scrumboard.helper.SprintProperties;
+import com.krylov.scrumboard.helper.Status;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
@@ -14,7 +15,6 @@ import com.krylov.scrumboard.request.SprintRequest;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -44,6 +44,7 @@ public class SprintService implements Runnable {
                          SprintRepository sprintRepo,
                          SprintTaskRepository sprintTaskRepo,
                          ProjectRepository projectRepo) {
+
         this.sprintConfigurer = sprintConfigurer;
         sprintComparator = Comparator.comparing(Sprint::getStartOfSprint, Comparator.reverseOrder());
 
@@ -57,22 +58,60 @@ public class SprintService implements Runnable {
         this.sprintDuration = Duration.NONE;
 
         running = new AtomicBoolean(false);
-
         int cores = Runtime.getRuntime().availableProcessors();
         service = Executors.newFixedThreadPool(cores);
 
         setSprints();
     }
 
+    private Sprint mapSprintDtoToSprint(SprintRepository.SprintDTO sDTO) {
+
+        Sprint sprint = new Sprint();
+        sprint.setStartOfSprint(sDTO.getStart());
+        sprint.setEndOfSprint(sDTO.getFinish());
+        sprint.setDuration(Duration.valueOf(sDTO.getDuration()));
+        sprint.setId(sDTO.getId());
+
+        Project project = new Project();
+        project.setId(sDTO.getProjectId());
+        project.setName(sDTO.getName());
+        project.setStatus(Status.valueOf(sDTO.getStatus()));
+
+        sprint.setProject(project);
+
+        return sprint;
+    }
+
+    private Project mapSprintDtoToProject(SprintRepository.SprintDTO sDTO) {
+        Project project = new Project();
+        project.setId(sDTO.getProjectId());
+        project.setName(sDTO.getName());
+        project.setStatus(Status.valueOf(sDTO.getStatus()));
+
+        return project;
+    }
+
+
+
+    // !! HEAVY METHOD !! USE ONLY ON RELOAD !!
     private void setSprints() {
 
-        List<Sprint> sprintInProgress = sprintRepo.findAllActiveSprints();
-        List<Project> projectInProgress = projectRepo.findAllActiveProjects();
+        List<SprintRepository.SprintDTO> sprintDTOS = sprintRepo.findAllActiveSprints();
 
-        if (sprintInProgress == null) return;
+        if (sprintDTOS.size() == 0) return;
+
+        List<Sprint> sprintInProgress = sprintDTOS.stream().map(this::mapSprintDtoToSprint).toList();
+        List<Project> projectInProgress = new ArrayList<>(
+                new HashSet<>(sprintDTOS.stream().map(this::mapSprintDtoToProject).toList()));
+
+        System.out.println("\n******************** DEBUG ********************\n");
+        sprintInProgress.forEach(System.out::println);
+        projectInProgress.forEach(System.out::println);
+        System.out.println("\n******************** DEBUG ********************\n");
+
         projectInProgress.forEach(project -> {
             List<Sprint> sprints = sprintInProgress.stream()
-                    .filter(s -> Objects.equals(s.getProject().getId(), project.getId())).sorted(sprintComparator).toList();
+                    .filter(s -> s.getProject().getId().equals(project.getId())).sorted(sprintComparator).toList();
             if (sprints.size() >= 2) {
                 next.add(sprints.get(0));
                 current.add(sprints.get(1));

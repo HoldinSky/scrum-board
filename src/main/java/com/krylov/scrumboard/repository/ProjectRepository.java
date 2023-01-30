@@ -16,6 +16,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByName(String name);
 
     @Query(nativeQuery = true,
-            value = "SELECT id, name, status FROM project WHERE status = 'IN_PROGRESS'")
+            value = "SELECT * FROM project WHERE status = 'IN_PROGRESS'")
     List<Project> findAllActiveProjects();
 }
