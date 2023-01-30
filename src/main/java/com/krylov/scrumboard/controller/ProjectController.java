@@ -35,6 +35,8 @@ public class ProjectController {
                 MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().minusDays(7)));
         modelAndView.addObject("maxDate",
                 MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().plusDays(30)));
+        modelAndView.addObject("currentSprint", projectService.retrieveCurrentSprintById(id));
+        modelAndView.addObject("nextSprint", projectService.retrieveNextSprintById(id));
 
         return modelAndView;
     }

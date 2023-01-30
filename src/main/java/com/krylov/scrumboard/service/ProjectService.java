@@ -22,9 +22,7 @@ import java.util.Optional;
 public class ProjectService {
 
     private final LocalDateTimeConverter converter;
-
     private final ProjectRepository repository;
-
     private final SprintTaskRepository backlog;
     private final SprintService sprintService;
 
@@ -100,6 +98,14 @@ public class ProjectService {
 
     public List<Project> retrieveAllProjects() {
         return repository.findAll().stream().sorted(Comparator.comparing(p -> p.getStatus().getValue())).toList();
+    }
+
+    public Sprint retrieveCurrentSprintById(Long id) {
+        return sprintService.getSprintOfProject(id, "current");
+    }
+
+    public Sprint retrieveNextSprintById(Long id) {
+        return sprintService.getSprintOfProject(id, "next");
     }
 
     public void saveTask(TaskRequest request, Long id) {

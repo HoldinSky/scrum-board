@@ -27,8 +27,8 @@
 
         <div class="me-lg-4 px-2">
             <div class="text-center fw-bold my-md-3 my-2">
-                <p class="pt-2 my-2 fs-1" id="projectName" th:text="${project.name}"
-                   style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
+                <p class="text-warning pt-2 my-2 fs-1" id="projectName" th:text="${project.name}"
+                   style="text-shadow: 1px 1px #a67d06;">
                 </p>
             </div>
         </div>
@@ -44,6 +44,24 @@
             <div class="fs-4 fw-normal text-start text-dark ps-4">
                 <p class="d-inline fw-bold">Status:</p>
                 <p class="d-inline" th:text="${project.status.name}"></p>
+            </div>
+            <div th:if="${project.status.name} == 'In progress'">
+                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
+                    <p class="fw-bold m-0" style="width: 160px;">
+                        <a class="link-info" style="text-shadow: 1px 1px #0d8ca8;"
+                           th:href="@{/api/v1/sprint/{id}(id=${currentSprint.id})}">Current sprint</a></p>
+                    <p>
+                        <a type="button" class="btn btn-secondary"><- Fill backlog</a>
+                    </p>
+                </div>
+                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
+                    <p class="fw-bold mb-2" style="width: 160px;">
+                        <a class="link-warning" style="text-shadow: 1px 1px #a67d06;"
+                           th:href="@{/api/v1/sprint/{id}(id=${nextSprint.id})}">Next sprint</a></p>
+                    <p>
+                        <a type="button" class="btn btn-secondary"><- Fill backlog</a>
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -80,7 +98,8 @@
                      th:classappend="${backlog.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${backlog.size()} == 0"
-                           class="text-center text-warning fw-medium fs-4 p-2">
+                           class="text-center fw-medium fs-4 p-2"
+                           style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">
                             You have not planned any tasks yet. Please proceed to creating one at Your choice.
                         </p>
                         <table th:if="${backlog.size()} != 0"

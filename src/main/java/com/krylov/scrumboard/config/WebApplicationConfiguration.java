@@ -1,10 +1,6 @@
 package com.krylov.scrumboard.config;
 
-import com.krylov.scrumboard.bean.SprintConfigurer;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -38,14 +34,6 @@ public class WebApplicationConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
 
         return (web) -> web.ignoring().requestMatchers("api/v1");
-    }
-
-    @Bean
-    public SprintConfigurer sprintConfigurer() {
-        LocalDateTimeConverter converter = new LocalDateTimeConverter();
-        SprintConfigurer configurer = new SprintConfigurer();
-        configurer.setConverter(converter);
-        return configurer;
     }
 
 }

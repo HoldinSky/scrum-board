@@ -239,19 +239,18 @@ public class SprintService implements Runnable {
         return sprintOptional.get();
     }
 
-    public Sprint getSprintOfProject(String name, String state) {
+    public Sprint getSprintOfProject(Long id, String state) {
 
-        Optional<Project> projectOptional = projectRepo.findByName(name);
+        Optional<Project> projectOptional = projectRepo.findById(id);
         if (projectOptional.isEmpty()) return null;
-        Project project = projectOptional.get();
 
         return switch (state) {
             case "current" -> current.stream()
-                    .filter(sprint -> sprint.getProject().equals(project))
-                    .sorted().toList().get(0);
+                    .filter(sprint -> sprint.getProject().getId().equals(id))
+                    .iterator().next();
             case "next" -> next.stream()
-                    .filter(sprint -> sprint.getProject().equals(project))
-                    .sorted().toList().get(0);
+                    .filter(sprint -> sprint.getProject().getId().equals(id))
+                    .iterator().next();
             default -> null;
         };
     }
