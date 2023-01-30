@@ -3,14 +3,10 @@ package com.krylov.scrumboard.service;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.helper.Duration;
-import com.krylov.scrumboard.helper.LinkedSet;
-import com.krylov.scrumboard.helper.SprintProperties;
-import com.krylov.scrumboard.helper.Status;
+import com.krylov.scrumboard.helper.*;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
-import com.krylov.scrumboard.bean.SprintConfigurer;
 import com.krylov.scrumboard.request.SprintRequest;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -24,28 +20,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class SprintService implements Runnable {
 
-    private final SprintConfigurer sprintConfigurer;
-
+    private final LocalDateTimeConverter converter;
     private final SprintRepository sprintRepo;
-
     private final SprintTaskRepository sprintTaskRepo;
-
     private final ProjectRepository projectRepo;
-
     private final LinkedSet<Sprint> current;
     private final LinkedSet<Sprint> next;
-    private Duration sprintDuration;
     private final ExecutorService service;
     private final AtomicBoolean running;
     private final Comparator<Sprint> sprintComparator;
 
     @SneakyThrows
-    public SprintService(SprintConfigurer sprintConfigurer,
+    public SprintService(LocalDateTimeConverter converter,
                          SprintRepository sprintRepo,
                          SprintTaskRepository sprintTaskRepo,
                          ProjectRepository projectRepo) {
 
-        this.sprintConfigurer = sprintConfigurer;
+        this.converter = converter;
         sprintComparator = Comparator.comparing(Sprint::getStartOfSprint, Comparator.reverseOrder());
 
         this.sprintRepo = sprintRepo;
@@ -54,8 +45,6 @@ public class SprintService implements Runnable {
 
         this.current = new LinkedSet<>();
         this.next = new LinkedSet<>();
-
-        this.sprintDuration = Duration.NONE;
 
         running = new AtomicBoolean(false);
         int cores = Runtime.getRuntime().availableProcessors();
@@ -72,12 +61,7 @@ public class SprintService implements Runnable {
         sprint.setDuration(Duration.valueOf(sDTO.getDuration()));
         sprint.setId(sDTO.getId());
 
-        Project project = new Project();
-        project.setId(sDTO.getProjectId());
-        project.setName(sDTO.getName());
-        project.setStatus(Status.valueOf(sDTO.getStatus()));
-
-        sprint.setProject(project);
+        sprint.setProject(mapSprintDtoToProject(sDTO));
 
         return sprint;
     }
@@ -91,8 +75,6 @@ public class SprintService implements Runnable {
         return project;
     }
 
-
-
     // !! HEAVY METHOD !! USE ONLY ON RELOAD !!
     private void setSprints() {
 
@@ -104,10 +86,10 @@ public class SprintService implements Runnable {
         List<Project> projectInProgress = new ArrayList<>(
                 new HashSet<>(sprintDTOS.stream().map(this::mapSprintDtoToProject).toList()));
 
-        System.out.println("\n******************** DEBUG ********************\n");
+        /*System.out.println("\n******************** DEBUG ********************\n");
         sprintInProgress.forEach(System.out::println);
         projectInProgress.forEach(System.out::println);
-        System.out.println("\n******************** DEBUG ********************\n");
+        System.out.println("\n******************** DEBUG ********************\n");*/
 
         projectInProgress.forEach(project -> {
             List<Sprint> sprints = sprintInProgress.stream()
@@ -119,7 +101,7 @@ public class SprintService implements Runnable {
         });
 
         if (!current.isEmpty()) {
-            sprintDuration = current.iterator().next().getDuration();
+            var sprintDuration = current.iterator().next().getDuration();
             running.set(true);
         }
 
@@ -131,38 +113,41 @@ public class SprintService implements Runnable {
     public List<Sprint> configureSprint(SprintRequest request, Project project) {
 
         // setup current sprint
-        sprintDuration = Duration.valueOf(request.getSprintDuration());
+        var duration = Duration.valueOf(request.getSprintDuration());
         var sprintStart = request.getStartOfSprint();
-        var sprintEnd = sprintStart.plusDays(sprintDuration.getDays());
+        var sprintEnd = sprintStart.plusDays(duration.getDays());
 
-        var properties = new SprintProperties(
-                sprintStart,
-                sprintEnd,
-                sprintDuration);
-
-        sprintConfigurer.setProperties(properties);
-        var sprint = sprintConfigurer.getSprintEntity();
+        var sprint = new Sprint(
+                converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
+                converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
+                duration
+        );
         sprint.setProject(project);
+
+        // persist current sprint
         current.add(sprint);
         sprintRepo.save(sprint);
 
         // setup next sprint
         sprintStart = sprintEnd;
-        sprintEnd = sprintEnd.plusDays(sprintDuration.getDays());
+        sprintEnd = sprintStart.plusDays(duration.getDays());
 
-        properties.setStart(sprintStart);
-        properties.setEnd(sprintEnd);
-
-        sprintConfigurer.setProperties(properties);
-        sprint = sprintConfigurer.getSprintEntity();
+        sprint = new Sprint(
+                converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
+                converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
+                duration
+        );
         sprint.setProject(project);
-        next.add(sprint);
 
+        // persist next sprint
+        next.add(sprint);
         sprintRepo.save(sprint);
 
+        // start sprint updater thread
         running.set(true);
         service.execute(this);
 
+        // just for testing purposes
         List<Sprint> toRet = new ArrayList<>(current);
         toRet.addAll(next);
         return toRet;
@@ -182,23 +167,23 @@ public class SprintService implements Runnable {
                 next.forEach(sprint -> {
                     if (LocalDateTime.now().isAfter(sprint.getStartOfSprint().toLocalDateTime())) {
                         // reconfiguring sprints that have to be started
-                        // add to current sprint, which start date has passed
+                        // add sprint to current, if its start date has passed
                         current.add(sprint);
+                        var duration = sprint.getDuration();
 
                         // describe new 'next' sprint
-                        var properties = new SprintProperties(
-                                sprint.getEndOfSprint().toLocalDateTime().toLocalDate(),
-                                sprint.getEndOfSprint().toLocalDateTime().toLocalDate().plusDays(sprintDuration.getDays()),
-                                sprintDuration
+                        var nextSprint = new Sprint(
+                                sprint.getEndOfSprint(),
+                                converter.convertToDatabaseColumn(sprint
+                                        .getEndOfSprint().toLocalDateTime().plusDays(duration.getDays())),
+                                duration
                         );
-                        sprintConfigurer.setProperties(properties);
-                        Sprint sprintEntity = sprintConfigurer.getSprintEntity();
 
                         // map sprint to the same project and save it
-                        sprintEntity.setProject(sprint.getProject());
-                        sprintRepo.save(sprintEntity);
+                        nextSprint.setProject(sprint.getProject());
+                        sprintRepo.save(nextSprint);
 
-                        next.add(sprintEntity);
+                        next.add(nextSprint);
                         next.remove(sprint);
                     }
                 });
