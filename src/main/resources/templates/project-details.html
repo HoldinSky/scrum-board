@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="me-lg-4 px-2 border-top border-bottom border-2 my-3">
+        <div class="me-lg-4 me-2 ms-2 px-4 border-top border-bottom border-2 my-3">
             <div class="fs-4 fw-normal text-center text-dark">
                 <p class="d-inline fw-bold">Info of the project</p>
             </div>
@@ -45,22 +45,63 @@
                 <p class="d-inline fw-bold">Status:</p>
                 <p class="d-inline" th:text="${project.status.name}"></p>
             </div>
-            <div th:if="${project.status.name} == 'In progress'">
-                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
+            <div th:if="${currentSprint} != null">
+                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4"
+                     style="height: 45px;">
                     <p class="fw-bold m-0" style="width: 160px;">
                         <a class="link-info" style="text-shadow: 1px 1px #0d8ca8;"
-                           th:href="@{/api/v1/sprint/{id}(id=${currentSprint.id})}">Current sprint</a></p>
+                           th:href="@{/api/v1/sprint/__${currentSprint.id}__}">Current sprint</a></p>
                     <p>
-                        <a type="button" class="btn btn-secondary"><- Fill backlog</a>
+                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
                     </p>
                 </div>
                 <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
                     <p class="fw-bold mb-2" style="width: 160px;">
                         <a class="link-warning" style="text-shadow: 1px 1px #a67d06;"
-                           th:href="@{/api/v1/sprint/{id}(id=${nextSprint.id})}">Next sprint</a></p>
+                           th:href="@{/api/v1/sprint/__${nextSprint.id}__}">Next sprint</a></p>
                     <p>
-                        <a type="button" class="btn btn-secondary"><- Fill backlog</a>
+                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
                     </p>
+                </div>
+            </div>
+
+            <div th:if="${allSprints} != null"
+                 class="my-3"
+                 id="sprintAccordion">
+                <div class="card mb-2">
+                    <button class="btn btn-link text-decoration-none text-info fw-semibold card-header"
+                            data-bs-toggle="collapse" data-bs-target="#collapseSprints"
+                            aria-expanded="false" aria-controls="collapseSprints">
+                        <div id="headingSprints">
+                            <h5 class="mb-0 text-center">
+                                Sprints of the project
+                            </h5>
+                        </div>
+                    </button>
+                    <div id="collapseSprints" class="collapse" aria-labelledby="headingSprints"
+                         data-parent="#sprintAccordion">
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead class="mb-2">
+                                <tr>
+                                    <th scope="col" class="text-center">Start</th>
+                                    <th scope="col" class="text-center">Finish</th>
+                                    <th scope="col" class="text-center"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="sprint : ${allSprints}" class="mb-2">
+                                    <td class="text-center w-40" th:text="${sprint.start}"></td>
+                                    <td class="text-center w-40" th:text="${sprint.finish}"></td>
+                                    <td class="text-center w-20">
+                                        <a class="btn btn-outline-dark"
+                                           th:href="@{/api/v1/sprint/__${sprint.id}__}">More</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,7 +124,7 @@
         </div>
 
 
-        <div id="accordion" class="m-2 me-lg-4">
+        <div id="backlogAccordion" class="m-2 me-lg-4">
             <div class="card mb-2">
                 <button class="btn btn-link text-decoration-none text-info fw-semibold card-header"
                         data-bs-toggle="collapse" data-bs-target="#collapseBacklog"
@@ -94,7 +135,8 @@
                         </h5>
                     </div>
                 </button>
-                <div id="collapseBacklog" class="collapse" aria-labelledby="headingBacklog" data-parent="#accordion"
+                <div id="collapseBacklog" class="collapse" aria-labelledby="headingBacklog"
+                     data-parent="#backlogAccordion"
                      th:classappend="${backlog.size()} != 0 ? ' show' : ''">
                     <div class="card-body">
                         <p th:if="${backlog.size()} == 0"
@@ -119,8 +161,7 @@
                                 <td class="text-center w-10" th:text="${task.priority}"></td>
                                 <td class="text-center w-15">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/project/task/{pId}/
-                                       {id}(id=${task.id}, pId=${project.id})}">More</a>
+                                       th:href="@{/api/v1/project/task/__${project.id}__/__${task.id}__}">More</a>
                                 </td>
                             </tr>
                             </tbody>

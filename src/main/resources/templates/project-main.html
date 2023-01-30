@@ -87,7 +87,7 @@
                     <td class="text-center w-25" th:text="${project.status.name}"></td>
                     <td class="text-center w-15">
                         <a class="btn btn-outline-dark"
-                           th:href="@{/api/v1/project/{projectId}(projectId=${project.id})}">More</a>
+                           th:href="@{/api/v1/project/__${project.id}__}">More</a>
                     </td>
                 </tr>
                 </tbody>

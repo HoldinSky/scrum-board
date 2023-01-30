@@ -3,12 +3,9 @@ package com.krylov.scrumboard.service;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.helper.TaskToShow;
+import com.krylov.scrumboard.helper.*;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
-import com.krylov.scrumboard.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.helper.Status;
 import com.krylov.scrumboard.request.SprintRequest;
 import com.krylov.scrumboard.request.TaskRequest;
 import org.springframework.stereotype.Service;
@@ -106,6 +103,10 @@ public class ProjectService {
 
     public Sprint retrieveNextSprintById(Long id) {
         return sprintService.getSprintOfProject(id, "next");
+    }
+
+    public List<SprintToShow> retrieveAllSprintsById(Long id) {
+        return sprintService.getAllSprintsOfProject(id);
     }
 
     public void saveTask(TaskRequest request, Long id) {

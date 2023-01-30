@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.repository;
 
+import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +24,8 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
                     " p.name AS name, p.status AS status FROM sprint s" +
                     " JOIN project AS p ON p.id = s.project_id WHERE p.status = 'IN_PROGRESS'")
     List<SprintDTO> findAllActiveSprints();
+
+    List<Sprint> findByProject(Project project);
 
 
     interface SprintDTO {

@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -26,7 +24,7 @@ public class SprintService implements Runnable {
     private final ProjectRepository projectRepo;
     private final LinkedSet<Sprint> current;
     private final LinkedSet<Sprint> next;
-    private final ExecutorService service;
+    private Thread thread;
     private final AtomicBoolean running;
     private final Comparator<Sprint> sprintComparator;
 
@@ -47,8 +45,6 @@ public class SprintService implements Runnable {
         this.next = new LinkedSet<>();
 
         running = new AtomicBoolean(false);
-        int cores = Runtime.getRuntime().availableProcessors();
-        service = Executors.newFixedThreadPool(cores);
 
         setSprints();
     }
@@ -101,12 +97,12 @@ public class SprintService implements Runnable {
         });
 
         if (!current.isEmpty()) {
-            var sprintDuration = current.iterator().next().getDuration();
             running.set(true);
         }
 
         if (running.get()) {
-            service.execute(this);
+            thread = new Thread(this);
+            thread.start();
         }
     }
 
@@ -144,8 +140,15 @@ public class SprintService implements Runnable {
         sprintRepo.save(sprint);
 
         // start sprint updater thread
-        running.set(true);
-        service.execute(this);
+
+        if (!running.get()) {
+            running.set(true);
+            if (thread == null || !thread.isAlive()) {
+                thread = new Thread(this);
+                thread.start();
+            }
+        }
+
 
         // just for testing purposes
         List<Sprint> toRet = new ArrayList<>(current);
@@ -190,7 +193,7 @@ public class SprintService implements Runnable {
 
 
             }
-            synchronized (service) {
+            synchronized (this) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
 
                 var hrs = tomorrow.getHour();
@@ -198,7 +201,7 @@ public class SprintService implements Runnable {
                 var sec = tomorrow.getSecond();
 
                 // wait until the midnight
-                service.wait((86_400 - (hrs * 3600 + min * 60 + sec)) * 1000);
+                this.wait((86_400 - (hrs * 3600 + min * 60 + sec)) * 1000);
             }
         }
     }
@@ -232,6 +235,17 @@ public class SprintService implements Runnable {
         sprintTaskRepo.saveAll(list);
     }
 
+    public List<SprintToShow> getAllSprintsOfProject(Long id) {
+        Optional<Project> projectOptional = projectRepo.findById(id);
+        if (projectOptional.isEmpty()) return null;
+
+        return sprintRepo.findByProject(projectOptional.get())
+                .stream().map(s -> new SprintToShow(
+                        s.getId(),
+                        s.getStartOfSprint().toLocalDateTime().toLocalDate().toString(),
+                        s.getEndOfSprint().toLocalDateTime().toLocalDate().toString())).toList();
+    }
+
     public Sprint getSprintById(Long id) {
         Optional<Sprint> sprintOptional = sprintRepo.findById(id);
         if (sprintOptional.isEmpty()) return null;
@@ -247,10 +261,10 @@ public class SprintService implements Runnable {
         return switch (state) {
             case "current" -> current.stream()
                     .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .iterator().next();
+                    .sorted(sprintComparator).iterator().next();
             case "next" -> next.stream()
                     .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .iterator().next();
+                    .sorted(sprintComparator).iterator().next();
             default -> null;
         };
     }
