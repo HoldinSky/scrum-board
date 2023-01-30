@@ -106,7 +106,7 @@
                 <p>Do you really want to delete these project? This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <form th:action="@{/api/v1/config/project/{pId}(pId=${project.id})}"
+                <form th:action="@{/api/v1/config/project/__${project.id}__}"
                       th:method="delete">
                     <input type="text" th:name="action" th:value="'delete'"
                            class="visually-hidden"/>
@@ -133,7 +133,7 @@
                 <p>Do you really want to stop these project? This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <form th:action="@{/api/v1/config/project/{pId}(pId=${project.id})}"
+                <form th:action="@{/api/v1/config/project/__${project.id}__}"
                       th:method="delete">
                     <input type="text" th:name="action" th:value="'stop'"
                            class="visually-hidden"/>

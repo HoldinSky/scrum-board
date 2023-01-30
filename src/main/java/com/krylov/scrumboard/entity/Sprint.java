@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.krylov.scrumboard.helper.Duration;
 import jakarta.persistence.*;
@@ -16,6 +17,8 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+
+@JsonIgnoreProperties(value = "taskList")
 
 @Entity(name = "Sprint")
 @Table(name = "Sprint")
@@ -46,17 +49,17 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id",
+            foreignKey = @ForeignKey(name = "project_id_fkey"))
+    @JsonManagedReference
+    private Project project;
+
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
             mappedBy = "sprint")
     @JsonManagedReference
     private List<SprintTask> taskList;
-
-    @ManyToOne
-    @JoinColumn(name = "project_id",
-            foreignKey = @ForeignKey(name = "project_id_fkey"))
-    @JsonBackReference
-    private Project project;
 
     public Sprint(Timestamp startOfSprint,
                   Timestamp endOfSprint,
@@ -70,5 +73,4 @@ public class Sprint {
         if (taskList == null) taskList = new ArrayList<>();
         taskList.add(task);
     }
-
 }

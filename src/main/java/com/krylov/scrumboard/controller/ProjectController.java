@@ -2,6 +2,7 @@ package com.krylov.scrumboard.controller;
 
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
+import com.krylov.scrumboard.helper.Status;
 import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 @Service
@@ -30,11 +30,19 @@ public class ProjectController {
 
         modelAndView.addObject("project", project);
         modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
-        modelAndView.addObject("today", MyDateTimeFormatter.formatToHTMLDate(LocalDate.now()));
-        modelAndView.addObject("minDate",
-                MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().minusDays(7)));
-        modelAndView.addObject("maxDate",
-                MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().plusDays(30)));
+
+        if (project.getStatus().equals(Status.PLANNED)) {
+            modelAndView.addObject("today", MyDateTimeFormatter.formatToHTMLDate(LocalDate.now()));
+            modelAndView.addObject("minDate",
+                    MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().minusDays(6)));
+            modelAndView.addObject("maxDate",
+                    MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().plusDays(30)));
+        } else if (project.getStatus().equals(Status.IN_PROGRESS)) {
+            modelAndView.addObject("currentSprint", projectService.retrieveCurrentSprintById(id));
+            modelAndView.addObject("nextSprint", projectService.retrieveNextSprintById(id));
+        } else {
+            modelAndView.addObject("allSprints", projectService.retrieveAllSprintsById(id));
+        }
 
         return modelAndView;
     }

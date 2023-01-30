@@ -1,6 +1,5 @@
 package com.krylov.scrumboard.config;
 
-import com.krylov.scrumboard.bean.SprintConfigurer;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,14 +34,6 @@ public class WebApplicationConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
 
         return (web) -> web.ignoring().requestMatchers("api/v1");
-    }
-
-    @Bean
-    public SprintConfigurer sprintConfigurer() {
-        LocalDateTimeConverter converter = new LocalDateTimeConverter();
-        SprintConfigurer configurer = new SprintConfigurer();
-        configurer.setConverter(converter);
-        return configurer;
     }
 
 }

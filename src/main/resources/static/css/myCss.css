@@ -74,3 +74,11 @@
 .clickable-row{
     cursor: pointer;
 }
+
+.a.blue-link:hover {
+    color: #0181ad;
+}
+
+.a.yellow-link:hover {
+    color: #c09a03;
+}

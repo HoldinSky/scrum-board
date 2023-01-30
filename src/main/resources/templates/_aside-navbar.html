@@ -13,37 +13,37 @@
 
 </head>
 <body>
-    <div th:fragment="aside">
-        <aside
-                id="sidebarMenu"
-                class="collapse d-lg-block sidebar bd-sidebar"
-        >
-            <div class="position-sticky">
-                <div class="list-group list-group-flush mx-3 mt-4">
-                    <a
-                            th:href="@{/api/v1/main}"
-                            class="list-group-item list-group-item-action py-2 ripple"
-                            aria-current="true"
-                    >
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i
-                        ><span>How it works</span>
-                    </a>
-                    <a
-                            th:href="@{/api/v1/config/project}"
-                            class="list-group-item list-group-item-action py-2 ripple"
-                    >
-                        <i class="fas fa-chart-area fa-fw me-3"></i
-                        ><span>Project page</span>
-                    </a>
-                    <a
-                            th:href="@{/api/v1/task/personal}"
-                            class="list-group-item list-group-item-action py-2 ripple"
-                    ><i class="fas fa-globe fa-fw me-3"></i
-                    ><span>Personal tasks</span></a
-                    >
-                </div>
+<div th:fragment="aside">
+    <aside
+            id="sidebarMenu"
+            class="collapse d-lg-block sidebar bd-sidebar"
+    >
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+                <a
+                        th:href="@{/api/v1/main}"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                        aria-current="true"
+                >
+                    <i class="fas fa-tachometer-alt fa-fw me-3"></i
+                    ><span>How it works</span>
+                </a>
+                <a
+                        th:href="@{/api/v1/config/project}"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                >
+                    <i class="fas fa-chart-area fa-fw me-3"></i
+                    ><span>Project page</span>
+                </a>
+                <a
+                        th:href="@{/api/v1/task/personal}"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                ><i class="fas fa-globe fa-fw me-3"></i
+                ><span>Personal tasks</span></a
+                >
             </div>
-        </aside>
-    </div>
+        </div>
+    </aside>
+</div>
 </body>
 </html>

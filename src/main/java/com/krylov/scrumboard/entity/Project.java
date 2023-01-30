@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.krylov.scrumboard.helper.Status;
 import jakarta.persistence.*;
@@ -51,4 +52,5 @@ public class Project {
         this.name = name;
         this.status = Status.PLANNED;
     }
+
 }
