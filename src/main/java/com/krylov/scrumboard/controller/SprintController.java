@@ -16,8 +16,9 @@ public class SprintController {
     private final SprintService sprintService;
 
     @GetMapping(path = "/{id}")
-    public ModelAndView showSprintBacklog(@PathVariable(name = "id") Long id) {
-        var modelAndView = new ModelAndView("sprint-details");
+    public ModelAndView showSprintBacklog(@PathVariable(name = "id") Long id,
+                                          ModelAndView modelAndView) {
+        modelAndView.setViewName("sprint-details");
 
         modelAndView.addObject("sprint", sprintService.getSprintById(id));
         modelAndView.addObject("sprint", sprintService.getSprintById(id));
@@ -26,8 +27,9 @@ public class SprintController {
     }
 
     @GetMapping
-    public ModelAndView showProjectSprints(@ModelAttribute(name = "projectName") String name) {
-        var modelAndView = new ModelAndView("sprint-main");
+    public ModelAndView showProjectSprints(@ModelAttribute(name = "projectName") String name,
+                                           ModelAndView modelAndView) {
+        modelAndView.setViewName("sprint-main");
 
         modelAndView.addObject("currentSprint",
                 sprintService.retrieveTaskOfSprintOfProject(name, "current"));

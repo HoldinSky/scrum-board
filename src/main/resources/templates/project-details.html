@@ -34,33 +34,37 @@
         </div>
 
         <div class="me-lg-4 me-2 ms-2 px-4 border-top border-bottom border-2 my-3">
-            <div class="fs-4 fw-normal text-center text-dark">
-                <p class="d-inline fw-bold">Info of the project</p>
-            </div>
-            <div class="fs-4 fw-normal text-start text-dark ps-4">
+            <div class="fs-4 fw-normal text-start text-dark">
                 <p class="d-inline fw-bold">Id:</p>
                 <p class="d-inline" th:text="${project.id}"></p>
             </div>
-            <div class="fs-4 fw-normal text-start text-dark ps-4">
+            <div class="fs-4 fw-normal text-start text-dark mb-3">
                 <p class="d-inline fw-bold">Status:</p>
                 <p class="d-inline" th:text="${project.status.name}"></p>
             </div>
             <div th:if="${currentSprint} != null">
-                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4"
-                     style="height: 45px;">
-                    <p class="fw-bold m-0" style="width: 160px;">
+                <div class="d-flex gap-2 fs-4 fw-normal text-center align-items-center text-dark"
+                     style="height: auto;">
+                    <p class="fw-bold" style="width: 160px;">
                         <a class="link-info" style="text-shadow: 1px 1px #0d8ca8;"
                            th:href="@{/api/v1/sprint/__${currentSprint.id}__}">Current sprint</a></p>
                     <p>
-                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
+                        <a type="button" class="btn btn-outline-dark"
+                           data-bs-toggle="offcanvas" th:data-bs-target="'#fillSprint' + ${currentSprint.id}"
+                           th:aria-controls="'fillSprint' + ${currentSprint.id}"
+                           style="width: 172px"><- Fill Current Sprint</a>
                     </p>
                 </div>
-                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
+                <div class="d-flex gap-2 fs-4 fw-normal text-center align-items-center text-dark">
                     <p class="fw-bold mb-2" style="width: 160px;">
                         <a class="link-warning" style="text-shadow: 1px 1px #a67d06;"
                            th:href="@{/api/v1/sprint/__${nextSprint.id}__}">Next sprint</a></p>
                     <p>
-                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
+                        <a type="button" class="btn btn-outline-dark text-center"
+                           data-bs-toggle="offcanvas" th:data-bs-target="'#fillSprint' + ${nextSprint.id}"
+                           th:aria-controls="'fillSprint' + ${nextSprint.id}"
+                           style="width: 172px"><- Fill Next
+                            Sprint</a>
                     </p>
                 </div>
             </div>
@@ -112,6 +116,10 @@
         <div th:insert="~{_additional :: project-delete-confirmation}"></div>
         <div th:if="${project.status.name} == 'In progress'"
              th:insert="~{_additional :: project-stop}"></div>
+        <div th:if="${project.status.name} == 'In progress'"
+             th:insert="~{_additional :: fill-current-sprint-form}"></div>
+        <div th:if="${project.status.name} == 'In progress'"
+             th:insert="~{_additional :: fill-next-sprint-form}"></div>
 
         <!-- Buttons -->
         <div class="d-lg-flex d-grid flex-lg-row justify-content-lg-center gap-2 me-lg-4 m-2">

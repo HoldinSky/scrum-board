@@ -17,8 +17,8 @@ public class PersonalTaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ModelAndView showScrumBoard() {
-        var modelAndView = new ModelAndView("tasks");
+    public ModelAndView showScrumBoard(ModelAndView modelAndView) {
+        modelAndView.setViewName("tasks");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -26,18 +26,20 @@ public class PersonalTaskController {
     }
 
     @GetMapping(path = "{id}")
-    public ModelAndView showTaskDetails(@PathVariable(name = "id") Long id) {
-        var modelAndView = new ModelAndView("task-details");
+    public ModelAndView showTaskDetails(@PathVariable(name = "id") Long id,
+                                        ModelAndView modelAndView) {
+        modelAndView.setViewName("task-details");
         modelAndView.addObject("task", taskService.retrieveById(id));
         return modelAndView;
     }
 
     @PostMapping
-    public ModelAndView createTask(@ModelAttribute TaskRequest request) {
+    public ModelAndView createTask(@ModelAttribute TaskRequest request,
+                                   ModelAndView modelAndView) {
         if (request.getDescription().length() > 15)
             taskService.save(request);
 
-        var modelAndView = new ModelAndView("redirect:/api/v1/task/personal");
+        modelAndView.setViewName("redirect:/api/v1/task/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -46,11 +48,12 @@ public class PersonalTaskController {
 
     @PutMapping(path = "{id}")
     public ModelAndView updateTask(@PathVariable(value = "id") Long id,
-                           @RequestParam(name = "dif", required = false) Byte difficulty,
-                           @ModelAttribute("request") String request) {
+                                   @RequestParam(name = "dif", required = false) Byte difficulty,
+                                   @ModelAttribute("request") String request,
+                                   ModelAndView modelAndView) {
         String message = taskService.updateTask(id, difficulty, request);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/task/personal/{id}");
+        modelAndView.setViewName("redirect:/api/v1/task/personal/{id}");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());
@@ -58,10 +61,11 @@ public class PersonalTaskController {
     }
 
     @DeleteMapping(path = "{id}")
-    public ModelAndView deleteTask(@PathVariable(value = "id") Long id) {
+    public ModelAndView deleteTask(@PathVariable(value = "id") Long id,
+                                   ModelAndView modelAndView) {
         taskService.deleteTask(id);
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/api/v1/task/personal");
+        modelAndView.setViewName("redirect:/api/v1/task/personal");
         modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
         modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
         modelAndView.addObject("finishedTasks", taskService.retrieveAllFinished());

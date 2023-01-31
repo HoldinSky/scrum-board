@@ -1,6 +1,8 @@
 package com.krylov.scrumboard.controller;
 
 
+import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.helper.FillingSprintDTO;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.request.SprintRequest;
 import com.krylov.scrumboard.request.StartProjectRequest;
@@ -24,56 +26,65 @@ public class ConfigController {
     private final SprintService sprintService;
 
     @GetMapping(path = "/project")
-    public ModelAndView projectConfigurer() {
-        var modelAndView = new ModelAndView("project-main");
+    public ModelAndView projectConfigurer(ModelAndView modelAndView) {
 
+        modelAndView.setViewName("project-main");
         modelAndView.addObject("projects", projectService.retrieveAllProjects());
 
         return modelAndView;
     }
 
     @PostMapping(path = "/project")
-    public ModelAndView createProject(@ModelAttribute(name = "projectName") String name) {
+    public ModelAndView createProject(@ModelAttribute(name = "projectName") String name,
+                                      ModelAndView modelAndView) {
 
         projectService.createProject(name);
+        modelAndView.setViewName("redirect:/api/v1/config/project");
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        return modelAndView;
     }
 
     @PostMapping(path = "/project/start")
-    public ModelAndView startProject(@ModelAttribute(name = "startProjectRequest") StartProjectRequest request) {
+    public ModelAndView startProject(@ModelAttribute(name = "startProjectRequest") StartProjectRequest request,
+                                     ModelAndView modelAndView) {
         String start = MyDateTimeFormatter.formatInputDate(request.getSprintStart());
 
         var sprintRequest = new SprintRequest(start, request.getSprintDuration());
-
         projectService.startProjectById(request.getProjectId(), sprintRequest);
 
-        return new ModelAndView("redirect:/api/v1/project/" + request.getProjectId());
+        modelAndView.setViewName("redirect:/api/v1/project/" + request.getProjectId());
+
+        return modelAndView;
     }
 
     @PutMapping(path = "/project/{projectId}")
     public ModelAndView stopProject(@PathVariable(name = "projectId") Long id,
-                                    @ModelAttribute(name = "action") String action) {
+                                    @ModelAttribute(name = "action") String action,
+                                    ModelAndView modelAndView) {
 
         projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        modelAndView.setViewName("redirect:/api/v1/config/project");
+        return modelAndView;
     }
 
     @DeleteMapping(path = "/project/{projectId}")
     public ModelAndView deleteProject(@PathVariable(name = "projectId") Long id,
-                                      @ModelAttribute(name = "action") String action) {
+                                      @ModelAttribute(name = "action") String action,
+                                      ModelAndView modelAndView) {
 
         projectService.updateProject(id, action);
 
-        return new ModelAndView("redirect:/api/v1/config/project");
+        modelAndView.setViewName("redirect:/api/v1/config/project");
+        return modelAndView;
     }
 
 
     @GetMapping(path = "/sprint")
-    public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectId") Long id) {
-        var modelAndView = new ModelAndView("sprint-main");
+    public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectId") Long id,
+                                             ModelAndView modelAndView) {
 
+        modelAndView.setViewName("sprint-main");
         modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
 
         return modelAndView;
@@ -82,20 +93,27 @@ public class ConfigController {
 
     @PostMapping(path = "/sprint/single/{sprintId}")
     public ModelAndView addOneTaskToSprint(@PathVariable(name = "sprintId") Long sprintId,
-                                           @RequestParam(name = "task") Long taskId) {
+                                           @RequestParam(name = "task") Long taskId,
+                                           ModelAndView modelAndView) {
         sprintService.addTaskToSprintById(taskId, sprintId);
 
-        return new ModelAndView("redirect:/api/v1/config/sprint");
+        modelAndView.setViewName("redirect:/api/v1/config/sprint");
+        return modelAndView;
     }
 
 
     @PostMapping(path = "/sprint/multiple/{sprintId}")
     public ModelAndView addMultipleTasksToSprint(@PathVariable(name = "sprintId") Long sprintId,
-                                                 @RequestBody List<Long> taskIds) {
+                                                 @ModelAttribute(name = "list") FillingSprintDTO list,
+                                                 @ModelAttribute(name = "projectId") Long projectId,
+                                                 ModelAndView modelAndView) {
+        List<SprintTask> taskList = list.getTaskList();
+        List<Long> taskIdList = taskList.stream().map(SprintTask::getId).toList();
 
-        sprintService.addMultipleTasksToSprintById(taskIds, sprintId);
+        sprintService.addMultipleTasksToSprintById(taskIdList, sprintId);
 
-        return new ModelAndView("redirect:/api/v1/config/sprint");
+        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
+        return modelAndView;
     }
 
 }

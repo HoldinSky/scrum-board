@@ -203,7 +203,8 @@ public class ProjectService {
     }
 
     public List<SprintTask> retrieveBacklog(Long projectId) {
-        return backlog.retrieveBacklog(projectId);
+        return backlog.retrieveBacklog(projectId)
+                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
     }
 
 }
