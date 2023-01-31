@@ -107,8 +107,7 @@ public class ConfigController {
                                                  @ModelAttribute(name = "list") FillingSprintDTO dto,
                                                  @ModelAttribute(name = "projectId") Long projectId,
                                                  ModelAndView modelAndView) {
-        List<SprintTask> taskList = dto.getTaskList();
-        List<Long> taskIds = taskList.stream().map(SprintTask::getId).toList();
+        List<Long> taskIds = dto.getTaskList();
 
         sprintService.addMultipleTasksToSprintById(taskIds, sprintId);
 

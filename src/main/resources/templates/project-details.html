@@ -211,10 +211,7 @@
                              th:each="task, taskStat : ${backlog}"
                              th:if="${task.startedAt} == null">
                             <input class="form-check-input" type="checkbox" th:id="'backlogTask' + ${task.id}"
-                                   th:field="*{taskList[__${taskStat.index}__].id}" th:value="${task.id}"/>
-                            <input th:field="*{taskList[__${taskStat.index}__].description}"
-                                   th:value="${task.description}"
-                                   class="visually-hidden"/>
+                                   th:field="*{taskList[__${taskStat.index}__]}" th:value="${task.id}"/>
                             <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
                                    th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
                            (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">
@@ -246,10 +243,7 @@
                              th:each="task, taskStat : ${backlog}"
                              th:if="${task.startedAt} == null">
                             <input class="form-check-input" type="checkbox" th:id="'backlogTask' + ${task.id}"
-                                   th:field="*{taskList[__${taskStat.index}__].id}" th:value="${task.id}"/>
-                            <input th:field="*{taskList[__${taskStat.index}__].description}"
-                                   th:value="${task.description}"
-                                   class="visually-hidden"/>
+                                   th:field="*{taskList[__${taskStat.index}__]}" th:value="${task.id}"/>
                             <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
                                    th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
                                 (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">

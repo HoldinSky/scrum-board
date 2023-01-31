@@ -11,17 +11,15 @@ import java.util.List;
 @Setter
 public class FillingSprintDTO {
 
-    private final List<SprintTask> taskList;
+    private final List<Long> taskList;
 
     public FillingSprintDTO() {
         taskList = new ArrayList<>();
     }
 
     public FillingSprintDTO(int size) {
-        this.taskList = new ArrayList<>(size);
-    }
-
-    public void addId(SprintTask task) {
-        this.taskList.add(task);
+        this.taskList = new ArrayList<>();
+        for (int i = 1; i <= size; i++)
+            taskList.add(null);
     }
 }
