@@ -39,5 +39,14 @@ public class SprintController {
         return modelAndView;
     }
 
+    @PostMapping
+    public ModelAndView startTask(@ModelAttribute(name = "taskId") Long id,
+                                  ModelAndView modelAndView) {
+        modelAndView.setViewName("sprint-main");
+
+        sprintService.startTaskById(id);
+
+        return modelAndView;
+    }
 
 }

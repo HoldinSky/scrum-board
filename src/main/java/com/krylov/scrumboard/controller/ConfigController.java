@@ -59,10 +59,9 @@ public class ConfigController {
 
     @PutMapping(path = "/project/{projectId}")
     public ModelAndView stopProject(@PathVariable(name = "projectId") Long id,
-                                    @ModelAttribute(name = "action") String action,
                                     ModelAndView modelAndView) {
 
-        projectService.updateProject(id, action);
+        projectService.stopProject(id);
 
         modelAndView.setViewName("redirect:/api/v1/config/project");
         return modelAndView;
@@ -93,23 +92,25 @@ public class ConfigController {
     @PostMapping(path = "/sprint/single/{sprintId}")
     public ModelAndView addOneTaskToSprint(@PathVariable(name = "sprintId") Long sprintId,
                                            @RequestParam(name = "task") Long taskId,
+                                           @ModelAttribute(name = "projectId") Long projectId,
                                            ModelAndView modelAndView) {
+
         sprintService.addTaskToSprintById(taskId, sprintId);
 
-        modelAndView.setViewName("redirect:/api/v1/config/sprint");
+        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
         return modelAndView;
     }
 
 
     @PostMapping(path = "/sprint/multiple/{sprintId}")
     public ModelAndView addMultipleTasksToSprint(@PathVariable(name = "sprintId") Long sprintId,
-                                                 @ModelAttribute(name = "list") FillingSprintDTO list,
+                                                 @ModelAttribute(name = "list") FillingSprintDTO dto,
                                                  @ModelAttribute(name = "projectId") Long projectId,
                                                  ModelAndView modelAndView) {
-        List<SprintTask> taskList = list.getTaskList();
-        List<Long> taskIdList = taskList.stream().map(SprintTask::getId).toList();
+        List<SprintTask> taskList = dto.getTaskList();
+        List<Long> taskIds = taskList.stream().map(SprintTask::getId).toList();
 
-        sprintService.addMultipleTasksToSprintById(taskIdList, sprintId);
+        sprintService.addMultipleTasksToSprintById(taskIds, sprintId);
 
         modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
         return modelAndView;

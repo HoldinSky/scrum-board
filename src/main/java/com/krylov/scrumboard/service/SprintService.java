@@ -235,6 +235,37 @@ public class SprintService implements Runnable {
         sprintTaskRepo.saveAll(list);
     }
 
+    public void startTaskById(Long id) {
+        var task = findTask(id);
+        if (task == null) return;
+
+        if (task.getDifficulty() == null) return;
+
+        task.setStartedAt(converter.convertToDatabaseColumn(LocalDateTime.now()));
+        sprintTaskRepo.save(task);
+    }
+
+    public void setDifficultyToTask(Long id, Byte difficulty) {
+        var task = findTask(id);
+        if (task == null) return;
+
+        task.setDifficulty(difficulty);
+        sprintTaskRepo.save(task);
+    }
+
+    public void finishTask(Long id) {
+        var task = findTask(id);
+        if (task == null) return;
+
+        task.setFinishedAt(converter.convertToDatabaseColumn(LocalDateTime.now()));
+        sprintTaskRepo.save(task);
+    }
+
+    public void deleteTask(Long id) {
+        sprintTaskRepo.deleteById(id);
+    }
+
+
     public List<SprintToShow> getAllSprintsOfProject(Long id) {
         Optional<Project> projectOptional = projectRepo.findById(id);
         if (projectOptional.isEmpty()) return null;

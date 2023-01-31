@@ -52,17 +52,8 @@ public class ProjectService {
         return project;
     }
 
-    public Project updateProject(Long id, String action) {
 
-        return switch (action) {
-            case "stop" -> stopProject(id);
-            case "delete" -> deleteProject(id);
-            default -> null;
-        };
-    }
-
-
-    private Project stopProject(Long id) {
+    public Project stopProject(Long id) {
         Optional<Project> optional = repository.findById(id);
         if (optional.isEmpty()) return null;
 
