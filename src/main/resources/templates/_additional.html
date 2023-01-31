@@ -81,7 +81,8 @@
                            th:value="${task.description}"
                            class="visually-hidden"/>
                     <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
-                           th:text="${task.description}">
+                           th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
+                           (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">
                     </label>
                 </div>
             </div>
@@ -113,7 +114,8 @@
                            th:value="${task.description}"
                            class="visually-hidden"/>
                     <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
-                           th:text="${task.description}">
+                           th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
+                           (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">
                     </label>
                 </div>
             </div>

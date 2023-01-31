@@ -156,17 +156,19 @@
                                class="table table-hover">
                             <thead class="mb-2">
                             <tr>
-                                <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">Task</th>
                                 <th scope="col" class="text-center">Priority</th>
+                                <th scope="col" class="text-center">Sprint</th>
                                 <th scope="col" class="text-center"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="task : ${backlog}" class="mb-2">
-                                <td class="text-center fw-bold w-10" th:text="${task.id}"></td>
-                                <td class="text-center w-65" th:text="${task.description}"></td>
+                                <td class="text-center w-60" th:text="${task.description}"></td>
                                 <td class="text-center w-10" th:text="${task.priority}"></td>
+                                <td class="text-center w-15"
+                                    th:text="${task.sprint} != null ?
+                                     (${task.sprint.id} == ${currentSprint.id} ? 'Current' : 'Next') : ''"></td>
                                 <td class="text-center w-15">
                                     <a class="btn btn-outline-dark"
                                        th:href="@{/api/v1/project/task/__${project.id}__/__${task.id}__}">More</a>
