@@ -36,7 +36,7 @@
           <p>Do you really want to delete these task? This action cannot be undone.</p>
         </div>
         <div class="modal-footer">
-          <form th:action="@{/api/v1/project/task/__${task.project.id}__/__${task.id}__}"
+          <form th:action="@{/api/v1/project/__${task.project.id}__/task/__${task.id}__}"
                 th:method="delete">
             <button type="submit" class="btn btn-danger">
               Delete
@@ -59,7 +59,7 @@
     </div>
     <div id="taskDetails">
       <p class="text-center fw-bold fs-2 my-3 ms-md-4 ms-2 text-decoration-underline"
-         style="color: var(--bs-cyan);">Task details</p>
+         style="color: var(--bs-yellow); text-shadow: 1px 1px #a67d06;">Task details</p>
     </div>
     <div class="ms-md-5 ms-3">
       <div class="fs-4 fw-normal text-start text-dark">
@@ -98,7 +98,7 @@
         <p class="d-inline fw-medium mb-1"
            th:text="'Please set difficulty before task can be started'"></p>
         <form class="row g-3" th:method="put"
-              th:action="@{/api/v1/project/task/__${task.project.id}__/__${task.id}__}">
+              th:action="@{/api/v1/project/__${task.project.id}__/task/__${task.id}__}">
           <div class="col-auto">
             <select id="taskAddDifficulty"
                     class="form-select ms-2"

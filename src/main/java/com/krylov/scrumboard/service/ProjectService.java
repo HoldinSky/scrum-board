@@ -61,6 +61,7 @@ public class ProjectService {
         };
     }
 
+
     private Project stopProject(Long id) {
         Optional<Project> optional = repository.findById(id);
         if (optional.isEmpty()) return null;
@@ -74,7 +75,7 @@ public class ProjectService {
         return project;
     }
 
-    private Project deleteProject(Long id) {
+    public Project deleteProject(Long id) {
         Optional<Project> optional = repository.findById(id);
         if (optional.isEmpty()) return null;
 

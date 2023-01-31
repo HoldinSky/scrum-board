@@ -1,7 +1,6 @@
 package com.krylov.scrumboard.controller;
 
 import com.krylov.scrumboard.entity.Project;
-import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.helper.FillingSprintDTO;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.helper.Status;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -65,14 +62,14 @@ public class ProjectController {
     public ModelAndView createTaskToProjectBacklog(@PathVariable(name = "projectId") Long id,
                                                    @ModelAttribute TaskRequest request,
                                                    ModelAndView modelAndView) {
-        if (request.getDescription().length() > 15)
+        if (request.getDescription().length() >= 15)
             projectService.saveTask(request, id);
 
         modelAndView.setViewName("redirect:/api/v1/project/" + id);
         return modelAndView;
     }
 
-    @GetMapping(path = "/task/{projectId}/{id}")
+    @GetMapping(path = "/{projectId}/task/{id}")
     public ModelAndView showTaskDetails(@PathVariable(name = "id") Long id,
                                         @PathVariable(name = "projectId") Long projectId,
                                         ModelAndView modelAndView) {
@@ -82,7 +79,7 @@ public class ProjectController {
         return modelAndView;
     }
 
-    @DeleteMapping(path = "/task/{projectId}/{id}")
+    @DeleteMapping(path = "/{projectId}/task/{id}")
     public ModelAndView deleteTask(@PathVariable(name = "id") Long id,
                                    @PathVariable(name = "projectId") Long projectId,
                                    ModelAndView modelAndView) {
@@ -93,7 +90,7 @@ public class ProjectController {
         return modelAndView;
     }
 
-    @PutMapping(path = "/task/{projectId}/{id}")
+    @PutMapping(path = "/{projectId}/task/{id}")
     public ModelAndView updateTaskById(@PathVariable(name = "id") Long taskId,
                                        @PathVariable(name = "projectId") Long projectId,
                                        @RequestParam(name = "dif", required = false) Byte difficulty,

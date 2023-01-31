@@ -40,7 +40,7 @@ public class Project {
     @OneToMany(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL,
             mappedBy = "project")
-    @JsonManagedReference
+    @JsonBackReference
     private List<Sprint> sprintList;
 
     public void addSprint(Sprint sprint) {

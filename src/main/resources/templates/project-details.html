@@ -167,11 +167,11 @@
                                 <td class="text-center w-60" th:text="${task.description}"></td>
                                 <td class="text-center w-10" th:text="${task.priority}"></td>
                                 <td class="text-center w-15"
-                                    th:text="${task.sprint} != null ?
+                                    th:text="${task.sprint} != null and ${currentSprint} != null ?
                                      (${task.sprint.id} == ${currentSprint.id} ? 'Current' : 'Next') : ''"></td>
                                 <td class="text-center w-15">
                                     <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/project/task/__${project.id}__/__${task.id}__}">More</a>
+                                       th:href="@{/api/v1/project/__${project.id}__/task/__${task.id}__}">More</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -182,7 +182,7 @@
         </div>
 
         <div class="d-grid w-auto mx-2 mt-5 me-lg-4"
-             th:if="${project.status.name} != 'In progress'"
+             th:if="${project.status.name} == 'Finished'"
              th:insert="~{_additional :: delete-project-button}"></div>
     </main>
 

@@ -49,14 +49,14 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "project_id",
             foreignKey = @ForeignKey(name = "project_id_fkey"))
     @JsonManagedReference
     private Project project;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.DETACH},
             mappedBy = "sprint")
     @JsonManagedReference
     private List<SprintTask> taskList;

@@ -36,7 +36,7 @@ public class PersonalTaskController {
     @PostMapping
     public ModelAndView createTask(@ModelAttribute TaskRequest request,
                                    ModelAndView modelAndView) {
-        if (request.getDescription().length() > 15)
+        if (request.getDescription().length() >= 15)
             taskService.save(request);
 
         modelAndView.setViewName("redirect:/api/v1/task/personal");

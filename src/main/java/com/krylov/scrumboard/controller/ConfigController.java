@@ -70,10 +70,9 @@ public class ConfigController {
 
     @DeleteMapping(path = "/project/{projectId}")
     public ModelAndView deleteProject(@PathVariable(name = "projectId") Long id,
-                                      @ModelAttribute(name = "action") String action,
                                       ModelAndView modelAndView) {
 
-        projectService.updateProject(id, action);
+        projectService.deleteProject(id);
 
         modelAndView.setViewName("redirect:/api/v1/config/project");
         return modelAndView;
