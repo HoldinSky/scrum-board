@@ -45,9 +45,8 @@ public class ProjectService {
 
         var project = optional.get();
         project.setStatus(Status.IN_PROGRESS);
-        List<Sprint> sprints = sprintService.configureSprint(request, project);
-        sprints.forEach(project::addSprint);
 
+        sprintService.configureSprint(request, project);
         repository.save(project);
         return project;
     }
@@ -86,7 +85,8 @@ public class ProjectService {
     }
 
     public List<Project> retrieveAllProjects() {
-        return repository.findAll().stream().sorted(Comparator.comparing(p -> p.getStatus().getValue())).toList();
+        return repository.findAll()
+                .stream().sorted(Comparator.comparing(p -> p.getStatus().getValue())).toList();
     }
 
     public Sprint retrieveCurrentSprintById(Long id) {
@@ -196,7 +196,9 @@ public class ProjectService {
 
     public List<SprintTask> retrieveBacklog(Long projectId) {
         return backlog.retrieveBacklog(projectId)
-                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
+                .stream().sorted(
+                        Comparator.comparing(SprintTask::getId)
+                        .thenComparing(SprintTask::getPriority)).toList();
     }
 
 }

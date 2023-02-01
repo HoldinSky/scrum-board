@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.helper;
 
 import com.krylov.scrumboard.entity.Project;
+import com.krylov.scrumboard.entity.Sprint;
 import lombok.*;
 
 @Getter
@@ -29,5 +30,6 @@ public class TaskToShow {
     private Byte priority;
 
     private Project project;
+    private Sprint sprint;
 
 }

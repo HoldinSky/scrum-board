@@ -69,16 +69,6 @@ public class ProjectController {
         return modelAndView;
     }
 
-    @GetMapping(path = "/{projectId}/task/{id}")
-    public ModelAndView showTaskDetails(@PathVariable(name = "id") Long id,
-                                        @PathVariable(name = "projectId") Long projectId,
-                                        ModelAndView modelAndView) {
-
-        modelAndView.setViewName("project-task-details");
-        modelAndView.addObject("task", projectService.retrieveTaskById(projectId, id));
-        return modelAndView;
-    }
-
     @DeleteMapping(path = "/{projectId}/task/{id}")
     public ModelAndView deleteTask(@PathVariable(name = "id") Long id,
                                    @PathVariable(name = "projectId") Long projectId,
@@ -91,7 +81,7 @@ public class ProjectController {
     }
 
     @PutMapping(path = "/{projectId}/task/{id}")
-    public ModelAndView updateTaskById(@PathVariable(name = "id") Long taskId,
+    public ModelAndView updateTask(@PathVariable(name = "id") Long taskId,
                                        @PathVariable(name = "projectId") Long projectId,
                                        @RequestParam(name = "dif", required = false) Byte difficulty,
                                        @ModelAttribute("request") String request,

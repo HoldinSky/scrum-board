@@ -56,7 +56,7 @@ public class Sprint {
     private Project project;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.DETACH},
+            cascade = CascadeType.ALL,
             mappedBy = "sprint")
     @JsonManagedReference
     private List<SprintTask> taskList;

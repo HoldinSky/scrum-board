@@ -1,7 +1,6 @@
 package com.krylov.scrumboard.controller;
 
 
-import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.helper.FillingSprintDTO;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
 import com.krylov.scrumboard.request.SprintRequest;
@@ -87,20 +86,6 @@ public class ConfigController {
 
         return modelAndView;
     }
-
-
-    @PostMapping(path = "/sprint/single/{sprintId}")
-    public ModelAndView addOneTaskToSprint(@PathVariable(name = "sprintId") Long sprintId,
-                                           @RequestParam(name = "task") Long taskId,
-                                           @ModelAttribute(name = "projectId") Long projectId,
-                                           ModelAndView modelAndView) {
-
-        sprintService.addTaskToSprintById(taskId, sprintId);
-
-        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
-        return modelAndView;
-    }
-
 
     @PostMapping(path = "/sprint/multiple/{sprintId}")
     public ModelAndView addMultipleTasksToSprint(@PathVariable(name = "sprintId") Long sprintId,

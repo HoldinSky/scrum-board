@@ -206,21 +206,6 @@ public class SprintService implements Runnable {
         }
     }
 
-    public void addTaskToSprintById(Long taskId, Long sprintId) {
-        var task = findTask(taskId);
-        if (task == null) return;
-
-        Optional<Sprint> sprintOpt = sprintRepo.findById(sprintId);
-        if (sprintOpt.isEmpty()) {
-            System.out.println("DEBUG: Could not find sprint by id '" + sprintId + "'");
-            return;
-        }
-        Sprint sprint = sprintOpt.get();
-        task.setSprint(sprint);
-
-        sprintTaskRepo.save(task);
-    }
-
     public void addMultipleTasksToSprintById(List<Long> taskIdList, Long sprintId) {
         var list = sprintTaskRepo.findAllById(taskIdList);
 
@@ -233,6 +218,28 @@ public class SprintService implements Runnable {
         list.forEach(task -> task.setSprint(sprint));
 
         sprintTaskRepo.saveAll(list);
+    }
+
+    public TaskToShow getSprintTask(Long id) {
+        var task = sprintTaskRepo.findById(id).orElse(null);
+        if (task == null) return null;
+
+        TaskToShow toShow = new TaskToShow(
+                task.getId(),
+                task.getDescription(),
+                MyDateTimeFormatter.formatDateTime(task.getCreatedAt().toLocalDateTime()),
+                task.getPriority());
+
+        toShow.setDifficulty(task.getDifficulty());
+        toShow.setProject(task.getProject());
+        toShow.setSprint(task.getSprint());
+
+        if (task.getStartedAt() != null)
+            toShow.setStartedAt(MyDateTimeFormatter.formatDateTime(task.getStartedAt().toLocalDateTime()));
+        if (task.getFinishedAt() != null)
+            toShow.setFinishedAt(MyDateTimeFormatter.formatDateTime(task.getFinishedAt().toLocalDateTime()));
+
+        return toShow;
     }
 
     public void startTaskById(Long id) {
@@ -296,23 +303,6 @@ public class SprintService implements Runnable {
             case "next" -> next.stream()
                     .filter(sprint -> sprint.getProject().getId().equals(id))
                     .sorted(sprintComparator).iterator().next();
-            default -> null;
-        };
-    }
-
-    public List<SprintTask> retrieveTaskOfSprintOfProject(String name, String state) {
-
-        Optional<Project> projectOptional = projectRepo.findByName(name);
-        if (projectOptional.isEmpty()) return new ArrayList<>();
-        Project project = projectOptional.get();
-
-        return switch (state) {
-            case "current" -> current.stream()
-                    .filter(sprint -> sprint.getProject().equals(project))
-                    .sorted().toList().get(0).getTaskList();
-            case "next" -> next.stream()
-                    .filter(sprint -> sprint.getProject().equals(project))
-                    .sorted().toList().get(0).getTaskList();
             default -> null;
         };
     }

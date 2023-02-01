@@ -16,35 +16,62 @@ public class SprintController {
     private final SprintService sprintService;
 
     @GetMapping(path = "/{id}")
-    public ModelAndView showSprintBacklog(@PathVariable(name = "id") Long id,
-                                          ModelAndView modelAndView) {
-        modelAndView.setViewName("sprint-details");
+    public ModelAndView showSprintTask(@PathVariable(name = "id") Long id,
+                                       ModelAndView modelAndView) {
+        modelAndView.setViewName("sprint-task-details");
 
-        modelAndView.addObject("sprint", sprintService.getSprintById(id));
-        modelAndView.addObject("sprint", sprintService.getSprintById(id));
+        modelAndView.addObject("task", sprintService.getSprintTask(id));
 
         return modelAndView;
     }
 
-    @GetMapping
-    public ModelAndView showProjectSprints(@ModelAttribute(name = "projectName") String name,
+
+    @GetMapping(path = "/upcoming/{projectId}")
+    public ModelAndView showProjectSprints(@PathVariable(name = "projectId") Long id,
                                            ModelAndView modelAndView) {
         modelAndView.setViewName("sprint-main");
 
         modelAndView.addObject("currentSprint",
-                sprintService.retrieveTaskOfSprintOfProject(name, "current"));
+                sprintService.getSprintOfProject(id, "current"));
         modelAndView.addObject("nextSprint",
-                sprintService.retrieveTaskOfSprintOfProject(name, "next"));
+                sprintService.getSprintOfProject(id, "next"));
 
         return modelAndView;
     }
 
-    @PostMapping
-    public ModelAndView startTask(@ModelAttribute(name = "taskId") Long id,
-                                  ModelAndView modelAndView) {
+    @PutMapping(path = "/{taskId}")
+    public ModelAndView updateTask(@PathVariable(name = "taskId") Long id,
+                                   @ModelAttribute(name = "action") String action,
+                                   @RequestParam(required = false, defaultValue = "0", name = "dif") Byte difficulty,
+                                   ModelAndView modelAndView) {
         modelAndView.setViewName("sprint-main");
 
-        sprintService.startTaskById(id);
+        switch (action) {
+            case "start" -> sprintService.startTaskById(id);
+            case "finish" -> sprintService.finishTask(id);
+            case "setDifficulty" -> {
+                sprintService.setDifficultyToTask(id, difficulty);
+                modelAndView.setViewName("sprint-task-details");
+                modelAndView.addObject("task", sprintService.getSprintTask(id));
+
+                return modelAndView;
+            }
+            default -> System.out.println("DEBUG: Could not recognize command '" + action + "'");
+        }
+
+        modelAndView.addObject("sprint", sprintService.getSprintById(id));
+
+        return modelAndView;
+    }
+
+    @DeleteMapping
+    public ModelAndView deleteTask(@ModelAttribute(name = "taskId") Long id,
+                                   ModelAndView modelAndView) {
+        modelAndView.setViewName("sprint-main");
+
+        sprintService.deleteTask(id);
+
+        modelAndView.addObject("sprint", sprintService.getSprintById(id));
 
         return modelAndView;
     }

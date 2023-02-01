@@ -63,7 +63,7 @@ public class SprintTask {
     @JsonManagedReference
     private List<Worker> workerList;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
     @JoinColumn(name = "sprint_id",
             foreignKey = @ForeignKey(name = "sprint_id_fkey"))
     @JsonBackReference
