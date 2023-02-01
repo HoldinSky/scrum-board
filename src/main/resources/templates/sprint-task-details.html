@@ -37,12 +37,12 @@
                     <p>Do you really want to delete these task? This action cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <form th:action="@{/api/v1/sprint}"
+                    <form th:action="@{/api/v1/sprint/__${task.id}__}"
                           th:method="delete">
                         <button type="submit" class="btn btn-danger">
                             Delete
                         </button>
-                        <input class="visually-hidden" th:name="taskId" th:value="${task.id}"/>
+                        <input class="visually-hidden" th:name="projectId" th:value="${task.project.id}"/>
                     </form>
                     <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
                 </div>
@@ -90,15 +90,17 @@
                 <p class="d-inline fw-bold">Creation:</p>
                 <p class="d-inline" th:text="${task.createdAt}"></p>
             </div>
-            <div th:if="${task.startedAt}"
-                 class="gap-2 fs-4 fw-normal text-start text-dark">
-                <p class="d-inline fw-bold">Start:</p>
-                <p class="d-inline" th:text="${task.startedAt}"></p>
-            </div>
-            <div th:if="${task.finishedAt}"
-                 class="gap-2 fs-4 fw-normal text-start text-dark">
-                <p class="d-inline fw-bold">Finish:</p>
-                <p class="d-inline" th:text="${task.finishedAt}"></p>
+            <div th:if="${canInteract}">
+                <div th:if="${task.startedAt}"
+                     class="gap-2 fs-4 fw-normal text-start text-dark">
+                    <p class="d-inline fw-bold">Start:</p>
+                    <p class="d-inline" th:text="${task.startedAt}"></p>
+                </div>
+                <div th:if="${task.finishedAt}"
+                     class="gap-2 fs-4 fw-normal text-start text-dark">
+                    <p class="d-inline fw-bold">Finish:</p>
+                    <p class="d-inline" th:text="${task.finishedAt}"></p>
+                </div>
             </div>
             <div class="fs-4 fw-normal text-start text-dark">
                 <p class="d-inline fw-bold">Project:</p>
@@ -132,29 +134,31 @@
                     </div>
                 </form>
             </div>
-            <form th:if="${task.difficulty} and ${task.startedAt} == null and ${task.sprint}"
-                  th:action="@{/api/v1/sprint/__${task.id}__}"
-                  th:method="put"
-                  class="my-2">
-                <input type="text" th:name="action" th:value="'start'"
-                       class="visually-hidden"/>
-                <button type="submit" class="mx-2 mt-2 btn btn-success">
-                    Start task
-                </button>
-            </form>
-            <form th:if="${task.startedAt} != null and ${task.finishedAt} == null"
-                  th:action="@{/api/v1/sprint/__${task.id}__}"
-                  th:method="put"
-                  class="my-2">
-                <input type="text" th:name="action" th:value="'finish'"
-                       class="visually-hidden"/>
-                <button type="submit" class="mx-2 mt-2 btn btn-warning">
-                    Finish task
-                </button>
-            </form>
+            <div th:if="${canInteract}">
+                <form th:if="${task.difficulty} != null and ${task.startedAt} == null"
+                      th:action="@{/api/v1/sprint/__${task.id}__}"
+                      th:method="put"
+                      class="my-2">
+                    <input type="text" th:name="action" th:value="'start'"
+                           class="visually-hidden"/>
+                    <button type="submit" class="mx-2 mt-2 btn btn-success">
+                        Start task
+                    </button>
+                </form>
+                <form th:if="${task.startedAt} != null and ${task.finishedAt} == null"
+                      th:action="@{/api/v1/sprint/__${task.id}__}"
+                      th:method="put"
+                      class="my-2">
+                    <input type="text" th:name="action" th:value="'finish'"
+                           class="visually-hidden"/>
+                    <button type="submit" class="mx-2 mt-2 btn btn-warning">
+                        Finish task
+                    </button>
+                </form>
+            </div>
             <button type="button" class="mx-2 mt-2 btn btn-danger"
                     data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal"
-                    th:if="${task.startedAt} == null or ${task.finishedAt} != null">
+                    th:if="(${task.startedAt} == null or ${task.finishedAt} != null) or !${canInteract}">
                 Delete task
             </button>
         </div>

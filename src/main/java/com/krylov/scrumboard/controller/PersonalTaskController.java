@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.controller;
 
+import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.service.TaskService;
 import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;

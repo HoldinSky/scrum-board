@@ -3,6 +3,7 @@ package com.krylov.scrumboard.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.krylov.scrumboard.helper.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -63,7 +64,8 @@ public class SprintTask {
     @JsonManagedReference
     private List<Worker> workerList;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
+            fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_id",
             foreignKey = @ForeignKey(name = "sprint_id_fkey"))
     @JsonBackReference

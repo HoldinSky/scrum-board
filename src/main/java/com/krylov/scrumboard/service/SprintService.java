@@ -82,11 +82,6 @@ public class SprintService implements Runnable {
         List<Project> projectInProgress = new ArrayList<>(
                 new HashSet<>(sprintDTOS.stream().map(this::mapSprintDtoToProject).toList()));
 
-        /*System.out.println("\n******************** DEBUG ********************\n");
-        sprintInProgress.forEach(System.out::println);
-        projectInProgress.forEach(System.out::println);
-        System.out.println("\n******************** DEBUG ********************\n");*/
-
         projectInProgress.forEach(project -> {
             List<Sprint> sprints = sprintInProgress.stream()
                     .filter(s -> s.getProject().getId().equals(project.getId())).sorted(sprintComparator).toList();
@@ -106,7 +101,7 @@ public class SprintService implements Runnable {
         }
     }
 
-    public List<Sprint> configureSprint(SprintRequest request, Project project) {
+    public void configureSprint(SprintRequest request, Project project) {
 
         // setup current sprint
         var duration = Duration.valueOf(request.getSprintDuration());
@@ -150,10 +145,7 @@ public class SprintService implements Runnable {
         }
 
 
-        // just for testing purposes
-        List<Sprint> toRet = new ArrayList<>(current);
-        toRet.addAll(next);
-        return toRet;
+        return;
     }
 
     @SneakyThrows
@@ -242,6 +234,11 @@ public class SprintService implements Runnable {
         return toShow;
     }
 
+    public List<SprintTask> getTasksOfSprint(Long id) {
+        return sprintTaskRepo.retrieveTasksOfSprintById(id)
+                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
+    }
+
     public void startTaskById(Long id) {
         var task = findTask(id);
         if (task == null) return;
@@ -281,30 +278,59 @@ public class SprintService implements Runnable {
                 .stream().map(s -> new SprintToShow(
                         s.getId(),
                         s.getStartOfSprint().toLocalDateTime().toLocalDate().toString(),
-                        s.getEndOfSprint().toLocalDateTime().toLocalDate().toString())).toList();
-    }
-
-    public Sprint getSprintById(Long id) {
-        Optional<Sprint> sprintOptional = sprintRepo.findById(id);
-        if (sprintOptional.isEmpty()) return null;
-
-        return sprintOptional.get();
+                        s.getEndOfSprint().toLocalDateTime().toLocalDate().toString(),
+                        s.getProject())).toList();
     }
 
     public Sprint getSprintOfProject(Long id, String state) {
-
         Optional<Project> projectOptional = projectRepo.findById(id);
         if (projectOptional.isEmpty()) return null;
 
         return switch (state) {
-            case "current" -> current.stream()
-                    .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .sorted(sprintComparator).iterator().next();
-            case "next" -> next.stream()
-                    .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .sorted(sprintComparator).iterator().next();
+            case "current" ->
+                this.current.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
+            case "next" ->
+                this.next.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
             default -> null;
         };
+    }
+
+    public SprintToShow getSprintToShowOfProject(Long id, String state) {
+
+        Optional<Project> projectOptional = projectRepo.findById(id);
+        if (projectOptional.isEmpty()) return null;
+
+        SprintToShow toShow;
+        switch (state) {
+            case "current" -> {
+                Sprint current = this.current.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
+
+                toShow = new SprintToShow(
+                        current.getId(),
+                        MyDateTimeFormatter.formatDate(current.getStartOfSprint().toLocalDateTime()),
+                        MyDateTimeFormatter.formatDate(current.getEndOfSprint().toLocalDateTime()),
+                        current.getProject());
+            }
+            case "next" -> {
+                Sprint next = this.next.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
+
+                toShow = new SprintToShow(next.getId(),
+                        MyDateTimeFormatter.formatDate(next.getStartOfSprint().toLocalDateTime()),
+                        MyDateTimeFormatter.formatDate(next.getEndOfSprint().toLocalDateTime()),
+                        next.getProject());
+            }
+            default -> toShow = null;
+        };
+
+        return toShow;
     }
 
     public void endProject(Project project) {
