@@ -1,6 +1,5 @@
 package com.krylov.scrumboard.controller;
 
-import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.service.TaskService;
 import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1/task/personal")
+@RequestMapping(path = "/api/v1/task/personal")
 @AllArgsConstructor
 public class PersonalTaskController {
 

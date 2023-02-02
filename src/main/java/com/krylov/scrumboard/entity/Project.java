@@ -1,19 +1,15 @@
 package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.krylov.scrumboard.helper.Status;
+import com.krylov.scrumboard.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode
 
 @Table(name = "Project")
 @Entity(name = "Project")

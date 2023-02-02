@@ -3,7 +3,7 @@ package com.krylov.scrumboard.controller;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.helper.FillingSprintDTO;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.helper.Status;
+import com.krylov.scrumboard.enums.Status;
 import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import lombok.AllArgsConstructor;

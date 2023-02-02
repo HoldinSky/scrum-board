@@ -3,7 +3,6 @@ package com.krylov.scrumboard.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.krylov.scrumboard.helper.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,11 +10,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 
 @JsonIgnoreProperties(value = {"workerList"})
 

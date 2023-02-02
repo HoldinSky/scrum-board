@@ -1,7 +1,6 @@
 package com.krylov.scrumboard.controller;
 
 import com.krylov.scrumboard.entity.Project;
-import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.service.SprintService;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1/sprint")
+@RequestMapping(path = "/api/v1/sprint")
 @AllArgsConstructor
 public class SprintController {
 

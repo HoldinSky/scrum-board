@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.helper;
+package com.krylov.scrumboard.enums;
 
 
 public enum Duration {

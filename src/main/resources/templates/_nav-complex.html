@@ -16,7 +16,7 @@
 <div th:fragment="navbar">
     <nav class="navbar navbar-expand-lg border-bottom border-secondary sticky-top bg-body">
         <div class="container-fluid">
-            <a class="navbar-brand text-info fw-bold" th:href="@{/api/v1/main}"
+            <a class="navbar-brand text-info fw-bold" th:href="@{/api/v1/landing/main}"
                style="text-shadow: 1px 1px #0d8ca8;">SCRUM Board</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a role="button" class="btn text-nowrap fw-bold text-warning"
-                           th:href="@{/api/v1}">Home</a>
+                           th:href="@{/api/v1/landing}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a role="button" class="btn text-nowrap" data-bs-toggle="modal" data-bs-target="#aboutModal">

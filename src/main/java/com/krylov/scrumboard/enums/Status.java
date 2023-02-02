@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.helper;
+package com.krylov.scrumboard.enums;
 
 public enum Status {
     PLANNED(1, "Planned"),

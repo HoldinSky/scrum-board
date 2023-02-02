@@ -77,16 +77,6 @@ public class ConfigController {
     }
 
 
-    @GetMapping(path = "/sprint")
-    public ModelAndView showSprintConfigurer(@ModelAttribute(name = "projectId") Long id,
-                                             ModelAndView modelAndView) {
-
-        modelAndView.setViewName("sprint-main");
-        modelAndView.addObject("backlog", projectService.retrieveBacklog(id));
-
-        return modelAndView;
-    }
-
     @PostMapping(path = "/sprint/multiple/{sprintId}")
     public ModelAndView addMultipleTasksToSprint(@PathVariable(name = "sprintId") Long sprintId,
                                                  @ModelAttribute(name = "list") FillingSprintDTO dto,

@@ -1,6 +1,5 @@
 package com.krylov.scrumboard.controller;
 
-import com.krylov.scrumboard.service.TaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "api/v1")
+@RequestMapping(path = "/api/v1/landing")
 @AllArgsConstructor
 public class MainController {
 

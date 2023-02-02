@@ -3,6 +3,8 @@ package com.krylov.scrumboard.service;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
+import com.krylov.scrumboard.enums.Duration;
+import com.krylov.scrumboard.enums.Status;
 import com.krylov.scrumboard.helper.*;
 import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
@@ -143,9 +145,6 @@ public class SprintService implements Runnable {
                 thread.start();
             }
         }
-
-
-        return;
     }
 
     @SneakyThrows
@@ -328,7 +327,7 @@ public class SprintService implements Runnable {
                         next.getProject());
             }
             default -> toShow = null;
-        };
+        }
 
         return toShow;
     }

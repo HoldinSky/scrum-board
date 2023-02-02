@@ -1,7 +1,6 @@
 package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.entity.Task;
 import com.krylov.scrumboard.entity.Worker;
 import com.krylov.scrumboard.repository.WorkerRepository;
 import lombok.AllArgsConstructor;
@@ -31,5 +30,7 @@ public class WorkerService {
         if (optional.isEmpty()) return null;
         return optional.get().getTask();
     }
+
+
 
 }

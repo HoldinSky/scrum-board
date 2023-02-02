@@ -4,18 +4,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+@Data
+@NoArgsConstructor
+
 @Entity(name = "Worker")
 @Table(name = "Worker",
         uniqueConstraints = {
                 @UniqueConstraint(name = "email_unique",
                         columnNames = "email")
         })
-
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor
 public class Worker {
 
     @Id
