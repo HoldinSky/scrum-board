@@ -33,7 +33,7 @@
                     sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        Secondary Menu
+                        Menu
                     </a>
                     <ul class="dropdown-menu">
                         <!-- TODO remade this link on "team page" -->
@@ -56,24 +56,33 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="mx-1">
-                    <a href="https://www.linkedin.com/in/nazar-krylov-1ba795236/">
-                        <img th:src="@{/images/linkedin.svg}" th:alt="'LinkedIn svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://www.linkedin.com/in/nazar-krylov-1ba795236/">
+                        <img class="pb-1" th:src="@{/images/linkedin.svg}" th:alt="'LinkedIn svg'"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">LinkedIn</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="https://t.me/HoldingSky">
-                        <img th:src="@{/images/telegram.svg}" th:alt="'Telegram svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://t.me/HoldingSky">
+                        <img class="pb-1" th:src="@{/images/telegram.svg}" th:alt="'Telegram svg'"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">Telegram</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="https://github.com/HoldinSky/scrum-board">
-                        <img th:src="@{/images/github.svg}" th:alt="'Github svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://github.com/HoldinSky/scrum-board">
+                        <img class="pb-1" th:src="@{/images/github.svg}" th:alt="'Github svg'"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">GitHub</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="mailto:nazar.luv2code@gmail.com">
-                        <img th:src="@{/images/envelope.svg}" th:alt="'Mailto svg'" title="nazar.luv2code@gmail.com"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="mailto:nazar.luv2code@gmail.com">
+                        <img class="pb-1" th:src="@{/images/envelope.svg}"
+                             th:alt="'Mailto svg'" title="nazar.luv2code@gmail.com"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">nazar.luv2code@gmail.com</p>
                     </a>
                 </li>
             </ul>
