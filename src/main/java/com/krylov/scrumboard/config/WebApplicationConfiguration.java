@@ -32,11 +32,11 @@ public class WebApplicationConfiguration {
 
     @Bean
     @Description("Thymeleaf template resolver building SCRUM app")
-    public ClassLoaderTemplateResolver emailTemplateResolver() {
+    public ClassLoaderTemplateResolver templateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setTemplateMode("HTML");
         templateResolver.setOrder(1);
         return templateResolver;
     }

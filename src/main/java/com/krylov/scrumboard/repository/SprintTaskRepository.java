@@ -23,4 +23,16 @@ public interface SprintTaskRepository extends JpaRepository<SprintTask, Long> {
             value = "SELECT * FROM sprint_task WHERE sprint_id = :sprintId")
     List<SprintTask> retrieveTasksOfSprintById(Long sprintId);
 
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM sprint_task WHERE started_at IS NULL")
+    List<SprintTask> retrievePlannedSprintTask(Long id);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM sprint_task WHERE started_at IS NOT NULL AND finished_at IS NULL")
+    List<SprintTask> retrieveInProgressSprintTask(Long id);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM sprint_task WHERE finished_at IS NOT NULL")
+    List<SprintTask> retrieveFinishedSprintTask(Long id);
+
 }

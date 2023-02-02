@@ -49,7 +49,9 @@ public class SprintController {
         modelAndView.addObject("project", current.getProject());
         modelAndView.addObject("currentSprint", current);
         modelAndView.addObject("nextSprint", next);
-        modelAndView.addObject("currentTasks", sprintService.getTasksOfSprint(current.getId()));
+        modelAndView.addObject("currentBacklog", sprintService.getBacklogOfSprint(current.getId()));
+        modelAndView.addObject("currentInProgress", sprintService.getInProgressOfSprint(current.getId()));
+        modelAndView.addObject("currentFinished", sprintService.getFinishedOfSprint(current.getId()));
         modelAndView.addObject("nextTasks", sprintService.getTasksOfSprint(next.getId()));
 
         return modelAndView;
