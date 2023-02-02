@@ -10,11 +10,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 
 @JsonIgnoreProperties(value = {"workerList"})
 
@@ -63,7 +60,8 @@ public class SprintTask {
     @JsonManagedReference
     private List<Worker> workerList;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
+            fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_id",
             foreignKey = @ForeignKey(name = "sprint_id_fkey"))
     @JsonBackReference

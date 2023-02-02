@@ -21,7 +21,6 @@ public class TaskService {
 
     private TaskRepository taskRepository;
     private LocalDateTimeConverter converter;
-    private List<TaskToShow> taskList;
 
     public void save(TaskRequest request) {
         // convert publication time to database timestamp
@@ -53,16 +52,6 @@ public class TaskService {
         if (task.getDifficulty() != null) tts.setDifficulty(task.getDifficulty());
 
         return tts;
-    }
-
-    public List<TaskToShow> retrieveALl() {
-        taskList = new ArrayList<>();
-
-        taskList.addAll(retrieveAllBacklog());
-        taskList.addAll(retrieveAllInProgress());
-        taskList.addAll(retrieveAllFinished());
-
-        return taskList;
     }
 
     public List<TaskToShow> retrieveAllBacklog() {
@@ -142,9 +131,7 @@ public class TaskService {
                 if (difficulty == 0) return "Task must have its difficulty";
                 task.setDifficulty(difficulty);
             }
-            default -> {
-                System.out.println("DEBUG: Cannot recognize update request \"" + request + "\"");
-            }
+            default -> System.out.println("DEBUG: Cannot recognize update request \"" + request + "\"");
         }
 
         // update DB instance

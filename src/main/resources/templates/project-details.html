@@ -33,35 +33,33 @@
             </div>
         </div>
 
-        <div class="me-lg-4 me-2 ms-2 px-4 border-top border-bottom border-2 my-3">
-            <div class="fs-4 fw-normal text-center text-dark">
-                <p class="d-inline fw-bold">Info of the project</p>
-            </div>
-            <div class="fs-4 fw-normal text-start text-dark ps-4">
+        <!-- Info section -->
+        <div class="me-lg-4 mx-2 px-4 border-top border-bottom border-2 my-3">
+            <div class="fs-4 fw-normal text-start text-dark">
                 <p class="d-inline fw-bold">Id:</p>
                 <p class="d-inline" th:text="${project.id}"></p>
             </div>
-            <div class="fs-4 fw-normal text-start text-dark ps-4">
+            <div class="fs-4 fw-normal text-start text-dark mb-3">
                 <p class="d-inline fw-bold">Status:</p>
                 <p class="d-inline" th:text="${project.status.name}"></p>
             </div>
-            <div th:if="${currentSprint} != null">
-                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4"
-                     style="height: 45px;">
-                    <p class="fw-bold m-0" style="width: 160px;">
-                        <a class="link-info" style="text-shadow: 1px 1px #0d8ca8;"
-                           th:href="@{/api/v1/sprint/__${currentSprint.id}__}">Current sprint</a></p>
-                    <p>
-                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
-                    </p>
+            <div th:if="${project.status.name} == 'In progress'">
+                <div class="text-center align-items-center mb-2"
+                     style="height: auto;">
+                    <a type="button" class="fw-bold fs-5 btn btn-outline-info w-100"
+                       th:href="@{/api/v1/sprint/upcoming/__${project.id}__}">
+                        Upcoming Sprints
+                    </a>
                 </div>
-                <div class="d-flex gap-2 fs-4 fw-normal text-start text-dark ps-4">
-                    <p class="fw-bold mb-2" style="width: 160px;">
-                        <a class="link-warning" style="text-shadow: 1px 1px #a67d06;"
-                           th:href="@{/api/v1/sprint/__${nextSprint.id}__}">Next sprint</a></p>
-                    <p>
-                        <a type="button" class="btn btn-secondary"><- Fill Sprint's backlog</a>
-                    </p>
+                <div class="d-lg-flex d-grid flex-lg-row justify-content-lg-center gap-2 mx-lg-5 m-2">
+                    <a type="button" class="btn btn-outline-dark w-lg-50"
+                       data-bs-toggle="offcanvas" th:data-bs-target="'#fillSprint' + ${currentSprint.id}"
+                       th:aria-controls="'fillSprint' + ${currentSprint.id}"
+                       style="width: 172px">Fill Current Sprint</a>
+                    <a type="button" class="btn btn-outline-dark w-lg-50"
+                       data-bs-toggle="offcanvas" th:data-bs-target="'#fillSprint' + ${nextSprint.id}"
+                       th:aria-controls="'fillSprint' + ${nextSprint.id}"
+                       style="width: 172px">Fill Next Sprint</a>
                 </div>
             </div>
 
@@ -106,21 +104,171 @@
             </div>
         </div>
 
+
         <!-- Forms -->
         <div th:insert="~{_additional :: add-task-form}"></div>
-        <div th:insert="~{_additional :: start-project-form}"></div>
-        <div th:insert="~{_additional :: project-delete-confirmation}"></div>
+
+        <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="startProject"
+             aria-labelledby="startProjectLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="startProjectLabel">Configure project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form class="row g-3" method="post" th:action="@{/api/v1/config/project/start}">
+                    <div class="col-auto">
+                        <label for="projectStart" class="form-label ps-2">Start of the project</label>
+                        <input type="date" id="projectStart" name="sprintStart"
+                               th:value="${today}"
+                               th:min="${minDate}" th:max="${maxDate}">
+                    </div>
+                    <div class="col-auto">
+                        <label for="sprintDuration" class="form-label ps-2">Duration of one sprint</label>
+                        <select id="sprintDuration" class="form-select" th:name="'sprintDuration'">
+                            <option selected value="WEEK">Week</option>
+                            <option value="TWO_WEEKS">2 Weeks</option>
+                            <option value="THREE_WEEKS">3 Weeks</option>
+                            <option value="MONTH">Month</option>
+                        </select>
+                    </div>
+                    <input type="text" th:name="'projectId'" th:value="${project.id}"
+                           class="visually-hidden"/>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${project.status.name} == 'In progress'" id="stopProject" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Are you sure?</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to stop these project? This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/api/v1/config/project/__${project.id}__}"
+                              th:method="put">
+                            <button type="submit" class="btn btn-warning">
+                                Stop
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="deleteProject" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Are you sure?</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete these project? This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/api/v1/config/project/__${project.id}__}"
+                              th:method="delete">
+                            <button type="submit" class="btn btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fill current sprint -->
         <div th:if="${project.status.name} == 'In progress'"
-             th:insert="~{_additional :: project-stop}"></div>
+             class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1"
+             th:id="'fillSprint' + ${currentSprint.id}"
+             aria-labelledby="fillCurrentSprintLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="fillCurrentSprintLabel">Choose tasks</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form class="row g-3" method="post"
+                      th:action="@{/api/v1/config/sprint/multiple/__${currentSprint.id}__}"
+                      th:name="list" th:object="${taskIds}">
+                    <div class="col-auto">
+                        <div class="form-check"
+                             th:each="task, taskStat : ${backlog}"
+                             th:if="${task.startedAt} == null">
+                            <input class="form-check-input" type="checkbox" th:id="'backlogTask' + ${task.id}"
+                                   th:field="*{taskList[__${taskStat.index}__]}" th:value="${task.id}"/>
+                            <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
+                                   th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
+                           (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">
+                            </label>
+                        </div>
+                    </div>
+                    <input class="visually-hidden" th:name="projectId" th:value="${project.id}"/>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Fill next sprint -->
+        <div th:if="${project.status.name} == 'In progress'"
+             class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1"
+             th:id="'fillSprint' + ${nextSprint.id}"
+             aria-labelledby="fillNextSprintLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="fillNextSprintLabel">Choose tasks</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <form class="row g-3" method="post"
+                      th:action="@{/api/v1/config/sprint/multiple/__${nextSprint.id}__}"
+                      th:name="list" th:object="${taskIds}">
+                    <div class="col-auto">
+                        <div class="form-check"
+                             th:each="task, taskStat : ${backlog}"
+                             th:if="${task.startedAt} == null">
+                            <input class="form-check-input" type="checkbox" th:id="'backlogTask' + ${task.id}"
+                                   th:field="*{taskList[__${taskStat.index}__]}" th:value="${task.id}"/>
+                            <label class="form-check-label" th:for="'backlogTask' + ${task.id}"
+                                   th:text="${task.sprint} == null ? ${task.description} : ${task.description} + (${task.sprint} != null ?
+                                (${task.sprint.id} == ${currentSprint.id} ? ' (Planned on Current)' : ' (Planned on Next)') : '')">
+                            </label>
+                        </div>
+                    </div>
+                    <input class="visually-hidden" th:name="projectId" th:value="${project.id}"/>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
 
         <!-- Buttons -->
         <div class="d-lg-flex d-grid flex-lg-row justify-content-lg-center gap-2 me-lg-4 m-2">
             <div th:if="${project.status.name} != 'Finished'"
-                 class="w-lg-50" th:insert="~{_additional :: add-task-button}"></div>
-            <div th:if="${project.status.name} == 'Planned'"
-                 class="w-lg-50" th:insert="~{_additional :: start-project-button}"></div>
-            <div th:if="${project.status.name} == 'In progress'"
-                 class="w-lg-50" th:insert="~{_additional :: stop-project-button}"></div>
+                 class="w-lg-50" th:insert="~{_additional :: add-task-button}">
+            </div>
+            <button th:if="${project.status.name} == 'Planned'"
+                    class="btn btn-success w-lg-50" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#startProject"
+                    aria-controls="startProject">Start Project
+            </button>
+            <button th:if="${project.status.name} == 'In progress'"
+                    class="btn btn-warning w-lg-50" type="button" data-bs-toggle="modal" data-bs-target="#stopProject">
+                Stop Project
+            </button>
         </div>
 
 
@@ -148,21 +296,21 @@
                                class="table table-hover">
                             <thead class="mb-2">
                             <tr>
-                                <th scope="col" class="text-center">Id</th>
-                                <th scope="col" class="text-center">Task</th>
                                 <th scope="col" class="text-center">Priority</th>
-                                <th scope="col" class="text-center"></th>
+                                <th scope="col" class="text-center">Task</th>
+                                <th scope="col" class="text-center">Sprint</th>
+                                <th scope="col" class="text-center">Status</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="task : ${backlog}" class="mb-2">
-                                <td class="text-center fw-bold w-10" th:text="${task.id}"></td>
-                                <td class="text-center w-65" th:text="${task.description}"></td>
                                 <td class="text-center w-10" th:text="${task.priority}"></td>
-                                <td class="text-center w-15">
-                                    <a class="btn btn-outline-dark"
-                                       th:href="@{/api/v1/project/task/__${project.id}__/__${task.id}__}">More</a>
-                                </td>
+                                <td class="text-center w-60" th:text="${task.description}"></td>
+                                <td class="text-center w-15"
+                                    th:text="${task.sprint} != null and ${currentSprint} != null ?
+                                     (${task.sprint.id} == ${currentSprint.id} ? 'Current' : 'Next') : ''"></td>
+                                <td class="text-center w-15"
+                                    th:text="${task.startedAt} == null ? 'Planned' : 'In progress'"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -171,9 +319,12 @@
             </div>
         </div>
 
-        <div class="d-grid w-auto mx-2 mt-5 me-lg-4"
-             th:if="${project.status.name} != 'In progress'"
-             th:insert="~{_additional :: delete-project-button}"></div>
+
+        <button th:if="${project.status.name} == 'Finished'"
+                class="w-100 mx-2 mt-5 me-lg-4 btn btn-danger" type="button"
+                data-bs-toggle="modal" data-bs-target="#deleteProject">
+            Delete Project
+        </button>
     </main>
 
 </div>

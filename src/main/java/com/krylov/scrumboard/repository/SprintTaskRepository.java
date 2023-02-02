@@ -15,7 +15,7 @@ public interface SprintTaskRepository extends JpaRepository<SprintTask, Long> {
     @Query(nativeQuery = true,
             value = "SELECT st.id, st.description, st.created_at, st.started_at, st.finished_at," +
                     " st.difficulty, st.priority, st.sprint_id, st.project_id FROM sprint_task st" +
-                    " JOIN project p ON p.id = st.project_id WHERE st.started_at IS NULL" +
+                    " JOIN project p ON p.id = st.project_id WHERE st.finished_at IS NULL" +
                     " AND p.id = :projectId")
     List<SprintTask> retrieveBacklog(Long projectId);
 

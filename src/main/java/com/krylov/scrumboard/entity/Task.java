@@ -5,11 +5,8 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 
 @Entity(name = "Task")
 @Table(name = "Task")

@@ -7585,12 +7585,20 @@ textarea.form-control-lg {
   width: 25% !important;
 }
 
+.w-30 {
+  width: 30% !important;
+}
+
 .w-40 {
   width: 40% !important;
 }
 
 .w-50 {
   width: 50% !important;
+}
+
+.w-60 {
+  width: 60% !important;
 }
 
 @media (min-width: 992px) {
