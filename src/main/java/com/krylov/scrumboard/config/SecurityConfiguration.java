@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.config;
 
+import com.krylov.scrumboard.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
