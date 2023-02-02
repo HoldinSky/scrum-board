@@ -1,5 +1,6 @@
 package com.krylov.scrumboard.config;
 
+import com.krylov.scrumboard.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,11 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**", "/api/v1/landing/**", "/css/**", "/js/**", "/images/**")
+                .requestMatchers(
+                        "/api/v1/auth/**",
+                        "/api/v1/landing/**",
+                        "/css/**", "/js/**",
+                        "/images/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

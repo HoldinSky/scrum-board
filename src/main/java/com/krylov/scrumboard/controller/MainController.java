@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping(path = "/api/v1/landing")
+@RequestMapping("/api/v1/landing")
 @AllArgsConstructor
 public class MainController {
 
@@ -17,9 +17,15 @@ public class MainController {
         return modelAndView;
     }
 
-    @GetMapping(path = "/main")
+    @GetMapping("/more")
     public ModelAndView showScrumBoard(ModelAndView modelAndView) {
         modelAndView.setViewName("scrum-board-main");
+        return modelAndView;
+    }
+
+    @GetMapping("/about")
+    public ModelAndView aboutSection(ModelAndView modelAndView) {
+        modelAndView.setViewName("about-page");
         return modelAndView;
     }
 }

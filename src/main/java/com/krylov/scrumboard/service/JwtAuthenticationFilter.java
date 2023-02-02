@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.config;
+package com.krylov.scrumboard.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

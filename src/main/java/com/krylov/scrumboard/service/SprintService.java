@@ -238,6 +238,20 @@ public class SprintService implements Runnable {
                 .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
     }
 
+    public List<SprintTask> getBacklogOfSprint(Long id) {
+        return sprintTaskRepo.retrievePlannedSprintTask(id)
+                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
+    }
+
+    public List<SprintTask> getInProgressOfSprint(Long id) {
+        return sprintTaskRepo.retrieveInProgressSprintTask(id)
+                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
+    }
+
+    public List<SprintTask> getFinishedOfSprint(Long id) {
+        return sprintTaskRepo.retrieveFinishedSprintTask(id)
+                .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
+    }
     public void startTaskById(Long id) {
         var task = findTask(id);
         if (task == null) return;
