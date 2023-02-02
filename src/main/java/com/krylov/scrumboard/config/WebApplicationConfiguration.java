@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 
@@ -26,6 +27,11 @@ public class WebApplicationConfiguration {
     private final AppUserRepository appUserRepository;
 
     @Bean
+    public SpringSecurityDialect springSecurityDialect() {
+        return new SpringSecurityDialect();
+    }
+
+    @Bean
     @Description("Thymeleaf template resolver building SCRUM app")
     public ClassLoaderTemplateResolver emailTemplateResolver() {
         ClassLoaderTemplateResolver emailTemplateResolver = new ClassLoaderTemplateResolver();
@@ -34,12 +40,6 @@ public class WebApplicationConfiguration {
         emailTemplateResolver.setTemplateMode("HTML5");
         emailTemplateResolver.setOrder(1);
         return emailTemplateResolver;
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-
-        return (web) -> web.ignoring().requestMatchers("api/v1");
     }
 
     @Bean
