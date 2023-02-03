@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping("/api/v1/landing")
+@RequestMapping("/api/v1")
 @AllArgsConstructor
 public class MainController {
 
@@ -26,6 +26,18 @@ public class MainController {
     @GetMapping("/about")
     public ModelAndView aboutSection(ModelAndView modelAndView) {
         modelAndView.setViewName("about-page");
+        return modelAndView;
+    }
+
+    @GetMapping("/authenticate")
+    public ModelAndView showForm(ModelAndView modelAndView) {
+        modelAndView.setViewName("authenticate-form");
+        return modelAndView;
+    }
+
+    @GetMapping("/invalidSession")
+    public ModelAndView invalidSession(ModelAndView modelAndView) {
+        modelAndView.setViewName("invalid-session");
         return modelAndView;
     }
 }

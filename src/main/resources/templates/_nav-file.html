@@ -22,10 +22,10 @@
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item" style="width: 100px;">
-                    <a class="nav-link" th:href="@{/api/v1/landing/more}">Learn more</a>
+                    <a class="nav-link" th:href="@{/api/v1/more}">Learn more</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/api/v1/landing/about}">
+                    <a class="nav-link" th:href="@{/api/v1/about}">
                         About
                     </a>
                 </li>
@@ -37,7 +37,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <!-- TODO remade this link on "team page" -->
-                        <li><a class="dropdown-item" th:href="@{/api/v1/landing/more}">How it works</a></li>
+                        <li><a class="dropdown-item" th:href="@{/api/v1/more}">How it works</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -47,7 +47,7 @@
                 </li>
             </ul>
         </div>
-        <a class="navbar-brand text-info fw-bold me-auto" th:href="@{/api/v1/landing}"
+        <a class="navbar-brand text-info fw-bold me-auto" th:href="@{/api/v1}"
            style="text-shadow: 1px 1px #0d8ca8;">SCRUM board</a>
         <div class="ms-auto order-0">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".dual-collapse">
@@ -87,11 +87,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-lg-5">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Right</a>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/api/v1/auth/logout}" th:action="post">Logout</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a class="btn btn-primary" th:href="@{/api/v1/authenticate}">Log in</a>
                 </li>
             </ul>
         </div>

@@ -35,12 +35,11 @@
                 Try it right now and I guarantee You will notice increase in work speed.
             </p>
             <div class="d-flex gap-2">
-                <!-- TODO MAKE Sign in - Sign up buttons here -->
-                <a class="btn btn-primary w-100" type="button" th:href="@{/api/v1/landing/more}">Learn more</a>
+                <a class="btn btn-primary w-100" type="button" th:href="@{/api/v1/more}">Learn more</a>
                 <a sec:authorize="isAuthenticated()"
-                   class="btn btn-warning w-100" type="button" th:href="@{/api/v1/landing/}">Get Started</a>
+                   class="btn btn-warning w-100" type="button" th:href="@{/api/v1/task/personal}">Get Started</a>
                 <a sec:authorize="isAnonymous()"
-                   class="btn btn-warning w-100" type="button" th:href="@{/api/v1/landing/about}">What is it?</a>
+                   class="btn btn-warning w-100" type="button" th:href="@{/api/v1/authenticate}">Get Started</a>
             </div>
         </div>
         <div class="me-sm-5 mx-2 col-sm-6">

@@ -26,22 +26,30 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/api/v1/auth/**",
-                        "/api/v1/landing/**",
+                        "/api/v1", "/api/v1/more", "/api/v1/about", "/api/v1/authenticate", "/api/v1/auth/**",
                         "/css/**", "/js/**",
-                        "/images/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                        "/images/**").permitAll()
+                .anyRequest().authenticated()
+//                .formLogin()
+//                .loginPage("/api/v1/authenticate")
+//                .loginProcessingUrl("/api/v1/auth/login")
+//                .defaultSuccessUrl("/api/v1", true)
+//                .failureUrl("/api/v1/
+//                .and()login?error=true")
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .logout()
+                .logoutUrl("/api/v1/logout")
+                .deleteCookies("JSESSIONID")
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .invalidSessionUrl("/api/v1/invalidSession")
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
 
 }

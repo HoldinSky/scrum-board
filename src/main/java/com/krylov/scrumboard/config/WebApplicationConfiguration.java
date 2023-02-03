@@ -42,12 +42,6 @@ public class WebApplicationConfiguration {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> appUserRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with name '" + username + "'"));
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -64,4 +58,12 @@ public class WebApplicationConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> appUserRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with name '" + username + "'"));
+    }
+
+
 }

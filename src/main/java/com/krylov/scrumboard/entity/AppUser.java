@@ -20,7 +20,11 @@ import java.util.List;
 
 
 @Entity(name = "AppUser")
-@Table(name = "AppUser")
+@Table(name = "AppUser",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "email_unique",
+                        columnNames = "email")
+        })
 public class AppUser implements UserDetails {
 
     @Id
