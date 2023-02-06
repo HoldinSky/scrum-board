@@ -14,8 +14,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.*;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import static com.krylov.scrumboard.service.JwtService.SECRET_KEY;
 
 
 @Configuration
@@ -65,5 +70,12 @@ public class WebApplicationConfiguration {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with name '" + username + "'"));
     }
 
+    @Bean
+    RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
+        RememberMeTokenAlgorithm encodingAlgorithm = RememberMeTokenAlgorithm.SHA256;
+        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(SECRET_KEY, userDetailsService, encodingAlgorithm);
+        rememberMe.setMatchingAlgorithm(TokenBasedRememberMeServices.RememberMeTokenAlgorithm.MD5);
+        return rememberMe;
+    }
 
 }

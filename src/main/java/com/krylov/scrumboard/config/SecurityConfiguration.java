@@ -1,6 +1,6 @@
 package com.krylov.scrumboard.config;
 
-import com.krylov.scrumboard.service.JwtAuthenticationFilter;
+import com.krylov.scrumboard.bean.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -20,7 +21,7 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RememberMeServices rmServices) throws Exception {
         http
                 .csrf()
                 .disable()
@@ -37,11 +38,13 @@ public class SecurityConfiguration {
 //                .failureUrl("/api/v1/
 //                .and()login?error=true")
                 .and()
+                .rememberMe().rememberMeServices(rmServices)
+                .and()
                 .logout()
                 .logoutUrl("/api/v1/logout")
                 .deleteCookies("JSESSIONID")
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .invalidSessionUrl("/api/v1/invalidSession")
                 .and()
                 .authenticationProvider(authenticationProvider)

@@ -43,12 +43,14 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        System.out.println("DEBUG: user is not authenticated (AuthenticationService)");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
+        System.out.println("DEBUG: user is authenticated (AuthenticationService)");
         var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
 

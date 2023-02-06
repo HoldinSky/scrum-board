@@ -1,5 +1,6 @@
-package com.krylov.scrumboard.service;
+package com.krylov.scrumboard.bean;
 
+import com.krylov.scrumboard.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Service
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,8 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+        final String authHeader = request.getHeader(AUTHORIZATION);
+        final String jwtToken;
         final String appUserEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -39,22 +42,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader.substring(7);
-        appUserEmail = jwtService.extractUsername(jwt);
+        jwtToken = authHeader.substring(7);
+        appUserEmail = jwtService.extractUsername(jwtToken);
 
         // user is not authenticated yet
         if (appUserEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(appUserEmail);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
-                        null,
+                        userDetails.getPassword(),
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("DEBUG: user is now authenticated (JWTFILTER)");
             }
         }
         filterChain.doFilter(request, response);

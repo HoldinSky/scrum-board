@@ -12,12 +12,13 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "25432A462D4A614E645267556B58703272357538782F413F4428472B4B625065";
+    public static final String SECRET_KEY = "25432A462D4A614E645267556B58703272357538782F413F4428472B4B625065";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -52,10 +53,11 @@ public class JwtService {
     ) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
+                .setClaims(extraClaims)
+                .claim("authorities", userDetails.getAuthorities())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
