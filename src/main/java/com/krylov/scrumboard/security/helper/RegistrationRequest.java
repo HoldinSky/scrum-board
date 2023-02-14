@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.request;
+package com.krylov.scrumboard.security.helper;
 
 import lombok.*;
 

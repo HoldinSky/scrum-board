@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,12 +33,6 @@ public class MainController {
     @GetMapping("/authenticate")
     public ModelAndView showForm(ModelAndView modelAndView) {
         modelAndView.setViewName("authenticate-form");
-        return modelAndView;
-    }
-
-    @GetMapping("/invalidSession")
-    public ModelAndView invalidSession(ModelAndView modelAndView) {
-        modelAndView.setViewName("invalid-session");
         return modelAndView;
     }
 }

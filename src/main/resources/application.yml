@@ -12,7 +12,7 @@ spring:
     password: 0211xthrfcb2004
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -23,3 +23,6 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  security:
+    filter:
+      order: 5

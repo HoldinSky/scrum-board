@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.service;
+package com.krylov.scrumboard.security.helper;
 
 import com.krylov.scrumboard.entity.AppUser;
 import lombok.*;
@@ -9,7 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class AuthenticationResponse {
 
-    private String token;
     private AppUser user;
 
 }

@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
+import static jakarta.persistence.GenerationType.AUTO;
+
 @Data
 @NoArgsConstructor
 
@@ -12,14 +14,9 @@ import java.sql.Timestamp;
 @Table(name = "Task")
 public class Task {
 
-    @Id
-    @SequenceGenerator(
-            name = "task_sequence",
-            sequenceName = "task_sequence",
-            allocationSize = 1)
-    @GeneratedValue(
+    @Id @GeneratedValue(
             generator = "task_sequence",
-            strategy = GenerationType.SEQUENCE)
+            strategy = AUTO)
     @Column(name = "id",
             updatable = false)
     private Long id;

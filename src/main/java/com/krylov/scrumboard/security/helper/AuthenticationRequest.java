@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.request;
+package com.krylov.scrumboard.security.helper;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AuthenticationRequest {
 
-    private String email;
+    private String username;
     private String password;
 
 }

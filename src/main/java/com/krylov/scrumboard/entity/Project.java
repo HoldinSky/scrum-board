@@ -8,19 +8,25 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.GenerationType.AUTO;
+
 @Data
 @NoArgsConstructor
 
-@Table(name = "Project")
+@Table(name = "Project",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "project_name_unique",
+                        columnNames = "name"
+                )
+        }
+)
 @Entity(name = "Project")
 public class Project {
 
-    @Id
-    @SequenceGenerator(name = "project_sequence",
-            sequenceName = "project_sequence",
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "project_sequence")
+    @Id @GeneratedValue(strategy = AUTO)
     private Long id;
 
     @Column(name = "name",
@@ -33,16 +39,11 @@ public class Project {
             nullable = false)
     private Status status;
 
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
+    @OneToMany(fetch = EAGER,
+            cascade = ALL,
             mappedBy = "project")
     @JsonBackReference
     private List<Sprint> sprintList;
-
-    public void addSprint(Sprint sprint) {
-        if (sprintList == null) sprintList = new ArrayList<>();
-        sprintList.add(sprint);
-    }
 
     public Project(String name) {
         this.name = name;
