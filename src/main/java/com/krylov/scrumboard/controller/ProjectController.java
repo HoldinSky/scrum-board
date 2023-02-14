@@ -1,17 +1,20 @@
 package com.krylov.scrumboard.controller;
 
 import com.krylov.scrumboard.entity.Project;
-import com.krylov.scrumboard.helper.FillingSprintDTO;
-import com.krylov.scrumboard.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.enums.Status;
+import com.krylov.scrumboard.entity.Sprint;
+import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.request.TaskRequest;
+import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 
 @Service
@@ -23,74 +26,71 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping(path = "/{projectId}")
-    public ModelAndView showProjectPage(@PathVariable(name = "projectId") Long id,
-                                        ModelAndView modelAndView) {
-        modelAndView.setViewName("project-details");
+    public ResponseEntity<ProjectResponsePage> showProjectPage(@PathVariable(name = "projectId") Long projectId,
+                                                               ModelAndView modelAndView) {
+//        modelAndView.setViewName("project-details");
+//        if (projectService.retrieveProjectById(projectId) == null) return new ModelAndView("redirect:/api/v1/config/project");
 
-        Project project = projectService.retrieveProjectById(id);
-        if (project == null) return new ModelAndView("redirect:/api/v1/config/project");
+        ProjectResponsePage responsePage = new ProjectResponsePage(
+                LocalDate.now(),
+                projectService.getProjectById(projectId),
+                projectService.getBacklog(projectId),
+                projectService.getCurrentSprintById(projectId),
+                projectService.getNextSprintById(projectId),
+                projectService.getAllSprintsById(projectId)
+                );
 
-        var backlog = projectService.retrieveBacklog(id);
-        modelAndView.addObject("project", project);
-        modelAndView.addObject("backlog", backlog);
-
-        if (project.getStatus().equals(Status.PLANNED)) {
-            // attributes for starting 'planned' project
-            modelAndView.addObject("today", MyDateTimeFormatter.formatToHTMLDate(LocalDate.now()));
-            modelAndView.addObject("minDate",
-                    MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().minusDays(6)));
-            modelAndView.addObject("maxDate",
-                    MyDateTimeFormatter.formatToHTMLDate(LocalDate.now().plusDays(30)));
-
-        } else if (project.getStatus().equals(Status.IN_PROGRESS)) {
-            // attributes for filling sprints of 'in progress' project
-            modelAndView.addObject("currentSprint", projectService.retrieveCurrentSprintById(id));
-            modelAndView.addObject("nextSprint", projectService.retrieveNextSprintById(id));
-
-            FillingSprintDTO dto = new FillingSprintDTO(backlog.size());
-            modelAndView.addObject("taskIds", dto);
-
-        } else {
-            // representation of all passed sprints of 'finished' project
-            modelAndView.addObject("allSprints", projectService.retrieveAllSprintsById(id));
-        }
-
-        return modelAndView;
+        return ResponseEntity.ok().body(responsePage);
     }
 
     @PostMapping(path = "/{projectId}")
-    public ModelAndView createTaskToProjectBacklog(@PathVariable(name = "projectId") Long id,
-                                                   @ModelAttribute TaskRequest request,
+    public ResponseEntity<Project> createTaskToProjectBacklog(@PathVariable(name = "projectId") Long id,
+                                                   @RequestBody TaskRequest request,
                                                    ModelAndView modelAndView) {
-        if (request.getDescription().length() >= 15)
-            projectService.saveTask(request, id);
+//        modelAndView.setViewName("redirect:/api/v1/project/" + id);
 
-        modelAndView.setViewName("redirect:/api/v1/project/" + id);
-        return modelAndView;
+        if (request.getDescription().length() >= 15) {
+            projectService.saveTask(request, id);
+        }
+
+        Project project = projectService.getProjectById(id);
+        return ResponseEntity.ok().body(project);
     }
 
     @DeleteMapping(path = "/{projectId}/task/{id}")
-    public ModelAndView deleteTask(@PathVariable(name = "id") Long id,
+    public ResponseEntity<Project> deleteTask(@PathVariable(name = "id") Long id,
                                    @PathVariable(name = "projectId") Long projectId,
                                    ModelAndView modelAndView) {
+//        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
 
         projectService.deleteTask(id);
 
-        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
-        return modelAndView;
+        Project project = projectService.getProjectById(projectId);
+        return ResponseEntity.ok().body(project);
     }
 
     @PutMapping(path = "/{projectId}/task/{id}")
-    public ModelAndView updateTask(@PathVariable(name = "id") Long taskId,
+    public ResponseEntity<Project> updateTask(@PathVariable(name = "id") Long taskId,
                                        @PathVariable(name = "projectId") Long projectId,
-                                       @RequestParam(name = "dif", required = false) Byte difficulty,
-                                       @ModelAttribute("request") String request,
+                                       @RequestBody UpdateTaskRequest request,
                                        ModelAndView modelAndView) {
-        projectService.updateTask(taskId, request, difficulty);
-
         modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
-        return modelAndView;
+
+        projectService.updateTask(taskId, request);
+
+        return ResponseEntity.ok().body(projectService.getProjectById(projectId));
     }
 
+
+
+    @Data @AllArgsConstructor
+    private static class ProjectResponsePage {
+        private LocalDate today;
+        private Project project;
+        private Collection<SprintTask> backlog;
+        private Sprint current;
+        private Sprint next;
+        private Collection<Sprint> allSprints;
+    }
 
 }

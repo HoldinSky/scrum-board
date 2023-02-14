@@ -10,7 +10,9 @@ import com.krylov.scrumboard.repository.ProjectRepository;
 import com.krylov.scrumboard.repository.SprintRepository;
 import com.krylov.scrumboard.repository.SprintTaskRepository;
 import com.krylov.scrumboard.request.SprintRequest;
+import com.krylov.scrumboard.request.UpdateTaskRequest;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
+@Slf4j
 public class SprintService implements Runnable {
 
     private final LocalDateTimeConverter converter;
@@ -197,40 +200,29 @@ public class SprintService implements Runnable {
         }
     }
 
-    public void addMultipleTasksToSprintById(List<Long> taskIdList, Long sprintId) {
-        var list = sprintTaskRepo.findAllById(taskIdList);
+    public Sprint addMultipleTasksToSprintById(Long[] taskIdList, Long sprintId) {
+        var list = sprintTaskRepo.findAllById(Arrays.stream(taskIdList).toList());
 
         Optional<Sprint> sprintOpt = sprintRepo.findById(sprintId);
         if (sprintOpt.isEmpty()) {
-            System.out.println("DEBUG: Could not find sprint by id '" + sprintId + "'");
-            return;
+            log.error("Could not find sprint by id '" + sprintId + "'");
+            return null;
         }
         Sprint sprint = sprintOpt.get();
         list.forEach(task -> task.setSprint(sprint));
 
         sprintTaskRepo.saveAll(list);
+        return sprint;
     }
 
-    public TaskToShow getSprintTask(Long id) {
-        var task = sprintTaskRepo.findById(id).orElse(null);
-        if (task == null) return null;
-
-        TaskToShow toShow = new TaskToShow(
-                task.getId(),
-                task.getDescription(),
-                MyDateTimeFormatter.formatDateTime(task.getCreatedAt().toLocalDateTime()),
-                task.getPriority());
-
-        toShow.setDifficulty(task.getDifficulty());
-        toShow.setProject(task.getProject());
-        toShow.setSprint(task.getSprint());
-
-        if (task.getStartedAt() != null)
-            toShow.setStartedAt(MyDateTimeFormatter.formatDateTime(task.getStartedAt().toLocalDateTime()));
-        if (task.getFinishedAt() != null)
-            toShow.setFinishedAt(MyDateTimeFormatter.formatDateTime(task.getFinishedAt().toLocalDateTime()));
-
-        return toShow;
+    public SprintTask getSprintTask(Long id) {
+        try {
+            return sprintTaskRepo.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Task is not found in database with id: " + id));
+        } catch (RuntimeException exception) {
+            log.error(exception.getMessage());
+            return null;
+        }
     }
 
     public List<SprintTask> getTasksOfSprint(Long id) {
@@ -252,47 +244,81 @@ public class SprintService implements Runnable {
         return sprintTaskRepo.retrieveFinishedSprintTask(id)
                 .stream().sorted(Comparator.comparing(SprintTask::getPriority)).toList();
     }
-    public void startTaskById(Long id) {
-        var task = findTask(id);
-        if (task == null) return;
 
-        if (task.getDifficulty() == null) return;
+    public SprintTaskOrError updateTaskById(Long id, UpdateTaskRequest request) {
+        try {
+            // retrieve task from DB
+            var task = sprintTaskRepo.findById(id).orElseThrow(() -> new RuntimeException("Task is not found in database with id: " + id));
 
+            var dateTime = LocalDateTime.now();
+
+            String action = request.getAction();
+            Byte difficulty = request.getDifficulty();
+
+            // based on request complete actions
+            switch (action) {
+                case "start" -> {
+                    if (difficulty == null && task.getDifficulty() == null) {
+                        log.error("Task must have its difficulty");
+                        return new SprintTaskOrError(null, "Task must have its difficulty");
+                    }
+                    if (task.getDifficulty() == null) setDifficultyToTask(task, difficulty);
+                    startTask(task);
+                }
+                case "finish" -> {
+                    if (task.getStartedAt() == null) {
+                        log.error("Task was not started yet");
+                        return new SprintTaskOrError(null, "Task was not started yet");
+                    }
+                    task.setFinishedAt(converter.convertToDatabaseColumn(dateTime));
+                }
+                case "Set difficulty" -> {
+                    if (difficulty == 0) {
+                        log.error("Task must have its difficulty");
+                        return new SprintTaskOrError(null, "Task must have its difficulty");
+                    }
+                    finishTask(task);
+                }
+                default -> {
+                    log.error("Cannot recognize update request \"" + request + "\"");
+                    return new SprintTaskOrError(null, "Cannot recognize update request \"" + request + "\"");
+                }
+            }
+
+//             update DB instance
+            return new SprintTaskOrError(task, null);
+//            backlog.save(task);
+        } catch (RuntimeException exception) {
+            log.error(exception.getMessage());
+            return new SprintTaskOrError(null, exception.getMessage());
+        }
+    }
+
+
+    private void startTask(SprintTask task) {
         task.setStartedAt(converter.convertToDatabaseColumn(LocalDateTime.now()));
-        sprintTaskRepo.save(task);
     }
 
-    public void setDifficultyToTask(Long id, Byte difficulty) {
-        var task = findTask(id);
-        if (task == null) return;
-
+    private void setDifficultyToTask(SprintTask task, Byte difficulty) {
         task.setDifficulty(difficulty);
-        sprintTaskRepo.save(task);
     }
 
-    public void finishTask(Long id) {
-        var task = findTask(id);
-        if (task == null) return;
-
+    private void finishTask(SprintTask task) {
         task.setFinishedAt(converter.convertToDatabaseColumn(LocalDateTime.now()));
-        sprintTaskRepo.save(task);
     }
 
-    public void deleteTask(Long id) {
+    public SprintTask deleteTask(Long id) {
+        SprintTask task = sprintTaskRepo.findById(id).orElse(null);
         sprintTaskRepo.deleteById(id);
+        return task;
     }
 
 
-    public List<SprintToShow> getAllSprintsOfProject(Long id) {
+    public List<Sprint> getAllSprintsOfProject(Long id) {
         Optional<Project> projectOptional = projectRepo.findById(id);
         if (projectOptional.isEmpty()) return null;
 
-        return sprintRepo.findByProject(projectOptional.get())
-                .stream().map(s -> new SprintToShow(
-                        s.getId(),
-                        s.getStartOfSprint().toLocalDateTime().toLocalDate().toString(),
-                        s.getEndOfSprint().toLocalDateTime().toLocalDate().toString(),
-                        s.getProject())).toList();
+        return sprintRepo.findByProject(projectOptional.get());
     }
 
     public Sprint getSprintOfProject(Long id, String state) {
@@ -300,50 +326,14 @@ public class SprintService implements Runnable {
         if (projectOptional.isEmpty()) return null;
 
         return switch (state) {
-            case "current" ->
-                this.current.stream()
-                        .filter(sprint -> sprint.getProject().getId().equals(id))
-                        .sorted(sprintComparator).iterator().next();
-            case "next" ->
-                this.next.stream()
-                        .filter(sprint -> sprint.getProject().getId().equals(id))
-                        .sorted(sprintComparator).iterator().next();
+            case "current" -> this.current.stream()
+                    .filter(sprint -> sprint.getProject().getId().equals(id))
+                    .sorted(sprintComparator).iterator().next();
+            case "next" -> this.next.stream()
+                    .filter(sprint -> sprint.getProject().getId().equals(id))
+                    .sorted(sprintComparator).iterator().next();
             default -> null;
         };
-    }
-
-    public SprintToShow getSprintToShowOfProject(Long id, String state) {
-
-        Optional<Project> projectOptional = projectRepo.findById(id);
-        if (projectOptional.isEmpty()) return null;
-
-        SprintToShow toShow;
-        switch (state) {
-            case "current" -> {
-                Sprint current = this.current.stream()
-                        .filter(sprint -> sprint.getProject().getId().equals(id))
-                        .sorted(sprintComparator).iterator().next();
-
-                toShow = new SprintToShow(
-                        current.getId(),
-                        MyDateTimeFormatter.formatDate(current.getStartOfSprint().toLocalDateTime()),
-                        MyDateTimeFormatter.formatDate(current.getEndOfSprint().toLocalDateTime()),
-                        current.getProject());
-            }
-            case "next" -> {
-                Sprint next = this.next.stream()
-                        .filter(sprint -> sprint.getProject().getId().equals(id))
-                        .sorted(sprintComparator).iterator().next();
-
-                toShow = new SprintToShow(next.getId(),
-                        MyDateTimeFormatter.formatDate(next.getStartOfSprint().toLocalDateTime()),
-                        MyDateTimeFormatter.formatDate(next.getEndOfSprint().toLocalDateTime()),
-                        next.getProject());
-            }
-            default -> toShow = null;
-        }
-
-        return toShow;
     }
 
     public void endProject(Project project) {

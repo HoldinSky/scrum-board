@@ -10,6 +10,7 @@ import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.AUTO;
 
 @Data
@@ -39,7 +40,7 @@ public class Project {
             nullable = false)
     private Status status;
 
-    @OneToMany(fetch = EAGER,
+    @OneToMany(fetch = LAZY,
             cascade = ALL,
             mappedBy = "project")
     @JsonBackReference
