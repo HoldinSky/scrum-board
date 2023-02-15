@@ -10,7 +10,6 @@ import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
 
@@ -26,7 +25,7 @@ public class PersonalTaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<ScrumBoard> showScrumBoard(ModelAndView modelAndView) {
+    public ResponseEntity<ScrumBoard> showScrumBoard() {
 //        modelAndView.setViewName("tasks");
 
         ScrumBoard board = new ScrumBoard(
@@ -39,8 +38,7 @@ public class PersonalTaskController {
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<Task> showTaskDetails(@PathVariable(name = "id") Long id,
-                                                ModelAndView modelAndView) {
+    public ResponseEntity<Task> showTaskDetails(@PathVariable(name = "id") Long id) {
 //        modelAndView.setViewName("task-details");
 
         Task task = taskService.getTaskById(id);
@@ -48,8 +46,7 @@ public class PersonalTaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody TaskRequest request,
-                                           ModelAndView modelAndView) {
+    public ResponseEntity<Task> createTask(@RequestBody TaskRequest request) {
 //        modelAndView.setViewName("redirect:/api/v1/task/personal");
 //        modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
 //        modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
@@ -67,8 +64,7 @@ public class PersonalTaskController {
 
     @PutMapping(path = "{id}")
     public ResponseEntity<Task> updateTask(@PathVariable(value = "id") Long id,
-                                           @RequestBody UpdateTaskRequest request,
-                                           ModelAndView modelAndView) {
+                                           @RequestBody UpdateTaskRequest request) {
 //        modelAndView.setViewName("redirect:/api/v1/task/personal/{id}");
 //        modelAndView.addObject("backlogTasks", taskService.retrieveAllBacklog());
 //        modelAndView.addObject("inProgressTasks", taskService.retrieveAllInProgress());
@@ -86,8 +82,7 @@ public class PersonalTaskController {
     }
 
     @DeleteMapping(path = "{id}")
-    public ResponseEntity<Task> deleteTask(@PathVariable(value = "id") Long id,
-                                   ModelAndView modelAndView) {
+    public ResponseEntity<Task> deleteTask(@PathVariable(value = "id") Long id) {
 //        modelAndView.setViewName("redirect:/api/v1/task/personal");
 //        modelAndView.addObject("backlogTasks", taskService.getAllBacklog());
 //        modelAndView.addObject("inProgressTasks", taskService.getAllInProgress());
@@ -97,12 +92,12 @@ public class PersonalTaskController {
         Task task = taskService.deleteTask(id);
         return ResponseEntity.ok().body(task);
     }
+}
 
-    @Data
-    @AllArgsConstructor
-    private static class ScrumBoard {
-        private Collection<Task> backlog;
-        private Collection<Task> inProgress;
-        private Collection<Task> finished;
-    }
+@Data
+@AllArgsConstructor
+class ScrumBoard {
+    private Collection<Task> backlog;
+    private Collection<Task> inProgress;
+    private Collection<Task> finished;
 }

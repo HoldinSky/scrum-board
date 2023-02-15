@@ -52,4 +52,10 @@ public class AppUser {
             cascade = {PERSIST, REFRESH, DETACH, MERGE})
     private Collection<Role> roles = new ArrayList<>();
 
+    public AppUser(String firstname, String lastname, String email, String password) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+    }
 }

@@ -2,14 +2,15 @@ package com.krylov.scrumboard.service;
 
 import com.krylov.scrumboard.entity.AppUser;
 import com.krylov.scrumboard.entity.Role;
+import com.krylov.scrumboard.security.helper.RegistrationRequest;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface UserService {
-    AppUser saveUser(AppUser user);
+    AppUser saveUser(RegistrationRequest request);
     Role saveRole(Role role);
-    void addRoleToUser(String username, String roleName);
+    AppUser addRoleToUser(String username, String roleName);
     AppUser getUser(String username);
     AppUser deleteUser(String username);
-    Collection<AppUser> getUsers();
+    List<AppUser> getUsers();
 }

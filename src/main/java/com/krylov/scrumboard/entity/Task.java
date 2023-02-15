@@ -14,9 +14,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @Table(name = "Task")
 public class Task {
 
-    @Id @GeneratedValue(
-            generator = "task_sequence",
-            strategy = AUTO)
+    @Id @GeneratedValue(strategy = AUTO)
     @Column(name = "id",
             updatable = false)
     private Long id;

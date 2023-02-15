@@ -1,6 +1,7 @@
 package com.krylov.scrumboard.security;
 
 import com.krylov.scrumboard.repository.AppUserRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
 
 import static java.lang.String.format;
@@ -25,73 +28,72 @@ import static java.lang.String.format;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
     private final AppUserRepository appUserRepository;
 
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1", "/api/v1/about", "/api/v1/authenticate", "/api/v1/auth/**",
-                        "/css/**", "/js/**",
-                        "/images/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .headers(header -> header.frameOptions().sameOrigin())
-                .authenticationProvider(authenticationProvider())
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .cors(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/v1", "/api/v1/about", "/api/v1/authenticate", "/api/v1/auth/**",
+//                        "/css/**", "/js/**",
+//                        "/images/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .authenticationProvider(authenticationProvider())
+//
+//                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .formLogin(login -> login
+//                                .loginPage("/api/v1/authenticate")
+//                                .permitAll()
+//                                .defaultSuccessUrl("/api/v1", true)
+//                                .failureUrl("/api/v1/authenticate?error=true")
+//                )
+//                .logout(logout -> logout
+//                        .logoutUrl("/api/v1/logout")
+//                        .deleteCookies("JSESSIONID")
+//                )
+//        ;
+//        return http.build();
+//    }
 
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(login -> login
-                                .loginPage("/api/v1/authenticate")
-                                .permitAll()
-                                .defaultSuccessUrl("/api/v1", true)
-                                .failureUrl("/api/v1/authenticate?error=true")
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/v1/logout")
-                        .deleteCookies("JSESSIONID")
-                )
-        ;
 
-        return http.build();
-    }
+//    @Bean
+//    public SpringSecurityDialect springSecurityDialect() {
+//        return new SpringSecurityDialect();
+//    }
 
-    @Bean
-    public SpringSecurityDialect springSecurityDialect() {
-        return new SpringSecurityDialect();
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> appUserRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                                format("User: %s, not found", username)
-                        )
-                );
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService());
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
+//
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+//        return config.getAuthenticationManager();
+//    }
+//
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        return username -> appUserRepository.findByUsername(username)
+//                .orElseThrow(() -> new UsernameNotFoundException(
+//                                format("User: %s, not found", username)
+//                        )
+//                );
+//    }
 
 //    @Bean
 //    RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {

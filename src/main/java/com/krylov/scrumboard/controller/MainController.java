@@ -1,7 +1,5 @@
 package com.krylov.scrumboard.controller;
 
-import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -9,7 +7,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Service
 @RestController
 @RequestMapping("/api/v1")
-@AllArgsConstructor
 public class MainController {
 
     @GetMapping

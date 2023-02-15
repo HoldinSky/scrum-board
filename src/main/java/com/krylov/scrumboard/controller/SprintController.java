@@ -5,7 +5,6 @@ import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.helper.SprintTaskOrError;
-import com.krylov.scrumboard.helper.TaskOrError;
 import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import com.krylov.scrumboard.service.SprintService;
@@ -14,7 +13,6 @@ import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -30,11 +28,9 @@ public class SprintController {
     private final SprintService sprintService;
     private final ProjectService projectService;
 
-    private final LocalDateTimeConverter converter;
 
     @GetMapping(path = "/{taskId}")
-    public ResponseEntity<SprintTaskDetails> showSprintTask(@PathVariable(name = "taskId") Long id,
-                                                            ModelAndView modelAndView) {
+    public ResponseEntity<SprintTaskDetails> showSprintTask(@PathVariable(name = "taskId") Long id) {
 //        modelAndView.setViewName("sprint-task-details");
 
         var task = sprintService.getSprintTask(id);
@@ -50,8 +46,7 @@ public class SprintController {
 
 
     @GetMapping(path = "/upcoming/{projectId}")
-    public ResponseEntity<ProjectPage> showProjectSprints(@PathVariable(name = "projectId") Long id,
-                                                          ModelAndView modelAndView) {
+    public ResponseEntity<ProjectPage> showProjectSprints(@PathVariable(name = "projectId") Long id) {
 //        modelAndView.setViewName("sprint-main");
 
         var current = sprintService.getSprintOfProject(id, "current");
@@ -71,8 +66,7 @@ public class SprintController {
 
     @PutMapping(path = "/{taskId}")
     public ResponseEntity<SprintTask> updateTask(@PathVariable(name = "taskId") Long id,
-                                                 @RequestBody UpdateTaskRequest request,
-                                                 ModelAndView modelAndView) {
+                                                 @RequestBody UpdateTaskRequest request) {
 //        Project project = sprintService.getSprintTask(id).getSprint().getProject();
 //        modelAndView.setViewName("redirect:/api/v1/sprint/upcoming/" + project.getId());
 
@@ -85,9 +79,7 @@ public class SprintController {
     }
 
     @DeleteMapping(path = "/{taskId}")
-    public ResponseEntity<SprintTask> deleteTask(@PathVariable(name = "taskId") Long id,
-                                                 @RequestBody Long projectId,
-                                                 ModelAndView modelAndView) {
+    public ResponseEntity<SprintTask> deleteTask(@PathVariable(name = "taskId") Long id) {
 //        modelAndView.setViewName("redirect:/api/v1/sprint/upcoming/" + projectId);
 
         SprintTask task = sprintService.deleteTask(id);
@@ -95,23 +87,24 @@ public class SprintController {
         return ResponseEntity.ok().body(task);
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class SprintTaskDetails {
-        private SprintTask task;
-        private Sprint sprint;
-    }
+}
 
-    @Data
-    @AllArgsConstructor
-    private static class ProjectPage {
-        private Project project;
-        private Sprint currentSprint;
-        private Sprint nextSprint;
-        private List<SprintTask> currentBacklog;
-        private List<SprintTask> currentInProgress;
-        private List<SprintTask> currentFinished;
-        private List<SprintTask> nextBacklog;
-    }
+@Data
+@AllArgsConstructor
+class SprintTaskDetails {
+    private SprintTask task;
+    private Sprint sprint;
+}
 
+@Data
+@AllArgsConstructor
+class ProjectPage {
+
+    private Project project;
+    private Sprint currentSprint;
+    private Sprint nextSprint;
+    private List<SprintTask> currentBacklog;
+    private List<SprintTask> currentInProgress;
+    private List<SprintTask> currentFinished;
+    private List<SprintTask> nextBacklog;
 }

@@ -11,7 +11,6 @@ import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -26,8 +25,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping(path = "/{projectId}")
-    public ResponseEntity<ProjectResponsePage> showProjectPage(@PathVariable(name = "projectId") Long projectId,
-                                                               ModelAndView modelAndView) {
+    public ResponseEntity<ProjectResponsePage> showProjectPage(@PathVariable(name = "projectId") Long projectId) {
 //        modelAndView.setViewName("project-details");
 //        if (projectService.retrieveProjectById(projectId) == null) return new ModelAndView("redirect:/api/v1/config/project");
 
@@ -45,8 +43,7 @@ public class ProjectController {
 
     @PostMapping(path = "/{projectId}")
     public ResponseEntity<Project> createTaskToProjectBacklog(@PathVariable(name = "projectId") Long id,
-                                                   @RequestBody TaskRequest request,
-                                                   ModelAndView modelAndView) {
+                                                   @RequestBody TaskRequest request) {
 //        modelAndView.setViewName("redirect:/api/v1/project/" + id);
 
         if (request.getDescription().length() >= 15) {
@@ -59,8 +56,7 @@ public class ProjectController {
 
     @DeleteMapping(path = "/{projectId}/task/{id}")
     public ResponseEntity<Project> deleteTask(@PathVariable(name = "id") Long id,
-                                   @PathVariable(name = "projectId") Long projectId,
-                                   ModelAndView modelAndView) {
+                                   @PathVariable(name = "projectId") Long projectId) {
 //        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
 
         projectService.deleteTask(id);
@@ -72,25 +68,21 @@ public class ProjectController {
     @PutMapping(path = "/{projectId}/task/{id}")
     public ResponseEntity<Project> updateTask(@PathVariable(name = "id") Long taskId,
                                        @PathVariable(name = "projectId") Long projectId,
-                                       @RequestBody UpdateTaskRequest request,
-                                       ModelAndView modelAndView) {
-        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
+                                       @RequestBody UpdateTaskRequest request) {
+//        modelAndView.setViewName("redirect:/api/v1/project/" + projectId);
 
         projectService.updateTask(taskId, request);
 
         return ResponseEntity.ok().body(projectService.getProjectById(projectId));
     }
+}
 
-
-
-    @Data @AllArgsConstructor
-    private static class ProjectResponsePage {
-        private LocalDate today;
-        private Project project;
-        private Collection<SprintTask> backlog;
-        private Sprint current;
-        private Sprint next;
-        private Collection<Sprint> allSprints;
-    }
-
+@Data @AllArgsConstructor
+class ProjectResponsePage {
+    private LocalDate today;
+    private Project project;
+    private Collection<SprintTask> backlog;
+    private Sprint current;
+    private Sprint next;
+    private Collection<Sprint> allSprints;
 }
