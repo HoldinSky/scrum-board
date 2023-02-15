@@ -1,14 +1,12 @@
 package com.krylov.scrumboard.controller;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping("/api/v1/landing")
-@AllArgsConstructor
+@RequestMapping("/api/v1")
 public class MainController {
 
     @GetMapping
@@ -26,6 +24,12 @@ public class MainController {
     @GetMapping("/about")
     public ModelAndView aboutSection(ModelAndView modelAndView) {
         modelAndView.setViewName("about-page");
+        return modelAndView;
+    }
+
+    @GetMapping("/authenticate")
+    public ModelAndView showForm(ModelAndView modelAndView) {
+        modelAndView.setViewName("authenticate-form");
         return modelAndView;
     }
 }

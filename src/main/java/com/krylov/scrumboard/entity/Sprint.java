@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.GenerationType.AUTO;
+
 
 @Data
 @NoArgsConstructor
@@ -21,11 +24,7 @@ import java.util.List;
 public class Sprint {
 
     @Id
-    @SequenceGenerator(name = "sprint_sequence",
-            sequenceName = "sprint_sequence",
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "sprint_sequence")
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id",
             updatable = false)
     private Long id;
@@ -45,7 +44,7 @@ public class Sprint {
             nullable = false)
     private Timestamp endOfSprint;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
     @JoinColumn(name = "project_id",
             foreignKey = @ForeignKey(name = "project_id_fkey"))
     @JsonManagedReference
@@ -65,8 +64,4 @@ public class Sprint {
         this.duration = duration;
     }
 
-    public void addSprintTask(SprintTask task) {
-        if (taskList == null) taskList = new ArrayList<>();
-        taskList.add(task);
-    }
 }

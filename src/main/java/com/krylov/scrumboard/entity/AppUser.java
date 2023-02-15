@@ -1,34 +1,33 @@
 package com.krylov.scrumboard.entity;
 
-import com.krylov.scrumboard.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.CascadeType.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
-
 @Entity(name = "AppUser")
-@Table(name = "AppUser")
-public class AppUser implements UserDetails {
+@Table(name = "AppUser",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "user_email_unique",
+                        columnNames = "email")
+        }
+)
+public class AppUser {
 
     @Id
-    @SequenceGenerator(name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "first_name",
@@ -49,41 +48,14 @@ public class AppUser implements UserDetails {
             nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(fetch = EAGER,
+            cascade = {PERSIST, REFRESH, DETACH, MERGE})
+    private Collection<Role> roles = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public AppUser(String firstname, String lastname, String email, String password) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
     }
 }

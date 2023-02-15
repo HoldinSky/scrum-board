@@ -71,14 +71,16 @@
     }
 }
 
-.clickable-row{
-    cursor: pointer;
+.icon-text {
+    display: none;
 }
 
-.a.blue-link:hover {
-    color: #0181ad;
-}
+@media (max-width: 992px) {
+    .icon-text {
+        display: inline;
+    }
 
-.a.yellow-link:hover {
-    color: #c09a03;
+    .icon-text:hover {
+        color: blue !important;
+    }
 }

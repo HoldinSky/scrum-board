@@ -2,13 +2,14 @@ package com.krylov.scrumboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.AUTO;
+import static jakarta.persistence.CascadeType.*;
 
 @Data
 @NoArgsConstructor
@@ -19,21 +20,13 @@ import java.util.List;
 @Table(name = "SprintTask")
 public class SprintTask {
 
-    @Id
-    @SequenceGenerator(
-            name = "sprint_task_sequence",
-            sequenceName = "sprint_task_sequence",
-            allocationSize = 1)
-    @GeneratedValue(
-            generator = "sprint_task_sequence",
-            strategy = GenerationType.SEQUENCE)
+    @Id @GeneratedValue(strategy = AUTO)
     @Column(name = "id",
             updatable = false)
     private Long id;
 
     @Column(name = "description",
-            nullable = false,
-            length = 255)
+            nullable = false)
     private String description;
 
     @Column(name = "created_at",
@@ -54,21 +47,16 @@ public class SprintTask {
             nullable = false)
     private Byte priority;
 
-    @OneToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE},
-            mappedBy = "task")
-    @JsonManagedReference
-    private List<Worker> workerList;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH},
-            fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {PERSIST, REFRESH, MERGE, DETACH},
+            fetch = LAZY)
     @JoinColumn(name = "sprint_id",
             foreignKey = @ForeignKey(name = "sprint_id_fkey"))
     @JsonBackReference
     private Sprint sprint;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH})
+    @ManyToOne(fetch = LAZY,
+            cascade = {REFRESH, MERGE, PERSIST, DETACH})
     @JoinColumn(name = "project_id",
             foreignKey = @ForeignKey(name = "project_id_fkey"))
     private Project project;
@@ -83,12 +71,4 @@ public class SprintTask {
         this.project = project;
     }
 
-    public void addWorker(Worker worker) {
-        if (workerList == null) workerList = new ArrayList<>();
-        workerList.add(worker);
-    }
-
-    public void removeWorker(Worker worker) {
-        if (workerList != null) workerList.remove(worker);
-    }
 }

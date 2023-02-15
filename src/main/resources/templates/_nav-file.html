@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
           rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
           crossorigin="anonymous">
-    <link rel="stylesheet" th:href="@{/css/myCss.css}">
+    <link rel="stylesheet" href="/css/myCss.css">
 </head>
 <body>
 
@@ -22,10 +22,10 @@
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item" style="width: 100px;">
-                    <a class="nav-link" th:href="@{/api/v1/landing/more}">Learn more</a>
+                    <a class="nav-link" th:href="@{/api/v1/more}">Learn more</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/api/v1/landing/about}">
+                    <a class="nav-link" th:href="@{/api/v1/about}">
                         About
                     </a>
                 </li>
@@ -33,11 +33,11 @@
                     sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        Secondary Menu
+                        Menu
                     </a>
                     <ul class="dropdown-menu">
                         <!-- TODO remade this link on "team page" -->
-                        <li><a class="dropdown-item" th:href="@{/api/v1/landing/more}">How it works</a></li>
+                        <li><a class="dropdown-item" th:href="@{/api/v1/more}">How it works</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -47,7 +47,7 @@
                 </li>
             </ul>
         </div>
-        <a class="navbar-brand text-info fw-bold me-auto" th:href="@{/api/v1/landing}"
+        <a class="navbar-brand text-info fw-bold me-auto" th:href="@{/api/v1}"
            style="text-shadow: 1px 1px #0d8ca8;">SCRUM board</a>
         <div class="ms-auto order-0">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".dual-collapse">
@@ -56,33 +56,42 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="mx-1">
-                    <a href="https://www.linkedin.com/in/nazar-krylov-1ba795236/">
-                        <img th:src="@{/images/linkedin.svg}" th:alt="'LinkedIn svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://www.linkedin.com/in/nazar-krylov-1ba795236/">
+                        <img class="pb-1" src="/images/linkedin.svg" alt="LinkedIn svg"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">LinkedIn</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="https://t.me/HoldingSky">
-                        <img th:src="@{/images/telegram.svg}" th:alt="'Telegram svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://t.me/HoldingSky">
+                        <img class="pb-1" src="/images/telegram.svg" alt="Telegram svg"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">Telegram</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="https://github.com/HoldinSky/scrum-board">
-                        <img th:src="@{/images/github.svg}" th:alt="'Github svg'"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="https://github.com/HoldinSky/scrum-board">
+                        <img class="pb-1" src="/images/github.svg" alt="Github svg"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">GitHub</p>
                     </a>
                 </li>
-                <li class="mx-1">
-                    <a href="mailto:nazar.luv2code@gmail.com">
-                        <img th:src="@{/images/envelope.svg}" th:alt="'Mailto svg'" title="nazar.luv2code@gmail.com"/>
+                <li class="me-4">
+                    <a class="text-decoration-none"
+                       href="mailto:nazar.luv2code@gmail.com">
+                        <img class="pb-1" src="/images/envelope.svg"
+                             alt="Mailto svg" title="nazar.luv2code@gmail.com"/>
+                        <p class="ms-2 pt-1 icon-text text-dark">nazar.luv2code@gmail.com</p>
                     </a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-lg-5">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Right</a>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/api/v1/auth/logout}" th:action="post">Logout</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a class="btn btn-primary" th:href="@{/api/v1/authenticate}">Log in</a>
                 </li>
             </ul>
         </div>
