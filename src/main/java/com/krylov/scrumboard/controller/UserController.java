@@ -22,7 +22,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<AppUser>> getUsers() {
-        return ResponseEntity.ok().body(userService.getUsers());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users").toUriString());
+        return ResponseEntity.created(uri).body(userService.getUsers());
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<AppUser> getUser(@PathVariable(name = "username")String username) {
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users").toUriString());
+        return ResponseEntity.created(uri).body(userService.getUser(username));
     }
 
     @PostMapping

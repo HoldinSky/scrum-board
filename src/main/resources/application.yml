@@ -19,3 +19,8 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+secret:
+  key:
+    for:
+      jwt: my-secret-and-absolutely-unbreakable-key-to-generate-jwt-yes-it-is-that-long
