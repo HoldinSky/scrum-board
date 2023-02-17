@@ -17,7 +17,7 @@ import static jakarta.persistence.CascadeType.*;
 @JsonIgnoreProperties(value = {"workerList"})
 
 @Entity(name = "SprintTask")
-@Table(name = "SprintTask")
+@Table(name = "sprint_task")
 public class SprintTask {
 
     @Id @GeneratedValue(strategy = AUTO)

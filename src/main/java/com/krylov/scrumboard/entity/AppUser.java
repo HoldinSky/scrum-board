@@ -17,7 +17,7 @@ import static jakarta.persistence.CascadeType.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "AppUser")
-@Table(name = "AppUser",
+@Table(name = "app_user",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "user_email_unique",
@@ -39,7 +39,6 @@ public class AppUser {
     private String lastname;
 
     @Column(name = "email",
-            unique = true,
             updatable = false,
             nullable = false)
     private String email;
@@ -50,6 +49,9 @@ public class AppUser {
 
     @ManyToMany(fetch = EAGER,
             cascade = {PERSIST, REFRESH, DETACH, MERGE})
+    @JoinTable(name = "app_user_roles",
+            foreignKey = @ForeignKey(name ="app_user_id_fkey"),
+            inverseForeignKey = @ForeignKey(name = "role_id_fkey"))
     private Collection<Role> roles = new ArrayList<>();
 
     public AppUser(String firstname, String lastname, String email, String password) {

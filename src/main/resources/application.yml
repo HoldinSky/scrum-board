@@ -23,4 +23,4 @@ spring:
 secret:
   key:
     for:
-      jwt: my-secret-and-absolutely-unbreakable-key-to-generate-jwt-yes-it-is-that-long
+      jwt: my-secret-and-absolutely-unbreakable-key-to-generate-jwt-yes-it-is-that-long-though-i-want-to-make-it-even-longer
