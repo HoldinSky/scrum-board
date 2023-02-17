@@ -11,7 +11,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @NoArgsConstructor
 
 @Entity(name = "Task")
-@Table(name = "Task")
+@Table(name = "task")
 public class Task {
 
     @Id @GeneratedValue(strategy = AUTO)

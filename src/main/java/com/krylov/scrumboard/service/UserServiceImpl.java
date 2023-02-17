@@ -6,22 +6,41 @@ import com.krylov.scrumboard.repository.AppUserRepository;
 import com.krylov.scrumboard.repository.RoleRepository;
 import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-@Service
-@RequiredArgsConstructor
-@Transactional
 @Slf4j
-public class UserServiceImpl implements UserService {
+@Service
+@AllArgsConstructor
+@Transactional
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final AppUserRepository userRepo;
     private final RoleRepository roleRepo;
+    private final PasswordEncoder encoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser user = getUser(username);
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+        return new User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
+    }
 
     @Override
     public AppUser saveUser(RegistrationRequest request) {
@@ -33,8 +52,8 @@ public class UserServiceImpl implements UserService {
                 request.getFirstname(),
                 request.getLastname(),
                 request.getEmail(),
-                request.getPassword()
-                );
+                encoder.encode(request.getPassword())
+        );
         log.info("Saving user {} to the database", user.getEmail());
         return userRepo.save(user);
     }

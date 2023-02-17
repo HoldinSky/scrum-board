@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;
@@ -20,7 +19,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @JsonIgnoreProperties(value = "taskList")
 
 @Entity(name = "Sprint")
-@Table(name = "Sprint")
+@Table(name = "sprint")
 public class Sprint {
 
     @Id

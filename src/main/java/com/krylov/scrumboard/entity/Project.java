@@ -5,11 +5,9 @@ import com.krylov.scrumboard.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.AUTO;
 
@@ -31,7 +29,6 @@ public class Project {
     private Long id;
 
     @Column(name = "name",
-            unique = true,
             nullable = false)
     private String name;
 

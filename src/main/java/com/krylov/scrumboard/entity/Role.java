@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data @NoArgsConstructor @AllArgsConstructor @Entity @Table
+@Data @NoArgsConstructor @AllArgsConstructor @Entity(name = "Role") @Table(name = "role")
 public class Role {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
