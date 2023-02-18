@@ -3,7 +3,6 @@ package com.krylov.scrumboard.controller;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.entity.SprintTask;
-import com.krylov.scrumboard.helper.LocalDateTimeConverter;
 import com.krylov.scrumboard.helper.SprintTaskOrError;
 import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;

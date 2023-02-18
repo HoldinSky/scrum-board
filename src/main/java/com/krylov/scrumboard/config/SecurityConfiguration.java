@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1", "/api/v1/about", "/api/v1/auth/**", "/api/v1/user/token/refresh/**",
                         "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers(DELETE, "/api/v1/user").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, "/api/v1/user/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(POST, "/api/v1/user/role").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

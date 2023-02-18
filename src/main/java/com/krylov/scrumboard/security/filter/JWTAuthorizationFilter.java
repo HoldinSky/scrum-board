@@ -38,8 +38,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         if (
-                request.getServletPath().equals("/api/v1/login") ||
-                request.getServletPath().equals("/api/v1/user") ||
+                request.getServletPath().equals("/api/v1/auth/login") ||
                 request.getServletPath().equals("/api/v1/user/token/refresh")
         ) {
             filterChain.doFilter(request, response);

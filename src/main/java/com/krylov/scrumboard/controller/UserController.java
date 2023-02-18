@@ -45,7 +45,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<AppUser>> getUsers() {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/user").toUriString());
         return ResponseEntity.created(uri).body(userService.getUsers());
     }
 

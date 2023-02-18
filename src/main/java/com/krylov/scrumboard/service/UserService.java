@@ -7,10 +7,11 @@ import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import java.util.List;
 
 public interface UserService {
-    AppUser saveUser(RegistrationRequest request);
+    AppUser saveUser(RegistrationRequest request) throws RuntimeException;
     Role saveRole(Role role);
-    AppUser addRoleToUser(String username, String roleName);
-    AppUser getUser(String username);
-    AppUser deleteUser(String username);
+    AppUser addRoleToUser(String username, String roleName) throws RuntimeException;
+    AppUser getUser(String username) throws RuntimeException;
+    Role getRole(String name) throws RuntimeException;
+    AppUser deleteUser(String username) throws RuntimeException;
     List<AppUser> getUsers();
 }
