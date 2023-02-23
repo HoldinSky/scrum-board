@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProjectTeamRequest {
     private Long projectId;
+    private String projectName;
     private Long teamId;
 }

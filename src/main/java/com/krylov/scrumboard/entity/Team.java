@@ -1,5 +1,7 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,6 +43,7 @@ public class Team {
             indexes = @Index(name = "members_id", columnList = "members_id", unique = true),
             inverseJoinColumns = @JoinColumn(name = "members_id")
     )
+    @JsonManagedReference
     private List<AppUser> members = new ArrayList<>();
 
     @OneToOne(fetch = EAGER, cascade = {MERGE, PERSIST, DETACH, REFRESH})

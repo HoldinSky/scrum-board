@@ -44,10 +44,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public AppUser saveUser(RegistrationRequest request) {
-        if (!request.getPassword().equals(request.getRepeatPassword())) {
-            log.error("Provided passwords do not match for the user {}", request.getEmail());
-            throw new RuntimeException("Could not register");
-        }
         AppUser user = new AppUser(
                 request.getFirstname(),
                 request.getLastname(),

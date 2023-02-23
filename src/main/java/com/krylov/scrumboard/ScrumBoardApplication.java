@@ -1,7 +1,6 @@
 package com.krylov.scrumboard;
 
 import com.krylov.scrumboard.entity.Role;
-import com.krylov.scrumboard.request.CreateTeamRequest;
 import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import com.krylov.scrumboard.service.TeamService;
 import com.krylov.scrumboard.service.UserService;
@@ -46,8 +45,6 @@ public class ScrumBoardApplication {
             userService.saveUser(new RegistrationRequest("Robert", "Green", "grobert@gmail.com", "password", "password"));
 
             userService.addRoleToUser("nkrylov2004@gmail.com", "ROLE_ADMIN");
-
-            teamService.saveTeam(new CreateTeamRequest("My new team", "nkrylov2004@gmail.com"));
         };
     }
 
