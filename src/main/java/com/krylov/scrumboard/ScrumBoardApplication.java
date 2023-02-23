@@ -2,7 +2,6 @@ package com.krylov.scrumboard;
 
 import com.krylov.scrumboard.entity.AppUser;
 import com.krylov.scrumboard.entity.Role;
-import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import com.krylov.scrumboard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -11,8 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @SpringBootApplication(scanBasePackages = {"com.krylov.scrumboard"},
@@ -21,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScrumBoardApplication {
 
+    private final PasswordEncoder encoder;
     public static void main(String[] args) {
         SpringApplication.run(ScrumBoardApplication.class, args);
     }
@@ -33,13 +32,13 @@ public class ScrumBoardApplication {
             userService.saveRole(new Role("ROLE_TEAM_MEMBER"));
             userService.saveRole(new Role("ROLE_TEAM_MANAGER"));
 
-            AppUser user1 = new AppUser("Nazar", "Krylov", "nkrylov2004@gmail.com", "password");
+            AppUser user1 = new AppUser("Nazar", "Krylov", "nkrylov2004@gmail.com", encoder.encode("password"));
             user1.getRoles().add(new Role("ROLE_USER"));
 
-            AppUser user2 = new AppUser("Maria", "Khomenko", "kmaria@gmail.com", "password");
+            AppUser user2 = new AppUser("Maria", "Khomenko", "kmaria@gmail.com", encoder.encode("password"));
             user1.getRoles().add(new Role("ROLE_USER"));
 
-            AppUser user3 = new AppUser("Mykola", "Deruzhko", "mykoladr@gmail.com", "password");
+            AppUser user3 = new AppUser("Mykola", "Deruzhko", "mykoladr@gmail.com", encoder.encode("password"));
             user1.getRoles().add(new Role("ROLE_USER"));
 
 

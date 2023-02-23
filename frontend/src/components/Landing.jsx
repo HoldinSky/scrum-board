@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../index.css";
+import { domain } from "../assets/domain";
 
 function Landing() {
   useEffect(() => {
@@ -27,14 +28,26 @@ const Authentication = () => {
 
   const [errorPass, setErrorPass] = useState("");
   const [errorRepeatPass, setErrorRepeatPass] = useState("");
-  const [errorLogin, setErrorLogin] = useState(""); // todo: on submit check for errors
-  const [errorEmail, setErrorEmail] = useState(""); // todo: do not submit while any of errors appear
+  const [errorLogin, setErrorLogin] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
 
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+
+  const loginBody = {
+    username: username,
+    password: password,
+  };
+
+  const registerBody = {
+    firstname: firstname,
+    lastname: lastname,
+    username: username,
+    password: password,
+  };
 
   // check for equal passwords
   useEffect(() => {
@@ -71,9 +84,37 @@ const Authentication = () => {
       errMsg = "";
     }
     setErrorPass(errMsg);
-
-    console.log(`useEffect with handling validation for password`);
   }, [password]);
+
+  // send login request
+  const handleSignIn = (event) => {
+    fetch(`${domain}/api/v1/auth/login`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "post",
+      body: JSON.stringify(loginBody),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+
+    event.preventDefault();
+  };
+
+  // send registration request
+  const handleSignUp = (event) => {
+    fetch(`${domain}/api/v1/auth/register`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "post",
+      body: JSON.stringify(registerBody),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+
+    event.preventDefault();
+  };
 
   if (formSignIn) {
     // Log in form
@@ -121,7 +162,7 @@ const Authentication = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                Show Password
+                {showPassword ? "Hide Password" : "Show Password"}
               </button>
             </div>
             {/* <a href="#" className="text-xs text-purple-600 hover:underline">
@@ -251,7 +292,7 @@ const Authentication = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                Show Password
+                {showPassword ? "Hide Password" : "Show Password"}
               </button>
             </div>
             <div className="mt-6">
@@ -283,16 +324,6 @@ const Authentication = () => {
 
 const renderErrorMessage = (error) => {
   return <div className="text-red-600 font-medium underline">{error}</div>;
-};
-
-const handleSignIn = (event) => {
-  console.log("Sign in!");
-  event.preventDefault();
-};
-
-const handleSignUp = (event) => {
-  console.log("Sign up!");
-  event.preventDefault();
 };
 
 export default Landing;

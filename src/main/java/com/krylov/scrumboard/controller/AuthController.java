@@ -10,11 +10,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -31,18 +29,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AuthController {
 
     private final static ObjectMapper MAPPER = new ObjectMapper();
-
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<AppUser> saveUser(@RequestBody RegistrationRequest request) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/auth/register").toUriString());
         return ResponseEntity.created(uri).body(authenticationService.register(request));
     }
 
-    // TODO: IMPLEMENT AUTHENTICATION PROCEDURE (USE URLENCODED PARAMS AS CREDENTIALS)
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
+        log.info("Request for log in has been sent");
         return ResponseEntity.ok().body(authenticationService.authenticate(request));
     }
 
@@ -62,6 +59,11 @@ public class AuthController {
             response.setContentType(APPLICATION_JSON_VALUE);
             MAPPER.writeValue(response.getOutputStream(), tokens);
         }
+    }
+
+    @GetMapping
+    public String testing() {
+        return JSONObject.quote("This is testing request for CORS configuration!");
     }
 }
 
