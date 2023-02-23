@@ -3,8 +3,6 @@ package com.krylov.scrumboard.security.helper;
 import lombok.*;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticationRequest {
 

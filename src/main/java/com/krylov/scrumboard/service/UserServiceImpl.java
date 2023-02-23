@@ -43,14 +43,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser saveUser(RegistrationRequest request) {
-        AppUser user = new AppUser(
-                request.getFirstname(),
-                request.getLastname(),
-                request.getEmail(),
-                encoder.encode(request.getPassword())
-        );
-        user.getRoles().add(getRole("ROLE_USER"));
+    public AppUser saveUser(AppUser user) {
         log.info("Saving user {} to the database", user.getEmail());
         return userRepo.save(user);
     }

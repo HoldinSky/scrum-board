@@ -31,9 +31,6 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        JWTAuthenticationFilter authFilter = new JWTAuthenticationFilter(authenticationManager(), secretKey);
-        authFilter.setFilterProcessesUrl("/api/v1/auth/login");
-
         http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -52,17 +49,14 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
 
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .formLogin(login -> login
-//                                .loginPage("/api/v1/auth/login")
-//                                .permitAll()
-//                                .defaultSuccessUrl("/api/v1", true)
-//                                .failureUrl("/api/v1/auth/login?error=true")
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/api/v1/auth/logout")
-//                        .deleteCookies("JSESSIONID")
-//                )
-                .addFilter(authFilter)
+                .formLogin(login -> login
+                        .loginProcessingUrl("/api/v1/auth/login")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .deleteCookies("JSESSIONID")
+                )
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), secretKey))
                 .addFilterBefore(new JWTAuthorizationFilter(secretKey), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
