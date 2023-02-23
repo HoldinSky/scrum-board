@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.*;
@@ -53,7 +54,7 @@ public class Sprint {
             cascade = CascadeType.ALL,
             mappedBy = "sprint")
     @JsonManagedReference
-    private List<SprintTask> taskList;
+    private List<SprintTask> taskList = new ArrayList<>();
 
     public Sprint(Timestamp startOfSprint,
                   Timestamp endOfSprint,

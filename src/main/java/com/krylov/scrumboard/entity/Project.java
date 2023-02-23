@@ -5,6 +5,7 @@ import com.krylov.scrumboard.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -41,7 +42,7 @@ public class Project {
             cascade = ALL,
             mappedBy = "project")
     @JsonBackReference
-    private List<Sprint> sprintList;
+    private List<Sprint> sprintList = new ArrayList<>();
 
     public Project(String name) {
         this.name = name;

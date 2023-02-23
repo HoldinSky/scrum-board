@@ -44,16 +44,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public AppUser saveUser(RegistrationRequest request) {
-        if (!request.getPassword().equals(request.getRepeatPassword())) {
-            log.error("Provided passwords do not match for the user {}", request.getEmail());
-            throw new RuntimeException("Could not register");
-        }
         AppUser user = new AppUser(
                 request.getFirstname(),
                 request.getLastname(),
                 request.getEmail(),
                 encoder.encode(request.getPassword())
         );
+        user.getRoles().add(getRole("ROLE_USER"));
         log.info("Saving user {} to the database", user.getEmail());
         return userRepo.save(user);
     }
@@ -63,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("Deleting user {} from the database", username);
         AppUser appUser = null;
         try {
-            appUser = userRepo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username is not found in database: " + username));
+            appUser = userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("Username is not found in database: " + username));
         } catch (Exception exception) {
             log.error(exception.getMessage());
         }
@@ -82,10 +79,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Role getRole(String name) {
+        try {
+            return roleRepo.findByName(name).orElseThrow(() ->
+                    new RuntimeException("Role is not found in database with name: " + name));
+        } catch (RuntimeException exception) {
+            log.error(exception.getMessage());
+        }
+        return null;
+    }
+
+    @Override
     public AppUser addRoleToUser(String username, String roleName) {
         log.info("Adding role {} to the user {}", roleName, username);
         try {
-            AppUser appUser = userRepo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username is not found in database: " + username));
+            AppUser appUser = userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("Username is not found in database: " + username));
             Role role = roleRepo.findByName(roleName).orElseThrow(() -> new RuntimeException("Role is not found in database: " + roleName));
             appUser.getRoles().add(role);
             return appUser;
@@ -98,7 +106,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public AppUser getUser(String username) {
         log.info("Retrieving user {} from the database", username);
-        return userRepo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username is not found in database: " + username));
+        return userRepo.findByEmail(username).orElseThrow(() -> new RuntimeException("Username is not found in database: " + username));
     }
 
     @Override

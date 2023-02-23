@@ -1,4 +1,4 @@
-package com.krylov.scrumboard.config;
+package com.krylov.scrumboard.security;
 
 import com.krylov.scrumboard.security.filter.JWTAuthenticationFilter;
 import com.krylov.scrumboard.security.filter.JWTAuthorizationFilter;
@@ -38,9 +38,14 @@ public class SecurityConfiguration {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1", "/api/v1/about", "/api/v1/auth/**", "/api/v1/user/token/refresh/**",
-                        "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers(DELETE, "/api/v1/user").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/api/v1", "/api/v1/about", "/api/v1/auth/**", "/api/v1/auth/**",
+                                "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/team/member",
+                                "/api/v1/team/manager",
+                                "/api/v1/team/project").hasAuthority("ROLE_TEAM_MANAGER")
+                        .requestMatchers(DELETE, "/api/v1/user/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(POST, "/api/v1/user/role").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -53,10 +58,10 @@ public class SecurityConfiguration {
 //                                .defaultSuccessUrl("/api/v1", true)
 //                                .failureUrl("/api/v1/auth/login?error=true")
 //                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/v1/auth/logout")
-                        .deleteCookies("JSESSIONID")
-                )
+//                .logout(logout -> logout
+//                        .logoutUrl("/api/v1/auth/logout")
+//                        .deleteCookies("JSESSIONID")
+//                )
                 .addFilter(authFilter)
                 .addFilterBefore(new JWTAuthorizationFilter(secretKey), UsernamePasswordAuthenticationFilter.class);
 

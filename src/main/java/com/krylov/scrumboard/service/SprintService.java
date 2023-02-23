@@ -154,7 +154,6 @@ public class SprintService implements Runnable {
     public void run() {
 
         while (running.get()) {
-
             synchronized (current) {
 
                 current.forEach(sprint -> {
@@ -184,8 +183,6 @@ public class SprintService implements Runnable {
                         next.remove(sprint);
                     }
                 });
-
-
             }
             synchronized (this) {
                 var tomorrow = LocalDateTime.now().plusDays(1);
@@ -354,13 +351,6 @@ public class SprintService implements Runnable {
         }
 
         if (current.isEmpty()) running.set(false);
-    }
-
-    private SprintTask findTask(Long id) {
-        var taskOptional = sprintTaskRepo.findById(id);
-        if (taskOptional.isEmpty()) return null;
-
-        return taskOptional.get();
     }
 
 }

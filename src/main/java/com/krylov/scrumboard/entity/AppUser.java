@@ -1,5 +1,7 @@
 package com.krylov.scrumboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +10,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Data
 @Builder
@@ -50,9 +54,18 @@ public class AppUser {
     @ManyToMany(fetch = EAGER,
             cascade = {PERSIST, REFRESH, DETACH, MERGE})
     @JoinTable(name = "app_user_roles",
-            foreignKey = @ForeignKey(name ="app_user_id_fkey"),
+            foreignKey = @ForeignKey(name = "app_user_id_fkey"),
             inverseForeignKey = @ForeignKey(name = "role_id_fkey"))
     private Collection<Role> roles = new ArrayList<>();
+
+    @ManyToOne(cascade = {PERSIST, REFRESH, DETACH, MERGE}, fetch = EAGER)
+    @JoinTable(name = "app_user_team",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "team_id"),
+            foreignKey = @ForeignKey(name = "app_user_id_fkey"),
+            inverseForeignKey = @ForeignKey(name = "team_id_fkey"))
+    @JsonBackReference
+    private Team team;
 
     public AppUser(String firstname, String lastname, String email, String password) {
         this.firstname = firstname;
