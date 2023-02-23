@@ -6,7 +6,9 @@ import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.TaskService;
 import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -95,6 +97,8 @@ public class PersonalTaskController {
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class ScrumBoard {
     private Collection<Task> backlog;

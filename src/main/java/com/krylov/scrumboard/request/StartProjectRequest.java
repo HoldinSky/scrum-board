@@ -1,11 +1,12 @@
 package com.krylov.scrumboard.request;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
+@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class StartProjectRequest {
 
     private Long projectId;

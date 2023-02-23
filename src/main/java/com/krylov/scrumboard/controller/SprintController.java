@@ -8,7 +8,9 @@ import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import com.krylov.scrumboard.service.SprintService;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +91,8 @@ public class SprintController {
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class SprintTaskDetails {
     private SprintTask task;
@@ -96,6 +100,8 @@ class SprintTaskDetails {
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class ProjectPage {
 

@@ -46,9 +46,6 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .formLogin(login -> login
-//                        .loginProcessingUrl("/api/v1/auth/login")
-//                )
                 .logout(logout -> logout
                         .deleteCookies("JSESSIONID")
                 )

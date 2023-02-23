@@ -4,8 +4,7 @@ import com.krylov.scrumboard.entity.AppUser;
 import com.krylov.scrumboard.entity.Role;
 import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import com.krylov.scrumboard.service.UserService;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +53,9 @@ public class UserController {
 }
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 class RoleToUser {
     private String username;
     private String role;

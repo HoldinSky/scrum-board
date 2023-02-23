@@ -33,8 +33,6 @@ public class AuthenticationService {
 
     @Value("${secret.key.for.jwt}")
     private String SECRET_KEY;
-
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
     private final UserService userService;
     private final JWTService jwtService;

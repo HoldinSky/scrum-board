@@ -2,14 +2,15 @@ package com.krylov.scrumboard.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SprintRequest {
 
     private DateTimeFormatter formatter;
