@@ -4,8 +4,6 @@ import com.krylov.scrumboard.entity.Task;
 import com.krylov.scrumboard.helper.TaskOrError;
 import com.krylov.scrumboard.repository.TaskRepository;
 import com.krylov.scrumboard.helper.LocalDateTimeConverter;
-import com.krylov.scrumboard.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.helper.TaskToShow;
 import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.request.UpdateTaskRequest;
 import jakarta.transaction.Transactional;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

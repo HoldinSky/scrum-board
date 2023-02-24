@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -34,36 +35,37 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AppUser> saveUser(@RequestBody RegistrationRequest request) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/auth/register").toUriString());
-        return ResponseEntity.created(uri).body(authenticationService.register(request));
+        AppUser user = authenticationService.register(request);
+
+        if (user == null) return ResponseEntity.status(BAD_REQUEST.value())
+                .header("Error_message", "The email is already taken!").build();
+        return ResponseEntity.created(uri).body(user);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
         log.info("Request for log in has been sent");
-        return ResponseEntity.ok().body(authenticationService.authenticate(request));
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @SneakyThrows
-    @PostMapping("/token/refresh")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, String> tokens = authenticationService.refreshTokens(request);
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestParam(name = "token") String refreshToken) {
+        Map<String, String> tokens = authenticationService.refreshTokens(refreshToken);
 
-        if (tokens == null) {
-            response.setStatus(BAD_REQUEST.value());
-            response.setContentType(APPLICATION_JSON_VALUE);
-
-            Map<String, String> errors = new HashMap<>();
-            errors.put("error_message", "Refresh token is missing");
-            MAPPER.writeValue(response.getOutputStream(), errors);
-        } else {
-            response.setContentType(APPLICATION_JSON_VALUE);
-            MAPPER.writeValue(response.getOutputStream(), tokens);
-        }
+        return ResponseEntity.ok(tokens);
     }
 
     @GetMapping
     public String testing() {
         return JSONObject.quote("This is testing request for CORS configuration!");
     }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestParam(name = "token") String token, @AuthenticationPrincipal AppUser user) {
+        log.info("User is {}", user);
+        return ResponseEntity.ok(authenticationService.validate(token, user));
+    }
+
 }
 

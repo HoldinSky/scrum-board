@@ -51,7 +51,6 @@ public class WebApplicationConfiguration {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                log.info(username);
                 AppUser appUser = appUserRepository.findByEmail(username)
                         .orElseThrow(() -> new RuntimeException("User is not found in database with username: " + username));
 

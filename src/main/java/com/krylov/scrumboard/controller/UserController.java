@@ -16,7 +16,7 @@ import java.util.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -41,7 +41,7 @@ public class UserController {
 
     @PutMapping("/roleToUser")
     public ResponseEntity<AppUser> addRoleToUser(@RequestBody RoleToUser request) {
-        return ResponseEntity.ok().body(userService.addRoleToUser(request.getUsername(), request.getRole()));
+        return ResponseEntity.ok(userService.addRoleToUser(request.getUsername(), request.getRole()));
     }
 
     @DeleteMapping("/{username}")

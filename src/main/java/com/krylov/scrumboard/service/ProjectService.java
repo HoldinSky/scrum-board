@@ -73,15 +73,15 @@ public class ProjectService {
         }
     }
 
-    public ProjectOrError deleteProject(Long id) {
+    public Project deleteProject(Long id) {
         try {
             Project project = repository.findById(id).orElseThrow(() -> new RuntimeException("Project is not found in database with id: " + id));
-            if (project.getStatus() == Status.IN_PROGRESS) return new ProjectOrError(project, "You cannot delete started project!");
+            if (project.getStatus() == Status.IN_PROGRESS) return null;
             repository.delete(project);
-            return new ProjectOrError(project, null);
+            return project;
         } catch (RuntimeException exception) {
             log.error(exception.getMessage());
-            return new ProjectOrError(null, exception.getMessage());
+            return null;
         }
     }
 

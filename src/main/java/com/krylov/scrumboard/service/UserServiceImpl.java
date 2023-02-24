@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Role getRole(String name) {
+        log.info("Getting role {} from database", name);
         try {
             return roleRepo.findByName(name).orElseThrow(() ->
                     new RuntimeException("Role is not found in database with name: " + name));

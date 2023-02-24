@@ -20,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+import static com.krylov.scrumboard.helper.RoleNames.*;
 import static org.springframework.http.HttpMethod.*;
 
 
@@ -36,13 +37,13 @@ public class SecurityConfiguration {
 //                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(
-                                "/api/v1/team/member",
-                                "/api/v1/team/manager",
-                                "/api/v1/team/project").hasAuthority("ROLE_TEAM_MANAGER")
-                        .requestMatchers(DELETE, "/api/v1/user/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST, "/api/v1/user/role").hasAuthority("ROLE_ADMIN")
+                                "/api/team/member",
+                                "/api/team/manager",
+                                "/api/team/project").hasAuthority(TEAM_MANAGER)
+                        .requestMatchers(DELETE, "/api/user/**").hasAuthority(ADMIN)
+                        .requestMatchers(POST, "/api/user/role").hasAuthority(ADMIN)
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class MainController {
 
     @GetMapping

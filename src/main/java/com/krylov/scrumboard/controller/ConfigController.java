@@ -4,7 +4,6 @@ package com.krylov.scrumboard.controller;
 import com.krylov.scrumboard.entity.Project;
 import com.krylov.scrumboard.entity.Sprint;
 import com.krylov.scrumboard.helper.MyDateTimeFormatter;
-import com.krylov.scrumboard.helper.ProjectOrError;
 import com.krylov.scrumboard.request.SprintRequest;
 import com.krylov.scrumboard.request.StartProjectRequest;
 import com.krylov.scrumboard.service.ProjectService;
@@ -20,7 +19,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RestController
-@RequestMapping(path = "/api/v1/config")
+@RequestMapping(path = "/api/config")
 @AllArgsConstructor
 public class ConfigController {
 
@@ -31,7 +30,7 @@ public class ConfigController {
     public ResponseEntity<List<Project>> projectConfigurer() {
 //        modelAndView.setViewName("project-main");
 
-        return ResponseEntity.ok().body(projectService.getAllProjects());
+        return ResponseEntity.ok(projectService.getAllProjects());
     }
 
     @PostMapping(path = "/project")
@@ -40,7 +39,7 @@ public class ConfigController {
 
         Project project = projectService.createProject(projectName);
 
-        return ResponseEntity.ok().body(project);
+        return ResponseEntity.ok(project);
     }
 
     @PostMapping(path = "/project/start")
@@ -56,7 +55,7 @@ public class ConfigController {
             return ResponseEntity.status(BAD_REQUEST.value())
                     .header("error", "Project was not found in database with id: " + request.getProjectId())
                     .build();
-        return ResponseEntity.ok().body(project);
+        return ResponseEntity.ok(project);
     }
 
     @PutMapping(path = "/project/{projectId}")
@@ -69,20 +68,20 @@ public class ConfigController {
             return ResponseEntity.status(BAD_REQUEST.value())
                     .header("error", "Project was not found in database with id: " + id)
                     .build();
-        return ResponseEntity.ok().body(project);
+        return ResponseEntity.ok(project);
     }
 
     @DeleteMapping(path = "/project/{projectId}")
     public ResponseEntity<Project> deleteProject(@PathVariable(name = "projectId") Long id) {
 //        modelAndView.setViewName("redirect:/api/v1/config/project");
 
-        ProjectOrError projectOrError = projectService.deleteProject(id);
+        Project project = projectService.deleteProject(id);
 
-        if (projectOrError.getErrorMessage() != null)
+        if (project == null)
             return ResponseEntity.status(BAD_REQUEST.value())
-                    .header("error", projectOrError.getErrorMessage())
+                    .header("error", "You cannot delete started project!")
                     .build();
-        return ResponseEntity.ok().body(projectOrError.getProject());
+        return ResponseEntity.ok(project);
     }
 
 
@@ -97,7 +96,7 @@ public class ConfigController {
             return ResponseEntity.status(BAD_REQUEST.value())
                     .header("error", "Could not find sprint by id '" + sprintId + "'")
                     .build();
-        return ResponseEntity.ok().body(sprint);
+        return ResponseEntity.ok(sprint);
     }
 
 }
