@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import Authenticate from "./components/Authenticate.jsx";
+import Authentication from "./components/Authentication.jsx";
 import Homepage from "./components/Homepage.jsx";
-import PrivateRoute from "./util/PrivateRoute.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/authenticate" element={<Authenticate />} />
+        <Route path="/authenticate" element={<Authentication />} />
       </Routes>
     </>
   );

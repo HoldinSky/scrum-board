@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import "../index.css";
-import { domain } from "../util/domain";
-import { useLocalState } from "../util/useLocalStorage";
+import { useLocalState } from "../hooks/useLocalStorage";
+import useAuth from "../hooks/useAuth";
+import axios from "../api/axios";
 
-function Authenticate() {
+const LOGIN_URL = "/api/auth/login";
+const SIGNUP_URL = "/api/auth/register";
+
+function Authentication() {
   useEffect(() => {
     document.title = "Authentication";
   });
 
   return (
     <>
-      <Authentication />
+      <RenderForm />
     </>
   );
 }
@@ -24,7 +26,8 @@ function Authenticate() {
 //   );
 // };
 
-const Authentication = () => {
+const RenderForm = () => {
+  const { setAuth } = useAuth();
   const [formSignIn, setFormSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
@@ -32,25 +35,27 @@ const Authentication = () => {
 
   return formSignIn ? (
     <Login
-      form={[formSignIn, setFormSignIn]}
-      password={[showPassword, setShowPassword]}
+      formType={[formSignIn, setFormSignIn]}
+      showPass={[showPassword, setShowPassword]}
       user={[username, setUsername, password, setPassword]}
+      auth={setAuth}
     />
   ) : (
     <SignUp
-      form={[formSignIn, setFormSignIn]}
-      password={[showPassword, setShowPassword]}
+      formType={[formSignIn, setFormSignIn]}
+      showPass={[showPassword, setShowPassword]}
       user={[username, setUsername, password, setPassword]}
     />
   );
 };
 
 const Login = ({
-  password: [showPassword, setShowPassword],
-  form: [formSignIn, setFormSignIn],
+  showPass: [showPassword, setShowPassword],
+  formType: [formSignIn, setFormSignIn],
   user: [username, setUsername, password, setPassword],
+  auth: setAuth,
 }) => {
-  const [token, setToken] = useLocalState(null, "token");
+  const [tokens, setTokens] = useLocalState(null, "tokens");
   const [user, setUser] = useLocalState(null, "user");
 
   const [errorLogin, setErrorLogin] = useState("");
@@ -61,44 +66,39 @@ const Login = ({
   };
 
   // send login request
-  const handleSignIn = (event) => {
-    if (!token) {
-      fetch(`${domain}/api/auth/login`, {
-        method: "post",
+  const handleSignIn = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.post(LOGIN_URL, JSON.stringify(loginBody), {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(loginBody),
-      })
-        .then((response) => {
-          if (response.status === 200) return response.json();
-          else {
-            return Promise.reject(errorLogin);
-          }
-        })
-        .then((data) => {
-          const token = {
-            access_token: data.tokens.access_token,
-            refresh_token: data.tokens.refresh_token,
-          };
-          setToken(token);
-          setUser(data.user);
-          return <Navigate to="/" />;
-        })
-        .catch((errorLogin) => {
-          setErrorLogin("Invalid email or password!");
-        });
+        withCredentials: true,
+      });
+      setUsername("");
+      setPassword("");
+
+      const accessToken = response?.data?.tokens.access_token;
+      const refreshToken = response?.data?.tokens?.refresh_token;
+
+      setTokens({ access_token: accessToken, refresh_token: refreshToken });
+      setUser(response?.data?.user);
+
+      setAuth({ user, tokens });
+    } catch (exc) {
+      console.log(exc);
+      setErrorLogin("Invalid email or password!");
     }
-    event.preventDefault();
   };
 
-  return user || token ? (
+  return tokens ? (
     <>
       <div className="form-holder">
         <div className="auth-form">
           <h1 className="auth-header">You are successfully logged in!</h1>
           <div className="mt-6 text-center">
-            <a className="auth-apply-btn" href="/">
+            <a className="auth-return-text" href="/">
               Go to HomePage
             </a>
           </div>
@@ -167,8 +167,8 @@ const Login = ({
 };
 
 const SignUp = ({
-  form: [formSignIn, setFormSignIn],
-  password: [showPassword, setShowPassword],
+  formType: [formSignIn, setFormSignIn],
+  showPass: [showPassword, setShowPassword],
   user: [username, setUsername, password, setPassword],
 }) => {
   const [errorEmail, setErrorEmail] = useState("");
@@ -187,7 +187,7 @@ const SignUp = ({
     password: password,
   };
 
-  // check for equal passwords
+  // check passwords for equality
   useEffect(() => {
     if (password !== repeatPassword) {
       setErrorRepeatPass("Passwords do not match");
@@ -196,7 +196,7 @@ const SignUp = ({
     }
   }, [password, repeatPassword]);
 
-  // check for valid password
+  // check password for validity
   useEffect(() => {
     const uppercaseRegExp = /(?=.*?[A-Z])/;
     const lowercaseRegExp = /(?=.*?[a-z])/;
@@ -224,35 +224,32 @@ const SignUp = ({
     setErrorPass(errMsg);
   }, [password]);
 
+  // reset unique email error when username is changed
   useEffect(() => {
     setErrorEmail("");
   }, [registerBody.username]);
 
   // send registration request
-  const handleSignUp = (event) => {
-    fetch(`${domain}/api/auth/register`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(registerBody),
-    })
-      .then((response) => {
-        if (response.status === 201) {
-          return response.json();
-        } else {
-          return Promise.reject("The email is already taken!");
-        }
-      })
-      .then(() => {
-        setFormSignIn(true);
-        setShowPassword(false);
-      })
-      .catch((message) => {
-        setErrorEmail(message);
-      });
-
+  const handleSignUp = async (event) => {
     event.preventDefault();
+
+    try {
+      await axios.post(SIGNUP_URL, JSON.stringify(registerBody), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      setFirstname("");
+      setLastname("");
+      setRepeatPassword("");
+
+      setFormSignIn(true);
+      setShowPassword(false);
+    } catch (exc) {
+      console.log(exc);
+      setErrorEmail("Email is already taken!");
+    }
   };
 
   return (
@@ -370,4 +367,4 @@ const renderErrorMessage = (error) => {
   return <div className="text-error">{error}</div>;
 };
 
-export default Authenticate;
+export default Authentication;

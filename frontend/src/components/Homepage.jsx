@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocalState } from "../util/useLocalStorage";
+import { useLocalState } from "../hooks/useLocalStorage";
 
 function Homepage() {
   const [user, setUser] = useLocalState(null, "user");
