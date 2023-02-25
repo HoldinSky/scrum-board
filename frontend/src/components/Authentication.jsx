@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import {
+  faCheck,
+  faTimes,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useLocalState } from "../hooks/useLocalStorage";
-import useAuth from "../hooks/useAuth";
 import axios from "../api/axios";
 
 const LOGIN_URL = "/api/auth/login";
 const SIGNUP_URL = "/api/auth/register";
+
+const EMAIL_REGEX = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&_]).{8,24}$/;
 
 function Authentication() {
   useEffect(() => {
@@ -27,24 +35,23 @@ function Authentication() {
 // };
 
 const RenderForm = () => {
-  const { setAuth } = useAuth();
   const [formSignIn, setFormSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [password, setPwd] = useState("");
 
   return formSignIn ? (
     <Login
       formType={[formSignIn, setFormSignIn]}
       showPass={[showPassword, setShowPassword]}
-      user={[username, setUsername, password, setPassword]}
-      auth={setAuth}
+      user={[email, setEmail, password, setPwd]}
     />
   ) : (
     <SignUp
       formType={[formSignIn, setFormSignIn]}
       showPass={[showPassword, setShowPassword]}
-      user={[username, setUsername, password, setPassword]}
+      user={[email, setEmail, password, setPwd]}
     />
   );
 };
@@ -52,47 +59,50 @@ const RenderForm = () => {
 const Login = ({
   showPass: [showPassword, setShowPassword],
   formType: [formSignIn, setFormSignIn],
-  user: [username, setUsername, password, setPassword],
-  auth: setAuth,
+  user: [email, setEmail, pwd, setPwd],
 }) => {
-  const [tokens, setTokens] = useLocalState(null, "tokens");
-  const [user, setUser] = useLocalState(null, "user");
+  const [auth, setAuth] = useLocalState(null, "auth");
 
   const [errorLogin, setErrorLogin] = useState("");
-
-  const loginBody = {
-    username: username,
-    password: password,
-  };
 
   // send login request
   const handleSignIn = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(LOGIN_URL, JSON.stringify(loginBody), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
+      const response = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({
+          username: email,
+          password: pwd,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setEmail("");
+      setPwd("");
+
+      const access_token = response?.data?.tokens.access_token;
+      const refresh_token = response?.data?.tokens?.refresh_token;
+
+      setAuth({
+        user: response?.data?.user,
+        tokens: { access_token, refresh_token },
       });
-      setUsername("");
-      setPassword("");
 
-      const accessToken = response?.data?.tokens.access_token;
-      const refreshToken = response?.data?.tokens?.refresh_token;
-
-      setTokens({ access_token: accessToken, refresh_token: refreshToken });
-      setUser(response?.data?.user);
-
-      setAuth({ user, tokens });
+      console.log(`Auth context is: ${auth}`);
     } catch (exc) {
       console.log(exc);
       setErrorLogin("Invalid email or password!");
     }
   };
 
-  return tokens ? (
+  console.log(`AuthContext is ${auth?.user}`);
+  return auth ? (
     <>
       <div className="form-holder">
         <div className="auth-form">
@@ -117,8 +127,8 @@ const Login = ({
             <input
               type="email"
               className="auth-field-input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-2">
@@ -128,10 +138,10 @@ const Login = ({
             <input
               type={showPassword ? "text" : "password"}
               className="auth-field-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
             />
-            <div className="display-error">
+            <div className="display-error text-error">
               {errorLogin && renderErrorMessage(errorLogin)}
             </div>
           </div>
@@ -169,86 +179,80 @@ const Login = ({
 const SignUp = ({
   formType: [formSignIn, setFormSignIn],
   showPass: [showPassword, setShowPassword],
-  user: [username, setUsername, password, setPassword],
+  user: [email, setEmail, pwd, setPwd],
 }) => {
-  const [errorEmail, setErrorEmail] = useState("");
-
-  const [errorPass, setErrorPass] = useState("");
-  const [errorRepeatPass, setErrorRepeatPass] = useState("");
+  const fnameRef = useRef();
+  const lnameRef = useRef();
+  const emailRef = useRef();
+  const errRef = useRef();
 
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
 
-  const registerBody = {
-    firstname: firstname,
-    lastname: lastname,
-    username: username,
-    password: password,
-  };
+  // const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
+  const [takenEmail, setTakenEmail] = useState(false);
+
+  // const [pwd, setPwd] = useState("");
+  const [validPwd, setValidPwd] = useState(false);
+  const [pwdFocus, setPwdFocus] = useState(false);
+
+  const [matchPwd, setMatchPwd] = useState("");
+  const [validMatch, setValidMatch] = useState(false);
+  const [matchFocus, setMatchFocus] = useState(false);
+
+  const takenEmailError = "Email is already taken";
+
+  useEffect(() => {
+    fnameRef.current.focus();
+    setValidEmail(false);
+  }, []);
+
+  useEffect(() => {
+    setValidEmail(EMAIL_REGEX.test(email));
+  }, [email]);
 
   // check passwords for equality
   useEffect(() => {
-    if (password !== repeatPassword) {
-      setErrorRepeatPass("Passwords do not match");
-    } else {
-      setErrorRepeatPass("");
-    }
-  }, [password, repeatPassword]);
+    setValidPwd(PWD_REGEX.test(pwd));
+    setValidMatch(pwd === matchPwd);
+  }, [pwd, matchPwd]);
 
-  // check password for validity
+  // reset unique email error when is is changed
   useEffect(() => {
-    const uppercaseRegExp = /(?=.*?[A-Z])/;
-    const lowercaseRegExp = /(?=.*?[a-z])/;
-    const digitsRegExp = /(?=.*?[0-9])/;
-    const minLengthRegExp = /.{8,}/;
-    const passwordLength = password.length;
-    const uppercasePassword = uppercaseRegExp.test(password);
-    const lowercasePassword = lowercaseRegExp.test(password);
-    const digitsPassword = digitsRegExp.test(password);
-    const minLengthPassword = minLengthRegExp.test(password);
-    let errMsg = "";
-    if (passwordLength === 0) {
-      errMsg = "Password is empty";
-    } else if (!uppercasePassword) {
-      errMsg = "At least one Uppercase";
-    } else if (!lowercasePassword) {
-      errMsg = "At least one Lowercase";
-    } else if (!digitsPassword) {
-      errMsg = "At least one digit";
-    } else if (!minLengthPassword) {
-      errMsg = "At least minumum 8 characters";
-    } else {
-      errMsg = "";
-    }
-    setErrorPass(errMsg);
-  }, [password]);
-
-  // reset unique email error when username is changed
-  useEffect(() => {
-    setErrorEmail("");
-  }, [registerBody.username]);
+    setTakenEmail(false);
+  }, [email]);
 
   // send registration request
   const handleSignUp = async (event) => {
     event.preventDefault();
 
     try {
-      await axios.post(SIGNUP_URL, JSON.stringify(registerBody), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      await axios.post(
+        SIGNUP_URL,
+        JSON.stringify({
+          firstname: firstname,
+          lastname: lastname,
+          username: email,
+          password: pwd,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
       setFirstname("");
       setLastname("");
-      setRepeatPassword("");
+      setMatchPwd("");
 
       setFormSignIn(true);
       setShowPassword(false);
     } catch (exc) {
       console.log(exc);
-      setErrorEmail("Email is already taken!");
+      setTakenEmail(true);
     }
   };
 
@@ -266,6 +270,9 @@ const SignUp = ({
               id="firstname"
               className="auth-field-input"
               value={firstname}
+              ref={fnameRef}
+              required={true}
+              autoComplete="off"
               onChange={(e) => setFirstname(e.target.value)}
             />
           </div>
@@ -278,55 +285,136 @@ const SignUp = ({
               id="lastname"
               className="auth-field-input"
               value={lastname}
+              ref={lnameRef}
+              required={true}
+              autoComplete="off"
               onChange={(e) => setLastname(e.target.value)}
             />
           </div>
           <div className="mb-2">
             <label htmlFor="email" className="auth-field-label">
               Email
+              <span className={validEmail ? "icon-valid" : "hidden"}>
+                <FontAwesomeIcon icon={faCheck} />
+              </span>
+              <span
+                className={validEmail || !email ? "hidden" : "icon-invalid"}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </span>
+              <span
+                className={takenEmail ? "display-error text-error" : "hidden"}
+                aria-live="assertive"
+                ref={errRef}
+              >
+                {renderErrorMessage(takenEmailError)}
+              </span>
             </label>
             <input
               type="email"
               id="email"
               className="auth-field-input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="off"
+              value={email}
+              ref={emailRef}
+              required={true}
+              aria-invalid={validEmail ? "false" : "true"}
+              aria-describedby="emainote"
+              onFocus={() => setEmailFocus(true)}
+              onBlur={() => setEmailFocus(false)}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <div className="display-error">
-              {errorEmail && renderErrorMessage(errorEmail)}
-            </div>
+            <p
+              id="emailnote"
+              className={
+                emailFocus && email && !validEmail
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              {" Must contain '@' character."}
+              <br />
+              Main part and domain should not start or end with dot.
+              <br />
+              Must not contain double dots.
+              <br />
+            </p>
           </div>
           <div className="mb-2">
             <label htmlFor="password" className="auth-field-label">
               Password
+              <span className={validPwd ? "icon-valid" : "hidden"}>
+                <FontAwesomeIcon icon={faCheck} />
+              </span>
+              <span className={validPwd || !pwd ? "hidden" : "icon-invalid"}>
+                <FontAwesomeIcon icon={faTimes} />
+              </span>
             </label>
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              name="password"
               className="auth-field-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={pwd}
+              required={true}
+              aria-invalid={validPwd ? "false" : "true"}
+              aria-describedby="pwdnote"
+              onFocus={() => setPwdFocus(true)}
+              onBlur={() => setPwdFocus(false)}
+              onChange={(e) => setPwd(e.target.value)}
             />
-            <div className="display-error">
-              {errorPass && renderErrorMessage(errorPass)}
-            </div>
+            <p
+              id="pwdnote"
+              className={
+                pwdFocus && pwd && !validPwd ? "instructions" : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              {" 8 to 24 characters long"}
+              <br />
+              Must contain at least one uppercase letter, one lowercase.
+              <br />
+              At least one digit and special character
+              <br />
+            </p>
           </div>
           <div className="mb-2">
-            <label htmlFor="repeatPassword" className="auth-field-label">
-              Repeat password
+            <label htmlFor="matchPassword" className="auth-field-label">
+              Confirm password
+              <span
+                className={validMatch && matchPwd ? "icon-valid" : "hidden"}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+              </span>
+              <span
+                className={validMatch || !matchPwd ? "hidden" : "icon-invalid"}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </span>
             </label>
             <input
               type={showPassword ? "text" : "password"}
-              id="repeatPassword"
-              name="repeatPassword"
+              id="matchPassword"
               className="auth-field-input"
-              value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
+              value={matchPwd}
+              required={true}
+              aria-invalid={validMatch ? "false" : "true"}
+              aria-describedby="matchnote"
+              onFocus={() => setMatchFocus(true)}
+              onBlur={() => setMatchFocus(false)}
+              onChange={(e) => setMatchPwd(e.target.value)}
             />
-            <div className="display-error">
-              {errorRepeatPass && renderErrorMessage(errorRepeatPass)}
-            </div>
+            <p
+              id="matchnote"
+              className={
+                matchFocus && matchPwd && !validMatch
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              {" Passwords have to be equal!"}
+            </p>
           </div>
           <div className="mb-2 text-center">
             <button
@@ -341,7 +429,7 @@ const SignUp = ({
             <button
               className="auth-apply-btn"
               type="submit"
-              disabled={errorPass || errorRepeatPass || errorEmail}
+              disabled={!validEmail && !takenEmail && !validPwd && !validMatch}
             >
               Sign up
             </button>
@@ -364,7 +452,7 @@ const SignUp = ({
 };
 
 const renderErrorMessage = (error) => {
-  return <div className="text-error">{error}</div>;
+  return <>{error}</>;
 };
 
 export default Authentication;

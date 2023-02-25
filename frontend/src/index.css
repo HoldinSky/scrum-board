@@ -46,9 +46,25 @@
 }
 
 .display-error {
-  @apply mt-2 text-sm font-light text-center;
+  @apply ml-2 mt-2 text-sm font-light text-center;
 }
 
 .text-error {
   @apply text-red-600 font-medium underline;
+}
+
+.offscreen {
+  @apply absolute left-[-9999px];
+}
+
+.instructions {
+  @apply bg-slate-700 p-2 text-sm rounded-md text-white relative bottom-[-10px] transition-all;
+}
+
+.icon-valid {
+  @apply ml-2 text-lime-500;
+}
+
+.icon-invalid {
+  @apply ml-2 text-red-500;
 }

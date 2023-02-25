@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocalState } from "../hooks/useLocalStorage";
 
 function Homepage() {
-  const [user, setUser] = useLocalState(null, "user");
+  const [auth, setAuth] = useLocalState(null, "auth");
   useEffect(() => {
     document.title = "SCRUM board";
   });
@@ -10,9 +10,22 @@ function Homepage() {
   return (
     <>
       <h1 className="text-4xl font-bold text-green-700 text-center mt-10">
-        {user ? `Welcome, ${user.firstname}! ` : ""}You are on Homepage of the
-        project!
+        {auth ? `Welcome, ${auth.user.firstname}! ` : ""}You are on Homepage of
+        the project!
       </h1>
+      <div className="text-center py-3 px-4">
+        <a
+          className="text-xl font-semibold text-yellow-400 hover:underline"
+          href="/about"
+        >
+          Link to the learn more about project
+        </a>
+      </div>
+      <div className="text-center py-3 px-4">
+        <p className="text-2xl font-bold text-blue-600">
+          {auth ? `User is: ${JSON.stringify(auth.user)}` : ""}
+        </p>
+      </div>
     </>
   );
 }

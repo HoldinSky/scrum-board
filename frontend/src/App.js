@@ -1,22 +1,34 @@
+import RequireAuth from "./components/RequireAuth";
+import Authentication from "./components/Authentication";
+import Homepage from "./components/Homepage";
+import About from "./components/About";
+import Layout from "./components/Layout";
+
 import { Routes, Route } from "react-router-dom";
-import Authentication from "./components/Authentication.jsx";
-import Homepage from "./components/Homepage.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
+import { AuthContext } from "./util/AuthProvider";
+import { useMemo, useState } from "react";
 
 function App() {
+  const [auth, setAuth] = useState(null);
+
+  const value = useMemo(() => ({ auth, setAuth }), [auth, setAuth]);
+
   return (
     <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Homepage />
-            </PrivateRoute>
-          }
-        />
-        <Route path="/authenticate" element={<Authentication />} />
-      </Routes>
+      <AuthContext.Provider value={value}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            {/*This routes require login*/}
+            <Route element={<RequireAuth />}>
+              <Route path="/about" element={<About />} />
+            </Route>
+
+            {/* This routes are public */}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/authenticate" element={<Authentication />} />
+          </Route>
+        </Routes>
+      </AuthContext.Provider>
     </>
   );
 }
