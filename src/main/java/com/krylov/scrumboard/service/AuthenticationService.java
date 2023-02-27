@@ -70,12 +70,12 @@ public class AuthenticationService {
                 username, password
         ));
 
-        HashMap<String, Object> map = new HashMap<>();
         AppUser appUser = userService.getUser(username);
-        map.put("authorities", appUser.getAuthorities());
+        HashMap<String, Object> claims = new HashMap<>();
+        claims.put("authorities", appUser.getAuthorities());
 
-        String accessToken = jwtService.generateToken(map, appUser);
-        String refreshToken = jwtService.generateRefreshToken(map, appUser);
+        String accessToken = jwtService.generateToken(claims, appUser);
+        String refreshToken = jwtService.generateRefreshToken(claims, appUser);
 
         HashMap<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
@@ -85,19 +85,13 @@ public class AuthenticationService {
     }
 
     public Map<String, String> refreshTokens(String refreshToken) {
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY.getBytes());
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decoded = verifier.verify(refreshToken);
 
-        String username = decoded.getSubject();
-        AppUser user = userService.getUser(username);
+        String username = jwtService.extractUsername(refreshToken);
+        AppUser appUser = userService.getUser(username);
+        HashMap<String, Object> claims = new HashMap<>();
+        claims.put("authorities", appUser.getAuthorities());
 
-        String accessToken = JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)))
-                .withIssuer("/api/auth/refresh")
-                .withClaim("roles", user.getRoles().stream().map(Role::getName).toList())
-                .sign(algorithm);
+        String accessToken = jwtService.generateToken(claims, appUser);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);

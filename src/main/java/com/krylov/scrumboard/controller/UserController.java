@@ -23,19 +23,19 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<AppUser>> getUsers() {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/user").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user").toUriString());
         return ResponseEntity.created(uri).body(userService.getUsers());
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<AppUser> getUser(@PathVariable(name = "username")String username) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/" + username).toUriString());
         return ResponseEntity.created(uri).body(userService.getUser(username));
     }
 
     @PostMapping("/role")
     public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users/role").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/role").toUriString());
         return ResponseEntity.created(uri).body(userService.saveRole(role));
     }
 
@@ -46,7 +46,7 @@ public class UserController {
 
     @DeleteMapping("/{username}")
     public ResponseEntity<AppUser> deleteUser(@PathVariable(name = "username") String username) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/users/" + username).toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/" + username).toUriString());
         return ResponseEntity.created(uri).body(userService.deleteUser(username));
     }
 

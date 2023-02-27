@@ -5,8 +5,8 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useLocalState } from "../hooks/useLocalStorage";
 import axios from "../api/axios";
+import { useLocalState } from "../hooks/useLocalStorage";
 
 const LOGIN_URL = "/api/auth/login";
 const SIGNUP_URL = "/api/auth/register";
@@ -43,8 +43,8 @@ const RenderForm = () => {
 
   return formSignIn ? (
     <Login
-      formType={[formSignIn, setFormSignIn]}
       showPass={[showPassword, setShowPassword]}
+      formType={[formSignIn, setFormSignIn]}
       user={[email, setEmail, password, setPwd]}
     />
   ) : (
@@ -62,6 +62,7 @@ const Login = ({
   user: [email, setEmail, pwd, setPwd],
 }) => {
   const [auth, setAuth] = useLocalState(null, "auth");
+  const [success, setSuccess] = useState(false);
 
   const [errorLogin, setErrorLogin] = useState("");
 
@@ -86,23 +87,31 @@ const Login = ({
       setEmail("");
       setPwd("");
 
+      const user = response?.data?.user;
+      const roles = [];
+      user.authorities.forEach((authority) =>
+        roles.push(Object.values(authority)[0])
+      );
       const access_token = response?.data?.tokens.access_token;
       const refresh_token = response?.data?.tokens?.refresh_token;
 
       setAuth({
-        user: response?.data?.user,
+        user: {
+          firstname: user.firstname,
+          lastname: user.lastname,
+          username: user.username,
+        },
+        roles: roles,
         tokens: { access_token, refresh_token },
       });
-
-      console.log(`Auth context is: ${auth}`);
+      setSuccess(true);
     } catch (exc) {
       console.log(exc);
       setErrorLogin("Invalid email or password!");
     }
   };
 
-  console.log(`AuthContext is ${auth?.user}`);
-  return auth ? (
+  return success ? (
     <>
       <div className="form-holder">
         <div className="auth-form">

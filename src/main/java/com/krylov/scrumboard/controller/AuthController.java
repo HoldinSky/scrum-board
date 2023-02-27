@@ -5,6 +5,7 @@ import com.krylov.scrumboard.entity.AppUser;
 import com.krylov.scrumboard.security.helper.AuthenticationRequest;
 import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import com.krylov.scrumboard.service.AuthenticationService;
+import com.krylov.scrumboard.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final static ObjectMapper MAPPER = new ObjectMapper();
     private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<AppUser> saveUser(@RequestBody RegistrationRequest request) {
@@ -62,7 +63,8 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<?> validateToken(@RequestParam(name = "token") String token, @AuthenticationPrincipal AppUser user) {
+    public ResponseEntity<?> validateToken(@RequestParam(name = "token") String token, @RequestBody String username) {
+        AppUser user = userService.getUser(username);
         log.info("User is {}", user);
         return ResponseEntity.ok(authenticationService.validate(token, user));
     }
