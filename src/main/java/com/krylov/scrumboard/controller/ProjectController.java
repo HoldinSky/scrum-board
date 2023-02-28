@@ -7,7 +7,9 @@ import com.krylov.scrumboard.request.TaskRequest;
 import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ import java.util.Collection;
 
 @Service
 @RestController
-@RequestMapping(path = "/api/v1/project")
+@RequestMapping(path = "/api/project")
 @AllArgsConstructor
 public class ProjectController {
 
@@ -38,7 +40,7 @@ public class ProjectController {
                 projectService.getAllSprintsById(projectId)
                 );
 
-        return ResponseEntity.ok().body(responsePage);
+        return ResponseEntity.ok(responsePage);
     }
 
     @PostMapping(path = "/{projectId}")
@@ -51,7 +53,7 @@ public class ProjectController {
         }
 
         Project project = projectService.getProjectById(id);
-        return ResponseEntity.ok().body(project);
+        return ResponseEntity.ok(project);
     }
 
     @DeleteMapping(path = "/{projectId}/task/{id}")
@@ -62,7 +64,7 @@ public class ProjectController {
         projectService.deleteTask(id);
 
         Project project = projectService.getProjectById(projectId);
-        return ResponseEntity.ok().body(project);
+        return ResponseEntity.ok(project);
     }
 
     @PutMapping(path = "/{projectId}/task/{id}")
@@ -73,11 +75,14 @@ public class ProjectController {
 
         projectService.updateTask(taskId, request);
 
-        return ResponseEntity.ok().body(projectService.getProjectById(projectId));
+        return ResponseEntity.ok(projectService.getProjectById(projectId));
     }
 }
 
-@Data @AllArgsConstructor
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 class ProjectResponsePage {
     private LocalDate today;
     private Project project;

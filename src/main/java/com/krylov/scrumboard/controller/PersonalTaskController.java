@@ -6,7 +6,9 @@ import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.TaskService;
 import com.krylov.scrumboard.request.TaskRequest;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RestController
-@RequestMapping(path = "/api/v1/task/personal")
+@RequestMapping(path = "/api/task/personal")
 @AllArgsConstructor
 public class PersonalTaskController {
 
@@ -34,7 +36,7 @@ public class PersonalTaskController {
                 taskService.getAllFinished()
         );
 
-        return ResponseEntity.ok().body(board);
+        return ResponseEntity.ok(board);
     }
 
     @GetMapping(path = "{id}")
@@ -42,7 +44,7 @@ public class PersonalTaskController {
 //        modelAndView.setViewName("task-details");
 
         Task task = taskService.getTaskById(id);
-        return ResponseEntity.ok().body(task);
+        return ResponseEntity.ok(task);
     }
 
     @PostMapping
@@ -54,7 +56,7 @@ public class PersonalTaskController {
 
 
         if (request.getDescription().length() >= 15) {
-            return ResponseEntity.ok().body(taskService.save(request));
+            return ResponseEntity.ok(taskService.save(request));
         }
         else
             return ResponseEntity
@@ -72,12 +74,12 @@ public class PersonalTaskController {
 //        return modelAndView;
 
         TaskOrError taskOrError = taskService.updateTask(id, request);
-        if (taskOrError.getErrorMessage() != null)
+        if (taskOrError.errorMessage() != null)
             return ResponseEntity.status(BAD_REQUEST.value())
-                    .header("error", taskOrError.getErrorMessage())
+                    .header("error", taskOrError.errorMessage())
                     .build();
         else
-            return ResponseEntity.ok().body(taskOrError.getTask());
+            return ResponseEntity.ok(taskOrError.task());
 
     }
 
@@ -90,11 +92,13 @@ public class PersonalTaskController {
 //        return modelAndView;
 
         Task task = taskService.deleteTask(id);
-        return ResponseEntity.ok().body(task);
+        return ResponseEntity.ok(task);
     }
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class ScrumBoard {
     private Collection<Task> backlog;

@@ -1,3 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.form-holder {
+  @apply relative flex flex-col justify-center min-h-screen overflow-hidden;
+}
+
+.auth-form {
+  @apply w-[95%] p-6 m-auto bg-white rounded-md shadow-xl md:max-w-lg;
+}
+
+.auth-header {
+  @apply text-3xl font-semibold text-center text-blue-500 underline;
+}
+
+.auth-field-label {
+  @apply block text-sm font-semibold text-gray-800;
+}
+
+.auth-field-input {
+  @apply block w-full px-4 py-2 mt-2 text-black bg-white border rounded-md
+     focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40;
+}
+
+.auth-apply-btn {
+  @apply w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-blue-500 rounded-md
+     hover:bg-blue-600
+     focus:outline-none focus:bg-blue-600;
+}
+
+.auth-password-btn {
+  @apply mt-4 text-sm font-light text-center text-gray-700 hover:underline;
+}
+
+.auth-switch-form {
+  @apply mt-8 text-sm font-light text-center text-gray-700;
+}
+
+.auth-switch-form-btn {
+  @apply font-medium text-blue-600 hover:underline;
+}
+
+.auth-return-text {
+  @apply py-3 px-4 text-xl font-semibold text-yellow-400 hover:underline;
+}
+
+.display-error {
+  @apply ml-2 mt-2 text-sm font-light text-center;
+}
+
+.text-error {
+  @apply text-red-600 font-medium underline;
+}
+
+.offscreen {
+  @apply absolute left-[-9999px];
+}
+
+.instructions {
+  @apply bg-slate-700 p-2 text-sm rounded-md text-white relative bottom-[-10px] transition-all;
+}
+
+.icon-valid {
+  @apply ml-2 text-lime-500;
+}
+
+.icon-invalid {
+  @apply ml-2 text-red-500;
+}

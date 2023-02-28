@@ -17,7 +17,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/team")
+@RequestMapping("/api/team")
 @RequiredArgsConstructor
 public class TeamController {
 
@@ -36,12 +36,12 @@ public class TeamController {
                     .body("Please join a team before You can access this page");
         }
 
-        return ResponseEntity.ok().body(team);
+        return ResponseEntity.ok(team);
     }
 
     @GetMapping("/find")
     public ResponseEntity<?> findTeam(@RequestBody String name) {
-        return ResponseEntity.ok().body(teamService.getTeams(name));
+        return ResponseEntity.ok(teamService.getTeams(name));
     }
 
     @PostMapping
@@ -51,38 +51,38 @@ public class TeamController {
 
         var request = new CreateTeamRequest(teamName, username);
         Team team = teamService.saveTeam(request);
-        return ResponseEntity.ok().body(team);
+        return ResponseEntity.ok(team);
     }
 
     @DeleteMapping
     public ResponseEntity<Team> deleteTeam(@RequestParam(name = "id") Long teamId) {
         Team team = teamService.deleteTeam(teamId);
-        return ResponseEntity.ok().body(team);
+        return ResponseEntity.ok(team);
     }
 
     @PutMapping("/member")
     public ResponseEntity<Team> addMember(@RequestBody MemberTeamRequest request) {
-        return ResponseEntity.ok().body(teamService.addMember(request));
+        return ResponseEntity.ok(teamService.addMember(request));
     }
 
     @DeleteMapping("/member")
     public ResponseEntity<Team> removeMember(@RequestBody MemberTeamRequest request) {
-        return ResponseEntity.ok().body(teamService.removeMember(request));
+        return ResponseEntity.ok(teamService.removeMember(request));
     }
 
     @PutMapping("/manager")
     public ResponseEntity<AppUser> addManager(@RequestParam(name = "name") String username) {
-        return ResponseEntity.ok().body(teamService.addTeamManager(username));
+        return ResponseEntity.ok(teamService.addTeamManager(username));
     }
 
     @PutMapping("/project")
     public ResponseEntity<Team> addProject(@RequestBody ProjectTeamRequest request) {
-        return ResponseEntity.ok().body(teamService.createProject(request));
+        return ResponseEntity.ok(teamService.createProject(request));
     }
 
     @DeleteMapping("/project")
     public ResponseEntity<Team> deleteProject(@RequestBody ProjectTeamRequest request) {
-        return ResponseEntity.ok().body(teamService.deleteProject(request));
+        return ResponseEntity.ok(teamService.deleteProject(request));
     }
 
 

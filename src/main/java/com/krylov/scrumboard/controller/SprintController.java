@@ -8,7 +8,9 @@ import com.krylov.scrumboard.request.UpdateTaskRequest;
 import com.krylov.scrumboard.service.ProjectService;
 import com.krylov.scrumboard.service.SprintService;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RestController
-@RequestMapping(path = "/api/v1/sprint")
+@RequestMapping(path = "/api/sprint")
 @AllArgsConstructor
 public class SprintController {
 
@@ -39,7 +41,7 @@ public class SprintController {
                     .header("error", "Task is not found in database with id: " + id).build();
         else {
             var sprint = task.getSprint();
-            return ResponseEntity.ok().body(new SprintTaskDetails(task, sprint));
+            return ResponseEntity.ok(new SprintTaskDetails(task, sprint));
         }
     }
 
@@ -60,7 +62,7 @@ public class SprintController {
                 sprintService.getFinishedOfSprint(current.getId()),
                 sprintService.getTasksOfSprint(next.getId())
         );
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(path = "/{taskId}")
@@ -70,11 +72,11 @@ public class SprintController {
 //        modelAndView.setViewName("redirect:/api/v1/sprint/upcoming/" + project.getId());
 
         SprintTaskOrError taskOrError = sprintService.updateTaskById(id, request);
-        if (taskOrError.getErrorMessage() != null)
+        if (taskOrError.errorMessage() != null)
             return ResponseEntity.status(BAD_REQUEST.value())
-                    .header("error", taskOrError.getErrorMessage()).build();
+                    .header("error", taskOrError.errorMessage()).build();
         else
-            return ResponseEntity.ok().body(taskOrError.getTask());
+            return ResponseEntity.ok(taskOrError.task());
     }
 
     @DeleteMapping(path = "/{taskId}")
@@ -83,12 +85,14 @@ public class SprintController {
 
         SprintTask task = sprintService.deleteTask(id);
 
-        return ResponseEntity.ok().body(task);
+        return ResponseEntity.ok(task);
     }
 
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class SprintTaskDetails {
     private SprintTask task;
@@ -96,6 +100,8 @@ class SprintTaskDetails {
 }
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 class ProjectPage {
 
