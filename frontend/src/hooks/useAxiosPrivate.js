@@ -1,13 +1,11 @@
 import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
-import { useLocalState } from "./useLocalStorage";
-
-const ORIGIN = "http://localhost:3000";
+import useAuth from "./useAuth";
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken();
-  const [auth, setAuth] = useLocalState(null, "auth");
+  const { auth } = useAuth();
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(

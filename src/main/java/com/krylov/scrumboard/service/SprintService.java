@@ -79,73 +79,77 @@ public class SprintService implements Runnable {
     // !! HEAVY METHOD !! USE ONLY ON RELOAD !!
     private void setSprints() {
 
-        List<SprintRepository.SprintDTO> sprintDTOS = sprintRepo.findAllActiveSprints();
+        synchronized (current) {
+            List<SprintRepository.SprintDTO> sprintDTOS = sprintRepo.findAllActiveSprints();
 
-        if (sprintDTOS.size() == 0) return;
+            if (sprintDTOS.size() == 0) return;
 
-        List<Sprint> sprintInProgress = sprintDTOS.stream().map(this::mapSprintDtoToSprint).toList();
-        List<Project> projectInProgress = new ArrayList<>(
-                new HashSet<>(sprintDTOS.stream().map(this::mapSprintDtoToProject).toList()));
+            List<Sprint> sprintInProgress = sprintDTOS.stream().map(this::mapSprintDtoToSprint).toList();
+            List<Project> projectInProgress = new ArrayList<>(
+                    new HashSet<>(sprintDTOS.stream().map(this::mapSprintDtoToProject).toList()));
 
-        projectInProgress.forEach(project -> {
-            List<Sprint> sprints = sprintInProgress.stream()
-                    .filter(s -> s.getProject().getId().equals(project.getId())).sorted(sprintComparator).toList();
-            if (sprints.size() >= 2) {
-                next.add(sprints.get(0));
-                current.add(sprints.get(1));
+            projectInProgress.forEach(project -> {
+                List<Sprint> sprints = sprintInProgress.stream()
+                        .filter(s -> s.getProject().getId().equals(project.getId())).sorted(sprintComparator).toList();
+                if (sprints.size() >= 2) {
+                    next.add(sprints.get(0));
+                    current.add(sprints.get(1));
+                }
+            });
+
+            if (!current.isEmpty()) {
+                running.set(true);
             }
-        });
 
-        if (!current.isEmpty()) {
-            running.set(true);
-        }
-
-        if (running.get()) {
-            thread = new Thread(this);
-            thread.start();
+            if (running.get()) {
+                thread = new Thread(this);
+                thread.start();
+            }
         }
     }
 
     public void configureSprint(SprintRequest request, Project project) {
 
-        // setup current sprint
-        var duration = Duration.valueOf(request.getSprintDuration());
-        var sprintStart = request.getStartOfSprint();
-        var sprintEnd = sprintStart.plusDays(duration.getDays());
+        synchronized (current) {
+            // setup current sprint
+            var duration = Duration.valueOf(request.getSprintDuration());
+            var sprintStart = request.getStartOfSprint();
+            var sprintEnd = sprintStart.plusDays(duration.getDays());
 
-        var sprint = new Sprint(
-                converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
-                converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
-                duration
-        );
-        sprint.setProject(project);
+            var sprint = new Sprint(
+                    converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
+                    converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
+                    duration
+            );
+            sprint.setProject(project);
 
-        // persist current sprint
-        current.add(sprint);
-        sprintRepo.save(sprint);
+            // persist current sprint
+            current.add(sprint);
+            sprintRepo.save(sprint);
 
-        // setup next sprint
-        sprintStart = sprintEnd;
-        sprintEnd = sprintStart.plusDays(duration.getDays());
+            // setup next sprint
+            sprintStart = sprintEnd;
+            sprintEnd = sprintStart.plusDays(duration.getDays());
 
-        sprint = new Sprint(
-                converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
-                converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
-                duration
-        );
-        sprint.setProject(project);
+            sprint = new Sprint(
+                    converter.convertToDatabaseColumn(sprintStart.atStartOfDay()),
+                    converter.convertToDatabaseColumn(sprintEnd.atStartOfDay()),
+                    duration
+            );
+            sprint.setProject(project);
 
-        // persist next sprint
-        next.add(sprint);
-        sprintRepo.save(sprint);
+            // persist next sprint
+            next.add(sprint);
+            sprintRepo.save(sprint);
 
-        // start sprint updater thread
+            // start sprint updater thread
 
-        if (!running.get()) {
-            running.set(true);
-            if (thread == null || !thread.isAlive()) {
-                thread = new Thread(this);
-                thread.start();
+            if (!running.get()) {
+                running.set(true);
+                if (thread == null || !thread.isAlive()) {
+                    thread = new Thread(this);
+                    thread.start();
+                }
             }
         }
     }
@@ -313,44 +317,47 @@ public class SprintService implements Runnable {
 
     public List<Sprint> getAllSprintsOfProject(Long id) {
         Optional<Project> projectOptional = projectRepo.findById(id);
-        if (projectOptional.isEmpty()) return null;
+        return projectOptional.map(sprintRepo::findByProject).orElse(null);
 
-        return sprintRepo.findByProject(projectOptional.get());
     }
 
     public Sprint getSprintOfProject(Long id, String state) {
         Optional<Project> projectOptional = projectRepo.findById(id);
         if (projectOptional.isEmpty()) return null;
 
-        return switch (state) {
-            case "current" -> this.current.stream()
-                    .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .sorted(sprintComparator).iterator().next();
-            case "next" -> this.next.stream()
-                    .filter(sprint -> sprint.getProject().getId().equals(id))
-                    .sorted(sprintComparator).iterator().next();
-            default -> null;
-        };
+        synchronized (current) {
+            return switch (state) {
+                case "current" -> this.current.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
+                case "next" -> this.next.stream()
+                        .filter(sprint -> sprint.getProject().getId().equals(id))
+                        .sorted(sprintComparator).iterator().next();
+                default -> null;
+            };
+        }
     }
 
     public void endProject(Project project) {
 
-        // free list of sprints
-        for (Sprint s : current) {
-            if (s.getProject().getId().equals(project.getId())) {
-                current.remove(s);
-                break;
+        synchronized (current) {
+            // free list of sprints
+            for (Sprint s : current) {
+                if (s.getProject().getId().equals(project.getId())) {
+                    current.remove(s);
+                    break;
+                }
             }
-        }
 
-        for (Sprint s : next) {
-            if (s.getProject().getId().equals(project.getId())) {
-                next.remove(s);
-                break;
+            for (Sprint s : next) {
+                if (s.getProject().getId().equals(project.getId())) {
+                    next.remove(s);
+                    break;
+                }
             }
-        }
 
-        if (current.isEmpty()) running.set(false);
+            if (current.isEmpty()) running.set(false);
+        }
     }
 
 }

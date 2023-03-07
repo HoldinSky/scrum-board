@@ -15,13 +15,12 @@ const Unauthorized = () => {
         You do not have access to the requested page.
       </p>
       <div className="text-center">
-        <a
+        <button
           className="text-blue-500 hover:underline hover:cursor-pointer"
-          type="button"
           onClick={goBack}
         >
           Go Back
-        </a>
+        </button>
       </div>
     </>
   );

@@ -15,7 +15,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @Data
 @NoArgsConstructor
 
-@Table(name = "Project",
+@Table(name = "project",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "project_name_unique",

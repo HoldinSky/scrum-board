@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useLocalState } from "../hooks/useLocalStorage";
 
 const Users = () => {
-  const [auth, setAuth] = useLocalState(null, "auth");
   const [users, setUsers] = useState();
   const axiosPrivate = useAxiosPrivate();
 
@@ -20,6 +18,7 @@ const Users = () => {
         console.log(response.data);
         isMounted && setUsers(response.data);
       } catch (exc) {
+        // if an error occurs -> refresh token has expired, renavigate to '/authenticate page'
         console.log(exc);
       }
     };
@@ -29,7 +28,7 @@ const Users = () => {
       isMounted = false;
       controller.abort();
     };
-  }, []);
+  }, [axiosPrivate]);
 
   return (
     <>

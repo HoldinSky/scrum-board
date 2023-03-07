@@ -1,16 +1,16 @@
 import { Navigate, useLocation, Outlet } from "react-router-dom";
-import { useLocalState } from "../hooks/useLocalStorage";
+import useAuth from "../hooks/useAuth";
 
 const RequireAuth = ({ allowedRoles }) => {
-  const [auth, setAuth] = useLocalState(null, "auth");
+  const { auth } = useAuth();
   const location = useLocation();
 
   return !auth ? (
-    <Navigate to="/authenticate" state={{ from: location }} replace />
+    <Navigate to="/authenticate" state={{ from: location }} replace={true} />
   ) : auth.roles.find((role) => allowedRoles?.includes(role)) ? (
     <Outlet />
   ) : (
-    <Navigate to="/unauthorized" state={{ from: location }} replace />
+    <Navigate to="/unauthorized" state={{ from: location }} replace={true} />
   );
 };
 

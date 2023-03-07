@@ -8,23 +8,32 @@ import AdminPanel from "./components/AdminPanel";
 import { Routes, Route } from "react-router-dom";
 import Unauthorized from "./components/Unauthorized";
 
+const USER = "ROLE_USER";
+const ADMIN = "ROLE_ADMIN";
+const TEAM_MEMBER = "ROLE_TEAM_MEMBER";
+const TEAM_MANAGER = "ROLE_TEAM_MANAGER";
+
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* This routes are public */}
-          <Route path="/" element={<Homepage />} />
           <Route path="/authenticate" element={<Authentication />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/*This routes require login*/}
-          <Route element={<RequireAuth allowedRoles={["ROLE_USER"]} />}>
+          <Route element={<RequireAuth allowedRoles={[USER]} />}>
+            <Route path="/" element={<Homepage />} />
+          </Route>
+          <Route element={<RequireAuth allowedRoles={[USER]} />}>
             <Route path="/about" element={<About />} />
           </Route>
-
-          <Route element={<RequireAuth allowedRoles={["ROLE_ADMIN"]} />}>
+          <Route element={<RequireAuth allowedRoles={[ADMIN]} />}>
             <Route path="/admin" element={<AdminPanel />} />
+          </Route>
+
+          <Route>
+            <Route path="/unauthorized" element={<Unauthorized />} />
           </Route>
 
           {/*  */}

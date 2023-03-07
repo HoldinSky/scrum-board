@@ -1,28 +1,22 @@
 package com.krylov.scrumboard.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.krylov.scrumboard.entity.AppUser;
 import com.krylov.scrumboard.security.helper.AuthenticationRequest;
 import com.krylov.scrumboard.security.helper.RegistrationRequest;
 import com.krylov.scrumboard.service.AuthenticationService;
 import com.krylov.scrumboard.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController

@@ -1,8 +1,8 @@
-import { useContext } from "react";
-import { AuthContext } from "../util/AuthProvider";
+import { useLocalState } from "./useLocalStorage";
 
 const useAuth = () => {
-  return useContext(AuthContext);
+  const [auth, setAuth] = useLocalState(null, "auth");
+  return { auth, setAuth };
 };
 
 export default useAuth;
