@@ -6,7 +6,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "../api/axios";
-import { useLocalState } from "../hooks/useLocalStorage";
+import useAuth from "../hooks/useAuth";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+// import { useLocation, useNavigate } from "react-router-dom";
 
 const LOGIN_URL = "/api/auth/login";
 const SIGNUP_URL = "/api/auth/register";
@@ -61,10 +63,15 @@ const Login = ({
   formType: [formSignIn, setFormSignIn],
   user: [email, setEmail, pwd, setPwd],
 }) => {
-  const [auth, setAuth] = useLocalState(null, "auth");
-  const [success, setSuccess] = useState(false);
+  const { auth, setAuth } = useAuth();
 
   const [errorLogin, setErrorLogin] = useState("");
+
+  // const navigate = useNavigate();
+  // const location = useLocation();
+  // const from = location.state?.from?.pathname || "/";
+
+  const axiosPrivate = useAxiosPrivate();
 
   // send login request
   const handleSignIn = async (event) => {
@@ -86,6 +93,7 @@ const Login = ({
       );
       setEmail("");
       setPwd("");
+      setErrorLogin("");
 
       const user = response?.data?.user;
       const roles = [];
@@ -104,14 +112,15 @@ const Login = ({
         roles: roles,
         tokens: { access_token, refresh_token },
       });
-      setSuccess(true);
+
+      // navigate(from, { replace: true });
     } catch (exc) {
       console.log(exc);
       setErrorLogin("Invalid email or password!");
     }
   };
 
-  return success ? (
+  return auth ? (
     <>
       <div className="form-holder">
         <div className="auth-form">
@@ -120,6 +129,31 @@ const Login = ({
             <a className="auth-return-text" href="/">
               Go to HomePage
             </a>
+          </div>
+          <div className="text-center py-3 px-4">
+            <button
+              className="px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-red-500 rounded-md
+     hover:bg-red-600"
+              type="button"
+              onClick={() => setAuth(null)}
+            >
+              Log out
+            </button>
+          </div>
+          <div className="text-center py-3 px-4">
+            <button
+              className="px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-fuchsia-500 rounded-md
+     hover:bg-fuchsia-600"
+              type="button"
+              onClick={async () => {
+                const response = await axiosPrivate.get(
+                  `/api/user/${auth.user.username}`
+                );
+                console.log(response.data);
+              }}
+            >
+              Get my user
+            </button>
           </div>
         </div>
       </div>

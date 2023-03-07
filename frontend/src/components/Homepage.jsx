@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useLocalState } from "../hooks/useLocalStorage";
 import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 function Homepage() {
-  const [auth, setAuth] = useLocalState(null, "auth");
+  const { auth, setAuth } = useAuth();
   useEffect(() => {
     document.title = "SCRUM board";
   });
@@ -32,11 +32,24 @@ function Homepage() {
       </div>
       <div className="text-center py-3 px-4">
         <Link
-          className="text-xl font-semibold text-yellow-400 hover:underline"
-          to={"/authenticate"}
+          className="px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-blue-500 rounded-md
+     hover:bg-blue-600"
+          to="/authenticate"
         >
           Log in
         </Link>
+      </div>
+      <div className="text-center py-3 px-4">
+        <button
+          className="px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-red-500 rounded-md
+     hover:bg-red-600"
+          type="button"
+          onClick={() => {
+            setAuth(null);
+          }}
+        >
+          Log out
+        </button>
       </div>
       <div className="text-center py-3 px-4">
         <p className="text-2xl font-bold text-blue-600">

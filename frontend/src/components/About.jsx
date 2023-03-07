@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useLocalState } from "../hooks/useLocalStorage";
+import useAuth from "../hooks/useAuth";
 
 function Homepage() {
-  const [auth, setAuth] = useLocalState(null, "auth");
+  const { auth } = useAuth();
   useEffect(() => {
     document.title = "SCRUM board";
   });
